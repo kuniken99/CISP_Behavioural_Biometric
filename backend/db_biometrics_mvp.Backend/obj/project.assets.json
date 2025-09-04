@@ -4498,11 +4498,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Kennedy Tan\\Downloads\\db_biometrics_mvp\\backend\\db_biometrics_mvp.Backend\\db_biometrics_mvp.Backend.csproj",
+      "projectUniqueName": "E:\\CISP_Behavioural_Biometric\\backend\\db_biometrics_mvp.Backend\\db_biometrics_mvp.Backend.csproj",
       "projectName": "db_biometrics_mvp.Backend",
-      "projectPath": "C:\\Users\\Kennedy Tan\\Downloads\\db_biometrics_mvp\\backend\\db_biometrics_mvp.Backend\\db_biometrics_mvp.Backend.csproj",
+      "projectPath": "E:\\CISP_Behavioural_Biometric\\backend\\db_biometrics_mvp.Backend\\db_biometrics_mvp.Backend.csproj",
       "packagesPath": "C:\\Users\\Kennedy Tan\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Kennedy Tan\\Downloads\\db_biometrics_mvp\\backend\\db_biometrics_mvp.Backend\\obj\\",
+      "outputPath": "E:\\CISP_Behavioural_Biometric\\backend\\db_biometrics_mvp.Backend\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

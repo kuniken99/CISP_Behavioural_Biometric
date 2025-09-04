@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "in7HldhixiM=",
+  "dgSpecHash": "nQkBYORVhA4=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Kennedy Tan\\Downloads\\db_biometrics_mvp\\backend\\db_biometrics_mvp.Backend\\db_biometrics_mvp.Backend.csproj",
+  "projectFilePath": "E:\\CISP_Behavioural_Biometric\\backend\\db_biometrics_mvp.Backend\\db_biometrics_mvp.Backend.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Kennedy Tan\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\Kennedy Tan\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
