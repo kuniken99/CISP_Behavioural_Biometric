@@ -1,0 +1,6 @@
+@db_biometrics_mvp.Backend_HostAddress = http://localhost:5089
+
+GET {{db_biometrics_mvp.Backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
