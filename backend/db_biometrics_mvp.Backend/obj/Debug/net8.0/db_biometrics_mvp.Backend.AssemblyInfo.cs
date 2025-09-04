@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("db_biometrics_mvp.Backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+05f7f8a81952297224abc4fb3b2fd7e02a65f2ca")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1aaee3d33e3aec783e33910eff54fe7dccfa469e")]
 [assembly: System.Reflection.AssemblyProductAttribute("db_biometrics_mvp.Backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("db_biometrics_mvp.Backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
