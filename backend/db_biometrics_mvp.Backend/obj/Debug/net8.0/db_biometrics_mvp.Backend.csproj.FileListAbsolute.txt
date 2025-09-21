@@ -167,7 +167,6 @@ C:\Users\Kennedy Tan\Downloads\db_biometrics_mvp\backend\db_biometrics_mvp.Backe
 C:\Users\Kennedy Tan\Downloads\db_biometrics_mvp\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\ref\db_biometrics_mvp.Backend.dll
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\bin\Debug\net8.0\appsettings.Development.json
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\bin\Debug\net8.0\appsettings.json
-E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\bin\Debug\net8.0\db_biometrics_mvp.Backend.staticwebassets.endpoints.json
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\bin\Debug\net8.0\db_biometrics_mvp.Backend.exe
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\bin\Debug\net8.0\db_biometrics_mvp.Backend.deps.json
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\bin\Debug\net8.0\db_biometrics_mvp.Backend.runtimeconfig.json
@@ -312,24 +311,23 @@ E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\bin\Debug\net8.0
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\bin\Debug\net8.0\runtimes\browser\lib\net8.0\System.Text.Encodings.Web.dll
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\db_biometrics_mvp.Backend.csproj.AssemblyReference.cache
-E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\rpswa.dswa.cache.json
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\db_biometrics_mvp.Backend.GeneratedMSBuildEditorConfig.editorconfig
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\db_biometrics_mvp.Backend.AssemblyInfoInputs.cache
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\db_biometrics_mvp.Backend.AssemblyInfo.cs
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\db_biometrics_mvp.Backend.csproj.CoreCompileInputs.cache
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\db_biometrics_mvp.Backend.MvcApplicationPartsAssemblyInfo.cache
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\db_biometrics_mvp.Backend.sourcelink.json
-E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\rjimswa.dswa.cache.json
-E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
-E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\scopedcss\bundle\db_biometrics_mvp.Backend.styles.css
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\staticwebassets.build.json
-E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\staticwebassets.build.json.cache
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\staticwebassets.development.json
-E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\staticwebassets.build.endpoints.json
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\db_biome.791F883E.Up2Date
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\db_biometrics_mvp.Backend.dll
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\refint\db_biometrics_mvp.Backend.dll
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\db_biometrics_mvp.Backend.pdb
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\db_biometrics_mvp.Backend.genruntimeconfig.cache
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\ref\db_biometrics_mvp.Backend.dll
+E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\staticwebassets\msbuild.db_biometrics_mvp.Backend.Microsoft.AspNetCore.StaticWebAssets.props
+E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\staticwebassets\msbuild.build.db_biometrics_mvp.Backend.props
+E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.db_biometrics_mvp.Backend.props
+E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.db_biometrics_mvp.Backend.props
+E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\staticwebassets.pack.json

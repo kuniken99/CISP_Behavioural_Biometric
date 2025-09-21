@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\db_biometrics_mvp.Backend.props" />
+</Project>
