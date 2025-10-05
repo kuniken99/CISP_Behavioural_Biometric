@@ -18,6 +18,17 @@ namespace db_biometrics_mvp.Backend.Data
         public DbSet<DbConfiguration> DbConfigurations { get; set; } = default!;
         public DbSet<WebsiteContent> WebsiteContents { get; set; } = default!;
         public DbSet<Alert> Alerts { get; set; } = default!;
+        
+        // New tables for CBBA system
+        public DbSet<DBAConsole> DBAConsoles { get; set; } = default!;
+        public DbSet<PrivilegedAdministrator> PrivilegedAdministrators { get; set; } = default!;
+        public DbSet<CBBA> CBBAs { get; set; } = default!;
+        public DbSet<CaptchaVerification> CaptchaVerifications { get; set; } = default!;
+        public DbSet<MouseMovement> MouseMovements { get; set; } = default!;
+        public DbSet<KeyStroke> KeyStrokes { get; set; } = default!;
+        public DbSet<BiometricProfile> BiometricProfiles { get; set; } = default!;
+        public DbSet<SecurityLog> SecurityLogs { get; set; } = default!;
+        public DbSet<RiskScore> RiskScores { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
