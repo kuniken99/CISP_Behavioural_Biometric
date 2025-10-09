@@ -1,0 +1,34 @@
+{
+  "files": {
+    "main.css": "/static/css/main.c5fc9ad4.css",
+    "main.js": "/static/js/main.f2a68a65.js",
+    "static/js/453.670e15c7.chunk.js": "/static/js/453.670e15c7.chunk.js",
+    "static/media/db-configuration-icon.svg": "/static/media/db-configuration-icon.a4adfcbbaf982a014cfc2f82731240c5.svg",
+    "static/media/profile-icon.svg": "/static/media/profile-icon.ae1ace44da357954c687a7f280040525.svg",
+    "static/media/cpu-icon.svg": "/static/media/cpu-icon.677a789667f2bc8f8760dde7634410a3.svg",
+    "static/media/eye-icon.svg": "/static/media/eye-icon.789fe4f9ff8b03926854115806b92042.svg",
+    "static/media/user-management-icon.svg": "/static/media/user-management-icon.dbef9fa4a09283e3cdbf216d03be1b59.svg",
+    "static/media/alert-system-icon.svg": "/static/media/alert-system-icon.0db489bee6fa96ca800ef7f8b4d8f74f.svg",
+    "static/media/memory-icon.svg": "/static/media/memory-icon.7fa606a16e018f2f9bdf7f1da9108083.svg",
+    "static/media/db-entry-management-icon.svg": "/static/media/db-entry-management-icon.dfe1d8495cfbbde002a28b57d7f45993.svg",
+    "static/media/help-icon.svg": "/static/media/help-icon.e1fa266203a4687b2de481917e0ee382.svg",
+    "static/media/transactions-icon.svg": "/static/media/transactions-icon.3378750c7415f3fe33902a0b562e3641.svg",
+    "static/media/logout-icon.svg": "/static/media/logout-icon.b179f5edc288eb687a928546bed53cdf.svg",
+    "static/media/activity-logs-icon.svg": "/static/media/activity-logs-icon.2e23dbf3ad44595beae43bd8f33aa4c9.svg",
+    "static/media/website-admin-icon.svg": "/static/media/website-admin-icon.1ca87c7bde9c98cea2263db883a6b7d0.svg",
+    "static/media/role-access-control-icon.svg": "/static/media/role-access-control-icon.2954137f16c42228aca8d75da22179fa.svg",
+    "static/media/cbba-risk-icon.svg": "/static/media/cbba-risk-icon.8ef796a93952c56aeb9e69c04edadfee.svg",
+    "static/media/dashboard-icon.svg": "/static/media/dashboard-icon.3e5b24719eae0c5d0737ce432014ab0f.svg",
+    "index.html": "/index.html",
+    "static/media/uptime-icon.svg": "/static/media/uptime-icon.58a1b70118bceb154f6c3c8e76866329.svg",
+    "static/media/phone-icon.svg": "/static/media/phone-icon.35b44dc60acd9fca7faecc3b9d366036.svg",
+    "static/media/shield-icon.svg": "/static/media/shield-icon.11a697ed9bf3c659c5e219d80690df73.svg",
+    "main.c5fc9ad4.css.map": "/static/css/main.c5fc9ad4.css.map",
+    "main.f2a68a65.js.map": "/static/js/main.f2a68a65.js.map",
+    "453.670e15c7.chunk.js.map": "/static/js/453.670e15c7.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.c5fc9ad4.css",
+    "static/js/main.f2a68a65.js"
+  ]
+}

@@ -1,0 +1,40 @@
+@{
+    ViewData["Title"] = "Login";
+    Layout = "_Layout";
+}
+
+<div class="auth-container">
+    <h2 class="text-center mb-3">DBA Admin Console</h2>
+    <h3 class="text-center mb-3">Sign In</h3>
+    
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">
+            @ViewBag.Error
+        </div>
+    }
+    
+    <form method="post" asp-action="Login">
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" required />
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required />
+        </div>
+        
+        <div class="form-group">
+            <div class="g-recaptcha" data-sitekey="YOUR_RECAPTCHA_SITE_KEY"></div>
+        </div>
+        
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Sign In</button>
+        </div>
+    </form>
+    
+    <div class="text-center mt-3">
+        <p>Don't have an account? <a href="/Auth/Register" class="link">Sign Up</a></p>
+    </div>
+</div>
