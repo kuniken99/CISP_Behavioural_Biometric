@@ -9,9 +9,17 @@ namespace db_biometrics_mvp.Backend.Models
         [Required]
         public string Username { get; set; } = string.Empty;
         [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+        [Required]
         public string PasswordHash { get; set; } = string.Empty; // Store hashed passwords
-        public string Role { get; set; } = "user"; // "user", "dba", "admin"
-        public bool IsActive { get; set; } = true;
+        [Required]
+        public string Role { get; set; } = string.Empty; // "user", "dba", "admin"
+        public bool IsActive { get; set; }
+        public bool IsEmailVerified { get; set; }
+        public bool IsTwoFactorEnabled { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? LastLoginAt { get; set; }
     }
 
     // DTO for user creation

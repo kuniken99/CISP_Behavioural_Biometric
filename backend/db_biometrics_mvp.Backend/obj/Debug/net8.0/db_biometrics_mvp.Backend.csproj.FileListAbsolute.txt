@@ -331,3 +331,5 @@ E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.db_biometrics_mvp.Backend.props
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.db_biometrics_mvp.Backend.props
 E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\obj\Debug\net8.0\staticwebassets.pack.json
+E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\bin\Debug\net8.0\Otp.NET.dll
+E:\CISP_Behavioural_Biometric\backend\db_biometrics_mvp.Backend\bin\Debug\net8.0\QRCoder.dll

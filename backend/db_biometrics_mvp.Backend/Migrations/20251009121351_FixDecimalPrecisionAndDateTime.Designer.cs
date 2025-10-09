@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using db_biometrics_mvp.Backend.Data;
 
@@ -11,9 +12,11 @@ using db_biometrics_mvp.Backend.Data;
 namespace db_biometrics_mvp.Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251009121351_FixDecimalPrecisionAndDateTime")]
+    partial class FixDecimalPrecisionAndDateTime
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -309,9 +312,6 @@ namespace db_biometrics_mvp.Backend.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsCorrect")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsExpired")
                         .HasColumnType("bit");
 
                     b.Property<string>("SessionId")
@@ -846,13 +846,7 @@ namespace db_biometrics_mvp.Backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("BackupCodes")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("EnabledAt")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsEnabled")
@@ -861,9 +855,6 @@ namespace db_biometrics_mvp.Backend.Migrations
                     b.Property<string>("SecretKey")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -922,7 +913,7 @@ namespace db_biometrics_mvp.Backend.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 10, 9, 12, 13, 46, 515, DateTimeKind.Utc).AddTicks(9289),
                             Email = "admin@system.com",
                             IsActive = true,
                             IsEmailVerified = true,
@@ -934,7 +925,7 @@ namespace db_biometrics_mvp.Backend.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 10, 9, 12, 13, 46, 516, DateTimeKind.Utc).AddTicks(293),
                             Email = "dba@system.com",
                             IsActive = true,
                             IsEmailVerified = true,
@@ -946,7 +937,7 @@ namespace db_biometrics_mvp.Backend.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 10, 9, 12, 13, 46, 516, DateTimeKind.Utc).AddTicks(296),
                             Email = "test@system.com",
                             IsActive = true,
                             IsEmailVerified = true,
@@ -954,18 +945,6 @@ namespace db_biometrics_mvp.Backend.Migrations
                             PasswordHash = "9af50a3ade35be3c6d8ef3ecf3cbedf85c141d0e550c9f1a3fa3e67b6ab55804",
                             Role = "user",
                             Username = "testuser"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Email = "tank108@uni.coventry.ac.uk",
-                            IsActive = true,
-                            IsEmailVerified = true,
-                            IsTwoFactorEnabled = false,
-                            PasswordHash = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
-                            Role = "admin",
-                            Username = "tank108"
                         });
                 });
 

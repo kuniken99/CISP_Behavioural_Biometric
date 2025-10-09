@@ -29,6 +29,10 @@ namespace db_biometrics_mvp.Backend.Data
         public DbSet<BiometricProfile> BiometricProfiles { get; set; } = default!;
         public DbSet<SecurityLog> SecurityLogs { get; set; } = default!;
         public DbSet<RiskScore> RiskScores { get; set; } = default!;
+        
+        // Add new tables for authentication flow
+        public DbSet<EmailVerificationToken> EmailVerificationTokens { get; set; } = default!;
+        public DbSet<TwoFactorAuth> TwoFactorAuths { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -39,9 +43,9 @@ namespace db_biometrics_mvp.Backend.Data
             var dbaPasswordHash = HashPassword("dbapass");
 
             modelBuilder.Entity<User>().HasData(
-                new User { Id = 1, Username = "admin", PasswordHash = adminPasswordHash, Role = "admin", IsActive = true },
-                new User { Id = 2, Username = "dbauser", PasswordHash = dbaPasswordHash, Role = "dba", IsActive = true },
-                new User { Id = 3, Username = "testuser", PasswordHash = dbaPasswordHash, Role = "user", IsActive = true }
+                new User { Id = 1, Username = "admin", Email = "admin@system.com", PasswordHash = adminPasswordHash, Role = "admin", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = true },
+                new User { Id = 2, Username = "dbauser", Email = "dba@system.com", PasswordHash = dbaPasswordHash, Role = "dba", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = true },
+                new User { Id = 3, Username = "testuser", Email = "test@system.com", PasswordHash = dbaPasswordHash, Role = "user", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = false }
             );
 
             modelBuilder.Entity<DbConfiguration>().HasData(
