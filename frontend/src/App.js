@@ -1106,12 +1106,12 @@ function App() {
         /* Basic CSS for the Admin Console */
         body { margin: 0; font-family: 'Inter', sans-serif; background-color: #ffffff; color: #000000; }
         .app-container { display: flex; flex-direction: column; min-height: 100vh; background-color: #ffffff; }
-        .main-app-wrapper { display: flex; flex: 1; }
-        .sidebar { width: 250px; background-color: #f8f9fa; color: #000000; padding: 20px; box-shadow: 2px 0 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; border-right: 1px solid #e5e7eb; min-height: 95vh; }
+        .main-app-wrapper { display: flex; flex: 1; overflow: hidden; }
+        .sidebar { width: 250px; background-color: #f8f9fa; color: #000000; padding: 20px; box-shadow: 2px 0 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; border-right: 1px solid #e5e7eb; position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; }
         .sidebar h1 { text-align: center; color: #000000; margin-bottom: 30px; font-size: 1.8em; }
         .sidebar-nav ul { list-style: none; padding: 0; margin: 0; }
         .sidebar-nav li { margin-bottom: 10px; }
-        .sidebar-nav { flex: 1; overflow-y: auto; margin-bottom: 10px; }
+        .sidebar-nav { flex: 1; overflow-y: auto; margin-bottom: 10px; max-height: calc(100vh - 200px); }
         .sidebar-nav button {
           background: none;
           border: none;
@@ -1130,7 +1130,7 @@ function App() {
         }
         .sidebar-nav button:hover { background-color: #e9ecef; }
         .sidebar-nav button.active { background-color: #007bff; color: #ffffff; }
-        .main-content { flex-grow: 1; padding: 25px 30px 20px; background-color: #ffffff; display: flex; flex-direction: column; overflow-y: auto; }
+        .main-content { flex-grow: 1; margin-left: 250px; margin-right: 20px; padding: 25px 30px 20px; background-color: #ffffff; display: flex; flex-direction: column; overflow-y: auto; min-height: 100vh; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; background-color: #ffffff; padding: 20px 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .header h2 { margin: 0; color: #000000; font-size: 1.8rem; font-weight: 600; }
         .user-info { display: flex; align-items: center; }
@@ -1199,20 +1199,14 @@ function App() {
           background-color: #f8f9fa;
           border-top: 1px solid #e5e7eb;
           margin-top: auto;
+          margin-left: 250px;
           padding: 40px 0 20px 0;
-          width: 100%;
+          width: calc(100% - 250px);
           color: #000000;
           position: relative;
           z-index: 1;
         }
-        
-        .footer-cbba-container {
-          position: absolute;
-          bottom: 100%;
-          left: 0px;
-          margin-bottom: 0px;
-          z-index: 10;
-        }
+
         
         .footer-content {
           max-width: 1200px;
@@ -1284,18 +1278,25 @@ function App() {
           margin: 0;
         }
         
-        /* CBBA Monitor - Match sidebar width */
+        /* CBBA Monitor - Floating positioning */
         .cbba-monitor {
-          width: 250px !important; /* Same as sidebar width */
+          position: fixed !important;
+          bottom: 20px !important;
+          left: 20px !important;
+          width: 210px !important;
+          z-index: 1000 !important;
+          background-color: #ffffff !important;
+          border: 1px solid #e5e7eb !important;
+          border-radius: 8px !important;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+          transition: all 0.3s ease !important;
         }
         
-        /* Responsive adjustments for CBBA Monitor */
+        /* Responsive adjustments for CBBA Monitor and Footer */
         @media (max-width: 768px) {
-          .footer-cbba-container {
-            left: 0px;
-            position: relative;
-            bottom: auto;
-            margin-bottom: 20px;
+          .footer {
+            margin-left: 0 !important;
+            width: 100% !important;
           }
           
           .cbba-monitor {
@@ -1303,14 +1304,21 @@ function App() {
           }
         }
         
-        @media (max-width: 480px) {
-          .footer-cbba-container {
-            left: 0px;
+        @media (max-width: 768px) {
+          .sidebar {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
           }
           
+          .main-content {
+            margin-left: 0 !important;
+          }
+        }
+        
+        @media (max-width: 480px) {
           .cbba-monitor {
             width: calc(100vw - 40px) !important;
-            max-width: 250px !important;
+            max-width: 210px !important;
           }
         }
       `}</style>
@@ -1397,15 +1405,16 @@ function App() {
       </div>
       </div>
       
-      <Footer onNavigate={setCurrentPage} cbbaComponent={
-        isAuthenticated ? (
-          <CBBAMonitor 
-            status="Active" 
-            riskScore={lastCbbaScore ? Math.round(Math.abs(lastCbbaScore * 100)) : 12}
-            isAuthenticated={isAuthenticated}
-          />
-        ) : null
-      } />
+      <Footer onNavigate={setCurrentPage} />
+      
+      {/* Floating CBBA Monitor */}
+      {isAuthenticated && (
+        <CBBAMonitor 
+          status="Active" 
+          riskScore={lastCbbaScore ? Math.round(Math.abs(lastCbbaScore * 100)) : 12}
+          isAuthenticated={isAuthenticated}
+        />
+      )}
     </div>
   );
 }

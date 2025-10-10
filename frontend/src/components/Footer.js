@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-const Footer = ({ onNavigate, cbbaComponent }) => {
+const Footer = ({ onNavigate }) => {
   const handleLinkClick = (e, page) => {
     e.preventDefault();
     if (onNavigate) {
@@ -12,12 +12,6 @@ const Footer = ({ onNavigate, cbbaComponent }) => {
 
   return (
     <footer className="footer">
-      {/* CBBA Monitor positioned above footer content */}
-      {cbbaComponent && (
-        <div className="footer-cbba-container">
-          {cbbaComponent}
-        </div>
-      )}
       <div className="footer-content">
         <div className="footer-section">
           <h3>CBBA Security System</h3>
