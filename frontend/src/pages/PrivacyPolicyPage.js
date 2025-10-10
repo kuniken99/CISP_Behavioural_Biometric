@@ -37,9 +37,10 @@ const PrivacyPolicyPage = () => {
           the use of behavioral biometric authentication through system administrators.
         </p>
         
-        <h3>Contact Information</h3>
+        <h3>Third Party Access</h3>
         <p>
-          For questions about this privacy policy or data processing, please contact your system administrator.
+          We do not share, sell, or distribute behavioral biometric data to third parties. Access is 
+          restricted to authorized security personnel for legitimate security purposes only.
         </p>
       </div>
     </div>

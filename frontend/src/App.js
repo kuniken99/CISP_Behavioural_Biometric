@@ -9,7 +9,7 @@ import Header from './components/Layout/Header';
 import Sidebar from './components/Layout/Sidebar';
 
 // Import all page components
-import LoginPage from './pages/LoginPage';
+import AuthWrapper from './pages/AuthWrapper';
 import DashboardPage from './pages/DashboardPage';
 import DbEntryManagementPage from './pages/DbEntryManagementPage';
 import UserManagementPage from './pages/UserManagementPage';
@@ -43,7 +43,7 @@ function App() {
   // Render page based on current page state
   const renderPage = () => {
     if (!isAuthenticated) {
-      return <LoginPage onLogin={handleLogin} />;
+      return <AuthWrapper onLogin={handleLogin} />;
     }
 
     switch (currentPage) {
@@ -83,7 +83,7 @@ function App() {
           <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} />
         )}
 
-        <div className="main-content">
+        <div className={`main-content ${!isAuthenticated ? 'login-mode' : ''}`}>
           {isAuthenticated && (
             <Header 
               currentPage={currentPage}
@@ -99,7 +99,7 @@ function App() {
         </div>
       </div>
       
-      <Footer onNavigate={setCurrentPage} />
+      {isAuthenticated && <Footer onNavigate={setCurrentPage} />}
       
       {/* Floating CBBA Monitor */}
       {isAuthenticated && (

@@ -19,12 +19,6 @@ const TermsOfUsePage = () => {
           appropriate access levels to use this database administration console.
         </p>
         
-        <h3>Behavioral Biometric Monitoring</h3>
-        <p>
-          By using this system, you consent to continuous behavioral biometric monitoring including 
-          keyboard and mouse pattern analysis for security and authentication purposes.
-        </p>
-        
         <h3>User Responsibilities</h3>
         <ul>
           <li>Maintain the confidentiality of your login credentials</li>
@@ -39,10 +33,16 @@ const TermsOfUsePage = () => {
           Scheduled maintenance and security updates may cause temporary service interruptions.
         </p>
         
-        <h3>Security Measures</h3>
+        <h3>Acceptable Use Policy</h3>
         <p>
-          The system implements advanced security measures including behavioral biometric analysis. 
-          Anomalous behavior may result in automatic session termination and security alerts.
+          Users must not attempt to circumvent security measures, access unauthorized data, or use 
+          the system for any illegal or unauthorized purposes.
+        </p>
+        
+        <h3>Account Termination</h3>
+        <p>
+          Access may be suspended or terminated immediately for violations of these terms, security 
+          breaches, or inappropriate system usage.
         </p>
         
         <h3>Limitation of Liability</h3>
