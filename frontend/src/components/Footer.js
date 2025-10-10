@@ -1,13 +1,14 @@
 // frontend/src/components/Footer.js
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const Footer = ({ onNavigate }) => {
-  const handleLinkClick = (e, page) => {
+const Footer = () => {
+  const navigate = useNavigate();
+
+  const handleLinkClick = (e, path) => {
     e.preventDefault();
-    if (onNavigate) {
-      onNavigate(page);
-    }
+    navigate(path);
   };
 
   return (
@@ -22,7 +23,7 @@ const Footer = ({ onNavigate }) => {
             <a 
               href="/privacy-policy" 
               className="footer-link"
-              onClick={(e) => handleLinkClick(e, 'privacy_policy')}
+              onClick={(e) => handleLinkClick(e, '/privacy-policy')}
             >
               Privacy & Policy
             </a>
@@ -30,7 +31,7 @@ const Footer = ({ onNavigate }) => {
             <a 
               href="/terms-conditions" 
               className="footer-link"
-              onClick={(e) => handleLinkClick(e, 'terms_conditions')}
+              onClick={(e) => handleLinkClick(e, '/terms-conditions')}
             >
               Terms & Condition
             </a>

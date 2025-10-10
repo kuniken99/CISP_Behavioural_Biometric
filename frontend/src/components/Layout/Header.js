@@ -1,5 +1,6 @@
 // frontend/src/components/Layout/Header.js
 import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import LogoutIcon from '../../assets/logout-icon.svg';
 import ProfileIcon from '../../assets/profile-icon.svg';
 // Page Icons
@@ -14,14 +15,29 @@ import HelpIcon from '../../assets/help-icon.svg';
 import WebsiteAdminIcon from '../../assets/website-admin-icon.svg';
 import ShieldIcon from '../../assets/shield-icon.svg';
 
-const Header = ({ currentPage, currentUser, userRole, handleLogout, setCurrentPage }) => {
-  const formatPageName = (page) => {
-    return page.replace(/_/g, ' ').split(' ').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ');
+const Header = ({ currentUser, userRole, handleLogout }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  // Map URL paths to display names
+  const getPageInfo = (pathname) => {
+    const pageMap = {
+      '/dashboard': { name: 'Dashboard', key: 'dashboard' },
+      '/db-management': { name: 'DB Entry Management', key: 'db_entry_management' },
+      '/user-management': { name: 'User Management', key: 'user_management' },
+      '/role-management': { name: 'Role Access Control', key: 'role_management' },
+      '/activity-log': { name: 'Activity Logs', key: 'activity_log' },
+      '/db-config': { name: 'DB Configuration', key: 'db_config' },
+      '/alerts': { name: 'Alert System', key: 'alert_system' },
+      '/help': { name: 'Help / Docs', key: 'help' },
+      '/website-admin': { name: 'Website Admin', key: 'website_admin' },
+      '/privacy-policy': { name: 'Privacy Policy', key: 'privacy_policy' },
+      '/terms-conditions': { name: 'Terms & Conditions', key: 'terms_conditions' },
+      '/profile': { name: 'User Profile', key: 'user_profile' }
+    };
+    return pageMap[pathname] || { name: 'Dashboard', key: 'dashboard' };
   };
 
-  const getPageIcon = (page) => {
+  const getPageIcon = (pageKey) => {
     const iconMap = {
       'dashboard': DashboardIcon,
       'db_entry_management': DbEntryManagementIcon,
@@ -36,18 +52,20 @@ const Header = ({ currentPage, currentUser, userRole, handleLogout, setCurrentPa
       'terms_conditions': ShieldIcon,
       'user_profile': ProfileIcon
     };
-    return iconMap[page] || DashboardIcon;
+    return iconMap[pageKey] || DashboardIcon;
   };
 
+  const currentPageInfo = getPageInfo(location.pathname);
+
   const handleProfileClick = () => {
-    setCurrentPage('user_profile');
+    navigate('/profile');
   };
 
   return (
     <div className="header">
       <div className="header-title">
-        <img src={getPageIcon(currentPage)} alt={formatPageName(currentPage)} className="page-icon" />
-        <h2>{formatPageName(currentPage)}</h2>
+        <img src={getPageIcon(currentPageInfo.key)} alt={currentPageInfo.name} className="page-icon" />
+        <h2>{currentPageInfo.name}</h2>
       </div>
       <div className="user-info">
         <button 

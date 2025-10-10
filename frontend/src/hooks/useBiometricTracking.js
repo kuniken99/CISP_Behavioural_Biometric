@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { API_BASE_URL, COLLECTION_INTERVAL_MS } from '../utils/config';
 
 const useBiometricTracking = (isAuthenticated, handleLogout) => {
-  const [biometricEvents, setBiometricEvents] = useState([]);
+  const biometricEventsRef = useRef([]);
   const [sessionId, setSessionId] = useState('');
   const [cbbaStatus, setCbbaStatus] = useState('CBBA Monitoring started...');
   const [lastCbbaScore, setLastCbbaScore] = useState(null);
@@ -15,7 +15,7 @@ const useBiometricTracking = (isAuthenticated, handleLogout) => {
     if (isAuthenticated) {
       setSessionId(uuidv4());
     } else {
-      setBiometricEvents([]);
+      biometricEventsRef.current = [];
       setSessionId('');
       setCbbaStatus('CBBA Monitoring stopped.');
       setLastCbbaScore(null);
@@ -26,24 +26,31 @@ const useBiometricTracking = (isAuthenticated, handleLogout) => {
   useEffect(() => {
     if (!isAuthenticated) return;
 
+    let lastMouseMoveTime = 0;
+    const MOUSE_MOVE_THROTTLE = 100; // Only capture mouse moves every 100ms
+
     const handleKeyPress = (event) => {
       const newEvent = { type: 'key_press', key: event.key, time: Date.now() / 1000 };
-      setBiometricEvents((prev) => [...prev, newEvent]);
+      biometricEventsRef.current.push(newEvent);
     };
 
     const handleKeyRelease = (event) => {
       const newEvent = { type: 'key_release', key: event.key, time: Date.now() / 1000 };
-      setBiometricEvents((prev) => [...prev, newEvent]);
+      biometricEventsRef.current.push(newEvent);
     };
 
     const handleMouseMove = (event) => {
+      const now = Date.now();
+      if (now - lastMouseMoveTime < MOUSE_MOVE_THROTTLE) return;
+      lastMouseMoveTime = now;
+      
       const newEvent = {
         type: 'mouse_move',
         x: event.clientX,
         y: event.clientY,
-        time: Date.now() / 1000,
+        time: now / 1000,
       };
-      setBiometricEvents((prev) => [...prev, newEvent]);
+      biometricEventsRef.current.push(newEvent);
     };
 
     const handleMouseClick = (event) => {
@@ -53,7 +60,7 @@ const useBiometricTracking = (isAuthenticated, handleLogout) => {
         y: event.clientY,
         time: Date.now() / 1000,
       };
-      setBiometricEvents((prev) => [...prev, newEvent]);
+      biometricEventsRef.current.push(newEvent);
     };
 
     document.addEventListener('keydown', handleKeyPress);
@@ -71,14 +78,14 @@ const useBiometricTracking = (isAuthenticated, handleLogout) => {
 
   // CBBA Data Sending
   useEffect(() => {
-    if (!isAuthenticated || !sessionId || biometricEvents.length === 0) return;
+    if (!isAuthenticated || !sessionId) return;
 
     const interval = setInterval(async () => {
-      if (isSendingCbba.current || biometricEvents.length === 0) return;
+      if (isSendingCbba.current || biometricEventsRef.current.length === 0) return;
       isSendingCbba.current = true;
 
-      const currentEvents = [...biometricEvents];
-      setBiometricEvents([]);
+      const currentEvents = [...biometricEventsRef.current];
+      biometricEventsRef.current = [];
 
       try {
         const token = localStorage.getItem('jwt_token');
@@ -114,7 +121,7 @@ const useBiometricTracking = (isAuthenticated, handleLogout) => {
     }, COLLECTION_INTERVAL_MS);
 
     return () => clearInterval(interval);
-  }, [biometricEvents, sessionId, isAuthenticated, handleLogout]);
+  }, [sessionId, isAuthenticated, handleLogout]);
 
   return {
     cbbaStatus,

@@ -51,21 +51,19 @@ function App() {
   const DashboardLayout = ({ children }) => (
     <div className="app-container">
       <div className="main-app-wrapper">
-        <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+        <Sidebar />
         <div className="main-content">
           <Header 
-            currentPage={currentPage}
             currentUser={currentUser}
             userRole={userRole}
             handleLogout={handleLogout}
-            setCurrentPage={setCurrentPage}
           />
           <div style={{ flex: 1, overflow: 'auto' }}>
             {children}
           </div>
         </div>
       </div>
-      <Footer onNavigate={setCurrentPage} />
+      <Footer />
       <CBBAMonitor 
         status="Active" 
         riskScore={lastCbbaScore ? Math.round(Math.abs(lastCbbaScore * 100)) : 12}
