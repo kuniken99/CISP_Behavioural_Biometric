@@ -7,23 +7,29 @@ const CBBAMonitor = ({ status = "Active", riskScore = 12, isAuthenticated = fals
   }
 
   return (
-    <div style={{
-      width: '100%',
+    <div className="cbba-monitor-fixed" style={{
+      position: 'fixed',
+      bottom: '20px',
+      left: '20px',
+      width: '280px',
       backgroundColor: '#ffffff',
-      border: '1px solid #e9ecef',
-      borderTop: '1px solid #e9ecef',
+      border: '2px solid #007bff',
+      borderRadius: '8px',
       padding: '15px',
-      marginTop: 'auto',
-      color: '#000000'
+      color: '#000000',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+      zIndex: 1000,
+      minHeight: '120px'
     }}>
       <div style={{
         marginBottom: '12px'
       }}>
         <h4 style={{
-          fontSize: '0.9rem',
-          fontWeight: '600',
+          fontSize: '1.2rem',
+          fontWeight: '700',
           margin: '0 0 8px 0',
-          color: '#000000'
+          color: '#007bff',
+          textAlign: 'center'
         }}>
           CBBA Monitoring
         </h4>

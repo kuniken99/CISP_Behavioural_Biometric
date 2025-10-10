@@ -38,14 +38,67 @@ namespace db_biometrics_mvp.Backend.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // Configure decimal precision for all decimal properties
+            modelBuilder.Entity<BiometricProfile>()
+                .Property(e => e.ProfileAccuracy)
+                .HasPrecision(18, 4);
+            
+            modelBuilder.Entity<BiometricProfile>()
+                .Property(e => e.ThresholdScore)
+                .HasPrecision(18, 4);
+
+            modelBuilder.Entity<CBBA>()
+                .Property(e => e.Confidence)
+                .HasPrecision(18, 4);
+            
+            modelBuilder.Entity<CBBA>()
+                .Property(e => e.RiskScore)
+                .HasPrecision(18, 4);
+
+            modelBuilder.Entity<RiskScore>()
+                .Property(e => e.BaselineScore)
+                .HasPrecision(18, 4);
+            
+            modelBuilder.Entity<RiskScore>()
+                .Property(e => e.BehavioralScore)
+                .HasPrecision(18, 4);
+            
+            modelBuilder.Entity<RiskScore>()
+                .Property(e => e.BiometricScore)
+                .HasPrecision(18, 4);
+            
+            modelBuilder.Entity<RiskScore>()
+                .Property(e => e.Confidence)
+                .HasPrecision(18, 4);
+            
+            modelBuilder.Entity<RiskScore>()
+                .Property(e => e.ContextualScore)
+                .HasPrecision(18, 4);
+            
+            modelBuilder.Entity<RiskScore>()
+                .Property(e => e.CurrentScore)
+                .HasPrecision(18, 4);
+            
+            modelBuilder.Entity<RiskScore>()
+                .Property(e => e.HistoricalScore)
+                .HasPrecision(18, 4);
+            
+            modelBuilder.Entity<RiskScore>()
+                .Property(e => e.PreviousScore)
+                .HasPrecision(18, 4);
+
+            modelBuilder.Entity<SecurityLog>()
+                .Property(e => e.RiskScore)
+                .HasPrecision(18, 4);
+
             // Seed initial data for MVP
             var adminPasswordHash = HashPassword("adminpass");
             var dbaPasswordHash = HashPassword("dbapass");
 
             modelBuilder.Entity<User>().HasData(
-                new User { Id = 1, Username = "admin", Email = "admin@system.com", PasswordHash = adminPasswordHash, Role = "admin", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = true },
-                new User { Id = 2, Username = "dbauser", Email = "dba@system.com", PasswordHash = dbaPasswordHash, Role = "dba", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = true },
-                new User { Id = 3, Username = "testuser", Email = "test@system.com", PasswordHash = dbaPasswordHash, Role = "user", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = false }
+                new User { Id = 1, Username = "admin", Email = "admin@system.com", PasswordHash = adminPasswordHash, Role = "admin", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = true, CreatedAt = new DateTime(2025, 8, 23, 9, 0, 0, DateTimeKind.Utc) },
+                new User { Id = 2, Username = "dbauser", Email = "dba@system.com", PasswordHash = dbaPasswordHash, Role = "dba", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = true, CreatedAt = new DateTime(2025, 8, 23, 9, 0, 0, DateTimeKind.Utc) },
+                new User { Id = 3, Username = "testuser", Email = "test@system.com", PasswordHash = dbaPasswordHash, Role = "user", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = false, CreatedAt = new DateTime(2025, 8, 23, 9, 0, 0, DateTimeKind.Utc) }
             );
 
             modelBuilder.Entity<DbConfiguration>().HasData(

@@ -1,19 +1,59 @@
 // frontend/src/App.js
 
-import React, { useState, useEffect, useRef } from 'react';
-import { v4 as uuidv4 } from 'uuid'; // npm install uuid
-import Footer from './components/Footer';
-import CBBAMonitor from './components/CBBAMonitor';
-import SidebarIcon from './components/SidebarIcon';
-import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
-import TermsOfUsePage from './pages/TermsOfUsePage';
+import React from 'react';
+import { Footer, Sidebar, Header, PageRouter } from './components';
+import { useAuth } from './utils/useAuth';
+import { useCBBA } from './utils/useCBBA';
+import './styles/AppStyles.css';
 
-const API_BASE_URL = 'http://localhost:5000/api'; // Your ASP.NET Core API base URL
-// const API_BASE_URL_SSL = 'https://localhost-5000.vscodessl-api.net/api';
+function App() {
+  const {
+    isAuthenticated,
+    currentUser,
+    userRole,
+    currentPage,
+    setCurrentPage,
+    handleLogin,
+    handleLogout
+  } = useAuth();
 
-const COLLECTION_INTERVAL_MS = 5000; // Send data every 5 seconds for a more active console
+  const { cbbaStatus, lastCbbaScore } = useCBBA(isAuthenticated, handleLogout);
 
-// --- BEGIN Placeholder Components for DBA Functions ---
+  return (
+    <div className="app-container">
+      <div className="main-app-wrapper">
+        <Sidebar 
+          isAuthenticated={isAuthenticated}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          lastCbbaScore={lastCbbaScore}
+        />
+
+        <div className="main-content">
+          {isAuthenticated && (
+            <Header 
+              currentPage={currentPage}
+              currentUser={currentUser}
+              userRole={userRole}
+              handleLogout={handleLogout}
+            />
+          )}
+          <div style={{ flex: 1, overflow: 'auto' }}>
+            <PageRouter 
+              currentPage={currentPage}
+              isAuthenticated={isAuthenticated}
+              onLogin={handleLogin}
+            />
+          </div>
+        </div>
+      </div>
+      
+      <Footer onNavigate={setCurrentPage} />
+    </div>
+  );
+}
+
+export default App;
 
 const LoginPage = ({ onLogin }) => {
   const [username, setUsername] = useState('');
@@ -1106,8 +1146,8 @@ function App() {
         /* Basic CSS for the Admin Console */
         body { margin: 0; font-family: 'Inter', sans-serif; background-color: #ffffff; color: #000000; }
         .app-container { display: flex; flex-direction: column; min-height: 100vh; background-color: #ffffff; }
-        .main-app-wrapper { display: flex; flex: 1; min-height: calc(100vh - 200px); }
-        .sidebar { width: 250px; background-color: #f8f9fa; color: #000000; padding: 20px; box-shadow: 2px 0 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; border-right: 1px solid #e5e7eb; min-height: 100vh; }
+        .main-app-wrapper { display: flex; flex: 1; }
+        .sidebar { width: 250px; background-color: #f8f9fa; color: #000000; padding: 20px; box-shadow: 2px 0 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; border-right: 1px solid #e5e7eb; }
         .sidebar h1 { text-align: center; color: #000000; margin-bottom: 30px; font-size: 1.8em; }
         .sidebar-nav ul { list-style: none; padding: 0; margin: 0; }
         .sidebar-nav li { margin-bottom: 10px; }
@@ -1130,7 +1170,7 @@ function App() {
         }
         .sidebar-nav button:hover { background-color: #e9ecef; }
         .sidebar-nav button.active { background-color: #007bff; color: #ffffff; }
-        .main-content { flex-grow: 1; padding: 25px 30px 20px; background-color: #ffffff; display: flex; flex-direction: column; overflow-y: auto; margin-bottom: 20px; }
+        .main-content { flex-grow: 1; padding: 25px 30px; background-color: #ffffff; display: flex; flex-direction: column; overflow-y: auto; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; background-color: #ffffff; padding: 20px 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .header h2 { margin: 0; color: #000000; font-size: 1.8rem; font-weight: 600; }
         .user-info { display: flex; align-items: center; }
@@ -1138,7 +1178,18 @@ function App() {
         .logout-button { background-color: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; transition: background-color 0.3s ease; font-size: 1rem; font-weight: 500; }
         .logout-button:hover { background-color: #c0392b; }
 
-
+        .cbba-status {
+            background-color: #f3f4f6;
+            color: #000000;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            margin-top: auto; /* Pushes it to the bottom of the sidebar */
+            text-align: center;
+            border: 1px solid #e5e7eb;
+        }
+        .cbba-status span.normal { color: #2ecc71; font-weight: bold; }
+        .cbba-status span.anomaly { color: #e74c3c; font-weight: bold; }
 
         .card { background-color: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .form-group { margin-bottom: 15px; }
@@ -1193,102 +1244,6 @@ function App() {
         .alert-row.high { background-color: #ffe0b2; }
         .alert-row.medium { background-color: #fff9c4; }
         .alert-row.low { background-color: #e8f5e9; }
-
-        /* Footer Styles */
-        .footer {
-          background-color: #f8f9fa;
-          border-top: 1px solid #e5e7eb;
-          margin-top: auto;
-          padding: 40px 0 20px 0;
-          width: 100%;
-          color: #000000;
-        }
-        
-        .footer-content {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 30px;
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          gap: 40px;
-          flex-wrap: wrap;
-        }
-        
-        @media (max-width: 768px) {
-          .footer-content {
-            flex-direction: column;
-            text-align: center;
-            gap: 20px;
-          }
-        }
-        
-        .footer-section h3 {
-          font-size: 1.3rem;
-          font-weight: 700;
-          color: #000000;
-          margin: 0 0 15px 0;
-        }
-        
-        .footer-section p {
-          color: #6b7280;
-          line-height: 1.6;
-          margin: 0;
-          max-width: 400px;
-        }
-        
-        .footer-links {
-          display: flex;
-          align-items: center;
-          gap: 15px;
-        }
-        
-        .footer-link {
-          color: #374151;
-          text-decoration: none;
-          font-weight: 500;
-          transition: color 0.3s ease;
-          padding: 8px 0;
-        }
-        
-        .footer-link:hover {
-          color: #007bff;
-          text-decoration: underline;
-        }
-        
-        .footer-divider {
-          color: #9ca3af;
-          font-weight: 300;
-        }
-        
-        .footer-copyright {
-          text-align: center;
-          padding: 20px 30px 0;
-          border-top: 1px solid #e5e7eb;
-          margin-top: 30px;
-        }
-        
-        .footer-copyright p {
-          color: #9ca3af;
-          font-size: 0.9rem;
-          margin: 0;
-        }
-        
-        /* Responsive adjustments for CBBA Monitor */
-        @media (max-width: 768px) {
-          .cbba-monitor-fixed {
-            bottom: 10px !important;
-            left: 10px !important;
-            width: 260px !important;
-          }
-        }
-        
-        @media (max-width: 480px) {
-          .cbba-monitor-fixed {
-            width: calc(100vw - 40px) !important;
-            max-width: 280px !important;
-          }
-        }
       `}</style>
 
       <div className="main-app-wrapper">
@@ -1353,7 +1308,11 @@ function App() {
               </li>
             </ul>
           </nav>
-
+          <CBBAMonitor 
+            status="Active" 
+            riskScore={lastCbbaScore ? Math.round(Math.abs(lastCbbaScore * 100)) : 12}
+            isAuthenticated={isAuthenticated}
+          />
         </div>
       )}
 
@@ -1372,15 +1331,6 @@ function App() {
         </div>
       </div>
       </div>
-      
-      {/* CBBA Monitor - Fixed at bottom left */}
-      {isAuthenticated && (
-        <CBBAMonitor 
-          status="Active" 
-          riskScore={lastCbbaScore ? Math.round(Math.abs(lastCbbaScore * 100)) : 12}
-          isAuthenticated={isAuthenticated}
-        />
-      )}
       
       <Footer onNavigate={setCurrentPage} />
     </div>
