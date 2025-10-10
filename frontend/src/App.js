@@ -8,6 +8,28 @@ import SidebarIcon from './components/SidebarIcon';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfUsePage from './pages/TermsOfUsePage';
 
+// Import SVG icons
+import ActivityLogsIcon from './assets/activity-logs-icon.svg';
+import AddTaskIcon from './assets/add-task-icon.svg';
+import AlertSystemIcon from './assets/alert-system-icon.svg';
+import ArrowBackIcon from './assets/arrow-back-icon.svg';
+import CpuIcon from './assets/cpu-icon.svg';
+import DashboardIcon from './assets/dashboard-icon.svg';
+import DbConfigurationIcon from './assets/db-configuration-icon.svg';
+import DbEntryManagementIcon from './assets/db-entry-management-icon.svg';
+import EditIcon from './assets/edit-icon.svg';
+import HelpIcon from './assets/help-icon.svg';
+import LogoutIcon from './assets/logout-icon.svg';
+import MemoryIcon from './assets/memory-icon.svg';
+import PersonIcon from './assets/person-icon.svg';
+import ProfileIcon from './assets/profile-icon.svg';
+import RoleAccessControlIcon from './assets/role-access-control-icon.svg';
+import ShieldIcon from './assets/shield-icon.svg';
+import TransactionsIcon from './assets/transactions-icon.svg';
+import UptimeIcon from './assets/uptime-icon.svg';
+import UserManagementIcon from './assets/user-management-icon.svg';
+import WebsiteAdminIcon from './assets/website-admin-icon.svg';
+
 const API_BASE_URL = 'http://localhost:5000/api'; // Your ASP.NET Core API base URL
 // const API_BASE_URL_SSL = 'https://localhost-5000.vscodessl-api.net/api';
 
@@ -51,7 +73,10 @@ const LoginPage = ({ onLogin }) => {
 
   return (
     <div className="card">
-      <h2>DBA Login</h2>
+      <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <img src={ProfileIcon} alt="Login" style={{ width: '24px', height: '24px' }} />
+        DBA Login
+      </h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Username:</label>
@@ -62,7 +87,10 @@ const LoginPage = ({ onLogin }) => {
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </div>
         {error && <p className="error">{error}</p>}
-        <button type="submit" className="button primary">Login</button>
+        <button type="submit" className="button primary" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <img src={ProfileIcon} alt="Login" style={{ width: '16px', height: '16px' }} />
+          Login
+        </button>
       </form>
     </div>
   );
@@ -100,15 +128,36 @@ const DashboardPage = () => {
 
   return (
     <div className="card">
-      <h2>Dashboard 📊</h2>
+      <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <img src={DashboardIcon} alt="Dashboard" style={{ width: '24px', height: '24px' }} />
+        Dashboard
+      </h2>
       {metrics ? (
         <div className="metrics-grid">
-          <div className="metric-item"><strong>Uptime:</strong> {metrics.uptime}</div>
-          <div className="metric-item"><strong>CPU Usage:</strong> {metrics.cpuUsage}%</div>
-          <div className="metric-item"><strong>Memory Usage:</strong> {metrics.memoryUsage} MB</div>
-          <div className="metric-item"><strong>Database Size:</strong> {metrics.databaseSize} GB</div>
-          <div className="metric-item"><strong>Active Users:</strong> {metrics.activeUsers}</div>
-          <div className="metric-item"><strong>Transactions/Sec:</strong> {metrics.transactionsPerSecond}</div>
+          <div className="metric-item" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <img src={UptimeIcon} alt="Uptime" style={{ width: '20px', height: '20px' }} />
+            <strong>Uptime:</strong> {metrics.uptime}
+          </div>
+          <div className="metric-item" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <img src={CpuIcon} alt="CPU" style={{ width: '20px', height: '20px' }} />
+            <strong>CPU Usage:</strong> {metrics.cpuUsage}%
+          </div>
+          <div className="metric-item" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <img src={MemoryIcon} alt="Memory" style={{ width: '20px', height: '20px' }} />
+            <strong>Memory Usage:</strong> {metrics.memoryUsage} MB
+          </div>
+          <div className="metric-item" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <img src={DbConfigurationIcon} alt="Database" style={{ width: '20px', height: '20px' }} />
+            <strong>Database Size:</strong> {metrics.databaseSize} GB
+          </div>
+          <div className="metric-item" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <img src={UserManagementIcon} alt="Users" style={{ width: '20px', height: '20px' }} />
+            <strong>Active Users:</strong> {metrics.activeUsers}
+          </div>
+          <div className="metric-item" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <img src={TransactionsIcon} alt="Transactions" style={{ width: '20px', height: '20px' }} />
+            <strong>Transactions/Sec:</strong> {metrics.transactionsPerSecond}
+          </div>
         </div>
       ) : (
         <p>No metrics available.</p>
@@ -273,7 +322,10 @@ const DbEntryManagementPage = () => {
 
   return (
     <div className="card">
-      <h2>Database Entry Management 🗄️</h2>
+      <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <img src={DbEntryManagementIcon} alt="Database Entry Management" style={{ width: '24px', height: '24px' }} />
+        Database Entry Management
+      </h2>
       <div className="form-group">
         <label>Select Table:</label>
         <select value={selectedTable} onChange={(e) => handleTableSelect(e.target.value)}>
@@ -329,11 +381,20 @@ const DbEntryManagementPage = () => {
             ))}
           </div>
           {editingEntryId ? (
-            <button className="button success" onClick={handleUpdateEntry}>Update Entry</button>
+            <button className="button success" onClick={handleUpdateEntry} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <img src={EditIcon} alt="Update" style={{ width: '16px', height: '16px' }} />
+              Update Entry
+            </button>
           ) : (
-            <button className="button primary" onClick={handleAddEntry}>Add Entry</button>
+            <button className="button primary" onClick={handleAddEntry} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <img src={AddTaskIcon} alt="Add" style={{ width: '16px', height: '16px' }} />
+              Add Entry
+            </button>
           )}
-           <button className="button secondary" onClick={() => { setNewEntryData({}); setEditingEntryId(null); }}>Clear Form</button>
+           <button className="button secondary" onClick={() => { setNewEntryData({}); setEditingEntryId(null); }} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+             <img src={ArrowBackIcon} alt="Clear" style={{ width: '16px', height: '16px' }} />
+             Clear Form
+           </button>
         </>
       )}
     </div>
@@ -445,7 +506,10 @@ const UserManagementPage = () => {
 
   return (
     <div className="card">
-      <h2>User Management 👥</h2>
+      <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <img src={UserManagementIcon} alt="User Management" style={{ width: '24px', height: '24px' }} />
+        User Management
+      </h2>
       {loading && <p>Loading users...</p>}
       {error && <p className="error">{error}</p>}
 
@@ -471,11 +535,20 @@ const UserManagementPage = () => {
         </div>
       </div>
       {editingUserId ? (
-        <button className="button success" onClick={handleUpdateUser}>Update User</button>
+        <button className="button success" onClick={handleUpdateUser} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <img src={EditIcon} alt="Update" style={{ width: '16px', height: '16px' }} />
+          Update User
+        </button>
       ) : (
-        <button className="button primary" onClick={handleCreateUser}>Create User</button>
+        <button className="button primary" onClick={handleCreateUser} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <img src={PersonIcon} alt="Create" style={{ width: '16px', height: '16px' }} />
+          Create User
+        </button>
       )}
-      <button className="button secondary" onClick={() => { setNewUser({ username: '', password: '', role: 'user' }); setEditingUserId(null); }}>Clear Form</button>
+      <button className="button secondary" onClick={() => { setNewUser({ username: '', password: '', role: 'user' }); setEditingUserId(null); }} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <img src={ArrowBackIcon} alt="Clear" style={{ width: '16px', height: '16px' }} />
+        Clear Form
+      </button>
 
 
       <h3>Existing Users</h3>
@@ -497,7 +570,10 @@ const UserManagementPage = () => {
               <td>{user.role}</td>
               <td>{user.isActive ? 'Yes' : 'No'}</td>
               <td>
-                <button className="button small" onClick={() => handleEditUser(user)}>Edit</button>
+                <button className="button small" onClick={() => handleEditUser(user)} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <img src={EditIcon} alt="Edit" style={{ width: '14px', height: '14px' }} />
+                  Edit
+                </button>
                 <button
                   className={`button small ${user.isActive ? 'danger' : 'success'}`}
                   onClick={() => handleToggleUserStatus(user.id, user.isActive)}
@@ -580,7 +656,10 @@ const RoleBasedAccessControlPage = () => {
 
   return (
     <div className="card">
-      <h2>Role-Based Access Control 🔒</h2>
+      <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <img src={RoleAccessControlIcon} alt="Role-Based Access Control" style={{ width: '24px', height: '24px' }} />
+        Role-Based Access Control
+      </h2>
       <div className="form-group-inline">
         <div className="form-group">
           <label>Select User:</label>
@@ -601,7 +680,10 @@ const RoleBasedAccessControlPage = () => {
           </select>
         </div>
       </div>
-      <button className="button primary" onClick={handleAssignRole}>Assign Role</button>
+      <button className="button primary" onClick={handleAssignRole} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <img src={RoleAccessControlIcon} alt="Assign" style={{ width: '16px', height: '16px' }} />
+        Assign Role
+      </button>
       {error && <p className="error">{error}</p>}
 
       <h3>Current User Roles</h3>
@@ -659,7 +741,10 @@ const ActivityLogPage = () => {
 
   return (
     <div className="card">
-      <h2>Activity History / Audit Logs 📜</h2>
+      <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <img src={ActivityLogsIcon} alt="Activity History / Audit Logs" style={{ width: '24px', height: '24px' }} />
+        Activity History / Audit Logs
+      </h2>
       <table>
         <thead>
           <tr>
@@ -744,7 +829,10 @@ const DbConfigurationPage = () => {
 
   return (
     <div className="card">
-      <h2>Database Configuration ⚙️</h2>
+      <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <img src={DbConfigurationIcon} alt="Database Configuration" style={{ width: '24px', height: '24px' }} />
+        Database Configuration
+      </h2>
       {success && <p className="success">{success}</p>}
       {config && (
         <div className="form-group-grid">
@@ -758,7 +846,10 @@ const DbConfigurationPage = () => {
               />
             </div>
           ))}
-          <button className="button primary" onClick={handleUpdateConfig}>Update Configuration</button>
+          <button className="button primary" onClick={handleUpdateConfig} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <img src={DbConfigurationIcon} alt="Update" style={{ width: '16px', height: '16px' }} />
+            Update Configuration
+          </button>
         </div>
       )}
     </div>
@@ -797,7 +888,10 @@ const AlertSystemPage = () => {
 
   return (
     <div className="card">
-      <h2>Alert System 🚨</h2>
+      <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <img src={AlertSystemIcon} alt="Alert System" style={{ width: '24px', height: '24px' }} />
+        Alert System
+      </h2>
       {alerts.length === 0 ? (
         <p>No active alerts.</p>
       ) : (
@@ -830,7 +924,10 @@ const AlertSystemPage = () => {
 
 const HelpDocumentationPage = () => (
   <div className="card">
-    <h2>Help / Documentation 📖</h2>
+    <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <img src={HelpIcon} alt="Help Documentation" style={{ width: '24px', height: '24px' }} />
+      Help / Documentation
+    </h2>
     <h3>Dashboard</h3>
     <p>Provides a quick overview of database health and performance metrics.</p>
     <h3>Database Entry Management</h3>
@@ -904,7 +1001,10 @@ const WebsiteAdministrationPage = () => {
 
   return (
     <div className="card">
-      <h2>Website Administration ⚙️</h2>
+      <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <img src={WebsiteAdminIcon} alt="Website Administration" style={{ width: '24px', height: '24px' }} />
+        Website Administration
+      </h2>
       {success && <p className="success">{success}</p>}
       <div className="form-group">
         <label>Website Content/Metadata (Markdown supported):</label>
@@ -915,7 +1015,10 @@ const WebsiteAdministrationPage = () => {
           style={{ width: '100%' }}
         ></textarea>
       </div>
-      <button className="button primary" onClick={handleUpdateContent}>Update Content</button>
+      <button className="button primary" onClick={handleUpdateContent} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <img src={WebsiteAdminIcon} alt="Update" style={{ width: '16px', height: '16px' }} />
+        Update Content
+      </button>
     </div>
   );
 };
@@ -1398,7 +1501,10 @@ function App() {
             <h2>{currentPage.replace(/_/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}</h2>
             <div className="user-info">
               <span>Logged in as: <strong>{currentUser}</strong> ({userRole})</span>
-              <button className="logout-button" onClick={handleLogout}>Logout</button>
+              <button className="logout-button" onClick={handleLogout} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <img src={LogoutIcon} alt="Logout" style={{ width: '16px', height: '16px' }} />
+                Logout
+              </button>
             </div>
           </div>
         )}
