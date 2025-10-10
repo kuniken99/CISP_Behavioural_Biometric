@@ -41,10 +41,6 @@ const DashboardPage = () => {
 
   return (
     <div className="card">
-      <h2>
-        <img src={dashboardIcon} alt="Dashboard" style={{width: '20px', height: '20px', marginRight: '8px'}}/>
-        Dashboard
-      </h2>
       {metrics ? (
         <div className="metrics-grid">
           <div className="metric-item">

@@ -21,6 +21,7 @@ import HelpDocumentationPage from './pages/HelpDocumentationPage';
 import WebsiteAdministrationPage from './pages/WebsiteAdministrationPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfUsePage from './pages/TermsOfUsePage';
+import UserProfilePage from './pages/UserProfilePage';
 
 // Import styles
 import './styles/App.css';
@@ -68,6 +69,8 @@ function App() {
         return <PrivacyPolicyPage />;
       case 'terms_conditions': 
         return <TermsOfUsePage />;
+      case 'user_profile': 
+        return <UserProfilePage currentUser={currentUser} userRole={userRole} />;
       default: 
         return <DashboardPage />;
     }
@@ -87,6 +90,7 @@ function App() {
               currentUser={currentUser}
               userRole={userRole}
               handleLogout={handleLogout}
+              setCurrentPage={setCurrentPage}
             />
           )}
           <div style={{ flex: 1, overflow: 'auto' }}>

@@ -56,10 +56,6 @@ const WebsiteAdministrationPage = () => {
 
   return (
     <div className="card">
-      <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <img src={WebsiteAdminIcon} alt="Website Administration" style={{ width: '24px', height: '24px' }} />
-        Website Administration
-      </h2>
       {success && <p className="success">{success}</p>}
       <div className="form-group">
         <label>Website Content/Metadata (Markdown supported):</label>

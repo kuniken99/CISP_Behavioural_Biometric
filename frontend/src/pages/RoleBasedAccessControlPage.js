@@ -69,10 +69,6 @@ const RoleBasedAccessControlPage = () => {
 
   return (
     <div className="card">
-      <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <img src={RoleAccessControlIcon} alt="Role-Based Access Control" style={{ width: '24px', height: '24px' }} />
-        Role-Based Access Control
-      </h2>
       <div className="form-group-inline">
         <div className="form-group">
           <label>Select User:</label>

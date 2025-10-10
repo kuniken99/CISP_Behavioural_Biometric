@@ -61,11 +61,6 @@ const UserManagementPage = () => {
 
   return (
     <div className="card">
-      <h2>
-        <img src={userManagementIcon} alt="User Management" style={{width: '20px', height: '20px', marginRight: '8px'}}/>
-        User Management
-      </h2>
-      
       <h3>Create New User</h3>
       <div className="form-group-inline">
         <div className="form-group">

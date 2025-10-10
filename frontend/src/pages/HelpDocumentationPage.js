@@ -3,10 +3,6 @@ import HelpIcon from '../assets/help-icon.svg';
 
 const HelpDocumentationPage = () => (
   <div className="card">
-    <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <img src={HelpIcon} alt="Help Documentation" style={{ width: '24px', height: '24px' }} />
-      Help / Documentation
-    </h2>
     <h3>Dashboard</h3>
     <p>Provides a quick overview of database health and performance metrics.</p>
     <h3>Database Entry Management</h3>

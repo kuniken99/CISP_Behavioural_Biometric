@@ -161,10 +161,6 @@ const DbEntryManagementPage = () => {
 
   return (
     <div className="card">
-      <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <img src={DbEntryManagementIcon} alt="Database Entry Management" style={{ width: '24px', height: '24px' }} />
-        Database Entry Management
-      </h2>
       <div className="form-group">
         <label>Select Table:</label>
         <select value={selectedTable} onChange={(e) => handleTableSelect(e.target.value)}>

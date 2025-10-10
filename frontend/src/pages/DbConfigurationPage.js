@@ -60,10 +60,6 @@ const DbConfigurationPage = () => {
 
   return (
     <div className="card">
-      <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <img src={DbConfigurationIcon} alt="Database Configuration" style={{ width: '24px', height: '24px' }} />
-        Database Configuration
-      </h2>
       {success && <p className="success">{success}</p>}
       {config && (
         <div className="form-group-grid">
