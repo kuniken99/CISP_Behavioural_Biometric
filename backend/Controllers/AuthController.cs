@@ -23,12 +23,14 @@ namespace db_biometrics_mvp.Backend.Controllers
         private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
         private readonly IRecaptchaService _recaptchaService;
+        private readonly IEmailService _emailService;
 
-        public AuthController(AppDbContext context, IConfiguration configuration, IRecaptchaService recaptchaService)
+        public AuthController(AppDbContext context, IConfiguration configuration, IRecaptchaService recaptchaService, IEmailService emailService)
         {
             _context = context;
             _configuration = configuration;
             _recaptchaService = recaptchaService;
+            _emailService = emailService;
         }
 
 
@@ -93,12 +95,128 @@ namespace db_biometrics_mvp.Backend.Controllers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        [AllowAnonymous]
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
+        {
+            // Verify reCAPTCHA first
+            var isRecaptchaValid = await _recaptchaService.VerifyTokenAsync(resetPasswordDto.RecaptchaToken);
+            if (!isRecaptchaValid)
+            {
+                return BadRequest(new { message = "reCAPTCHA verification failed. Please try again." });
+            }
+
+            // Check if user exists
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == resetPasswordDto.Email && u.IsActive);
+            
+            // Always return success message for security (prevent email enumeration)
+            var successMessage = "If the email address is valid, you will receive a password reset link shortly.";
+
+            if (user != null)
+            {
+                // Generate a secure reset token
+                var resetToken = Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N");
+                
+                // Invalidate any existing reset tokens for this user
+                var existingTokens = await _context.PasswordResetTokens
+                    .Where(t => t.UserId == user.Id && !t.IsUsed && t.ExpiresAt > DateTime.UtcNow)
+                    .ToListAsync();
+                
+                foreach (var token in existingTokens)
+                {
+                    token.IsUsed = true;
+                }
+
+                // Create new reset token (expires in 1 hour)
+                var passwordResetToken = new PasswordResetToken
+                {
+                    UserId = user.Id,
+                    Token = resetToken,
+                    ExpiresAt = DateTime.UtcNow.AddHours(1),
+                    IsUsed = false
+                };
+
+                _context.PasswordResetTokens.Add(passwordResetToken);
+                await _context.SaveChangesAsync();
+
+                // Send email
+                var emailSent = await _emailService.SendPasswordResetEmailAsync(user.Email!, resetToken);
+                
+                if (!emailSent)
+                {
+                    // Log the error but don't reveal it to the user for security
+                    // In production, you might want to have better error handling
+                }
+            }
+            
+            return Ok(new { message = successMessage });
+        }
+
+        [AllowAnonymous]
+        [HttpPost("confirm-reset-password")]
+        public async Task<IActionResult> ConfirmResetPassword([FromBody] ConfirmResetPasswordDto confirmDto)
+        {
+            // Verify reCAPTCHA first
+            var isRecaptchaValid = await _recaptchaService.VerifyTokenAsync(confirmDto.RecaptchaToken);
+            if (!isRecaptchaValid)
+            {
+                return BadRequest(new { message = "reCAPTCHA verification failed. Please try again." });
+            }
+
+            // Find the reset token
+            var resetToken = await _context.PasswordResetTokens
+                .Include(t => t.User)
+                .FirstOrDefaultAsync(t => t.Token == confirmDto.Token && !t.IsUsed && t.ExpiresAt > DateTime.UtcNow);
+
+            if (resetToken == null)
+            {
+                return BadRequest(new { message = "Invalid or expired reset token." });
+            }
+
+            // Update user password
+            resetToken.User.PasswordHash = HashPassword(confirmDto.NewPassword);
+            
+            // Mark token as used
+            resetToken.IsUsed = true;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Password has been reset successfully. You can now login with your new password." });
+        }
+
+        [AllowAnonymous]
+        [HttpGet("verify-reset-token/{token}")]
+        public async Task<IActionResult> VerifyResetToken(string token)
+        {
+            var resetToken = await _context.PasswordResetTokens
+                .Include(t => t.User)
+                .FirstOrDefaultAsync(t => t.Token == token && !t.IsUsed && t.ExpiresAt > DateTime.UtcNow);
+
+            if (resetToken == null)
+            {
+                return BadRequest(new { message = "Invalid or expired reset token.", isValid = false });
+            }
+
+            return Ok(new { 
+                message = "Token is valid.", 
+                isValid = true,
+                email = resetToken.User.Email,
+                expiresAt = resetToken.ExpiresAt 
+            });
+        }
         
         [HttpOptions("login")]
         public IActionResult OptionsLogin()
         {
             // The CORS middleware handles the headers. This just ensures the
             // preflight request doesn't return a 404.
+            return Ok();
+        }
+
+        [HttpOptions("reset-password")]
+        public IActionResult OptionsResetPassword()
+        {
             return Ok();
         }
     }

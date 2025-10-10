@@ -1,6 +1,7 @@
 // frontend/src/App.js
 
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import useAuth from './hooks/useAuth';
 import useBiometricTracking from './hooks/useBiometricTracking';
 import Footer from './components/Footer';
@@ -10,6 +11,7 @@ import Sidebar from './components/Layout/Sidebar';
 
 // Import all page components
 import AuthWrapper from './pages/AuthWrapper';
+import SetNewPasswordPage from './pages/SetNewPasswordPage';
 import DashboardPage from './pages/DashboardPage';
 import DbEntryManagementPage from './pages/DbEntryManagementPage';
 import UserManagementPage from './pages/UserManagementPage';
@@ -40,76 +42,204 @@ function App() {
   // eslint-disable-next-line no-unused-vars
   const { cbbaStatus, lastCbbaScore, sessionId } = useBiometricTracking(isAuthenticated, handleLogout);
 
-  // Render page based on current page state
-  const renderPage = () => {
-    if (!isAuthenticated) {
-      return <AuthWrapper onLogin={handleLogin} />;
-    }
-
-    switch (currentPage) {
-      case 'dashboard': 
-        return <DashboardPage />;
-      case 'db_entry_management': 
-        return <DbEntryManagementPage />;
-      case 'user_management': 
-        return <UserManagementPage />;
-      case 'role_management': 
-        return <RoleBasedAccessControlPage />;
-      case 'activity_log': 
-        return <ActivityLogPage />;
-      case 'db_config': 
-        return <DbConfigurationPage />;
-      case 'alert_system': 
-        return <AlertSystemPage />;
-      case 'help': 
-        return <HelpDocumentationPage />;
-      case 'website_admin': 
-        return <WebsiteAdministrationPage />;
-      case 'privacy_policy': 
-        return <PrivacyPolicyPage />;
-      case 'terms_conditions': 
-        return <TermsOfUsePage />;
-      case 'user_profile': 
-        return <UserProfilePage currentUser={currentUser} userRole={userRole} />;
-      default: 
-        return <DashboardPage />;
-    }
+  // Protected Route Component
+  const ProtectedRoute = ({ children }) => {
+    return isAuthenticated ? children : <Navigate to="/login" replace />;
   };
 
-  return (
+  // Main Dashboard Layout Component
+  const DashboardLayout = ({ children }) => (
     <div className="app-container">
       <div className="main-app-wrapper">
-        {isAuthenticated && (
-          <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} />
-        )}
-
-        <div className={`main-content ${!isAuthenticated ? 'login-mode' : ''}`}>
-          {isAuthenticated && (
-            <Header 
-              currentPage={currentPage}
-              currentUser={currentUser}
-              userRole={userRole}
-              handleLogout={handleLogout}
-              setCurrentPage={setCurrentPage}
-            />
-          )}
+        <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+        <div className="main-content">
+          <Header 
+            currentPage={currentPage}
+            currentUser={currentUser}
+            userRole={userRole}
+            handleLogout={handleLogout}
+            setCurrentPage={setCurrentPage}
+          />
           <div style={{ flex: 1, overflow: 'auto' }}>
-            {renderPage()}
+            {children}
           </div>
         </div>
       </div>
-      
-      {isAuthenticated && <Footer onNavigate={setCurrentPage} />}
-      
-      {/* Floating CBBA Monitor */}
-      {isAuthenticated && (
-        <CBBAMonitor 
-          status="Active" 
-          riskScore={lastCbbaScore ? Math.round(Math.abs(lastCbbaScore * 100)) : 12}
-          isAuthenticated={isAuthenticated}
-        />
-      )}
+      <Footer onNavigate={setCurrentPage} />
+      <CBBAMonitor 
+        status="Active" 
+        riskScore={lastCbbaScore ? Math.round(Math.abs(lastCbbaScore * 100)) : 12}
+        isAuthenticated={isAuthenticated}
+      />
     </div>
+  );
+
+  return (
+    <Router>
+      <Routes>
+        {/* Public Routes */}
+        <Route 
+          path="/login" 
+          element={
+            isAuthenticated ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <div className="app-container">
+                <div className="main-content login-mode">
+                  <AuthWrapper onLogin={handleLogin} />
+                </div>
+              </div>
+            )
+          } 
+        />
+        <Route 
+          path="/reset-password/:token" 
+          element={
+            <div className="app-container">
+              <div className="main-content login-mode">
+                <SetNewPasswordPage />
+              </div>
+            </div>
+          } 
+        />
+
+        {/* Protected Routes */}
+        <Route 
+          path="/dashboard" 
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <DashboardPage />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/db-management" 
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <DbEntryManagementPage />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/user-management" 
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <UserManagementPage />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/role-management" 
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <RoleBasedAccessControlPage />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/activity-log" 
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <ActivityLogPage />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/db-config" 
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <DbConfigurationPage />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/alerts" 
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <AlertSystemPage />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/help" 
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <HelpDocumentationPage />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/website-admin" 
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <WebsiteAdministrationPage />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/privacy-policy" 
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <PrivacyPolicyPage />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/terms-conditions" 
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <TermsOfUsePage />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/profile" 
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <UserProfilePage currentUser={currentUser} userRole={userRole} />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+        {/* Default redirect */}
+        <Route 
+          path="/" 
+          element={
+            <Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />
+          } 
+        />
+        <Route 
+          path="*" 
+          element={
+            <Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />
+          } 
+        />
+      </Routes>
+    </Router>
   );
 }
 

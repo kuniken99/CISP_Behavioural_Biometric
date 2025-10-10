@@ -66,6 +66,9 @@ namespace db_biometrics_mvp.Backend
             // Register the reCAPTCHA service
             services.AddHttpClient<IRecaptchaService, RecaptchaService>();
 
+            // Register the Email service
+            services.AddScoped<IEmailService, EmailService>();
+
             // Configure CORS
            
 

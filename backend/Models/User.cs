@@ -66,4 +66,14 @@ namespace db_biometrics_mvp.Backend.Models
         public int UserId { get; set; }
         public bool IsActive { get; set; }
     }
+
+    // DTO for password reset
+    public class ResetPasswordDto
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+        [Required]
+        public string RecaptchaToken { get; set; } = string.Empty;
+    }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using db_biometrics_mvp.Backend.Data;
 
@@ -11,9 +12,11 @@ using db_biometrics_mvp.Backend.Data;
 namespace db_biometrics_mvp.Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251010140036_AddPasswordResetToken")]
+    partial class AddPasswordResetToken
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -606,37 +609,6 @@ namespace db_biometrics_mvp.Backend.Migrations
                     b.ToTable("MouseMovements");
                 });
 
-            modelBuilder.Entity("db_biometrics_mvp.Backend.Models.PasswordResetToken", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsUsed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("PasswordResetTokens");
-                });
-
             modelBuilder.Entity("db_biometrics_mvp.Backend.Models.PrivilegedAdministrator", b =>
                 {
                     b.Property<int>("Id")
@@ -941,7 +913,7 @@ namespace db_biometrics_mvp.Backend.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 10, 10, 14, 2, 34, 215, DateTimeKind.Utc).AddTicks(169),
+                            CreatedAt = new DateTime(2025, 10, 10, 14, 0, 33, 722, DateTimeKind.Utc).AddTicks(4522),
                             Email = "admin@system.com",
                             IsActive = true,
                             IsEmailVerified = true,
@@ -953,7 +925,7 @@ namespace db_biometrics_mvp.Backend.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 10, 10, 14, 2, 34, 215, DateTimeKind.Utc).AddTicks(1205),
+                            CreatedAt = new DateTime(2025, 10, 10, 14, 0, 33, 722, DateTimeKind.Utc).AddTicks(5375),
                             Email = "dba@system.com",
                             IsActive = true,
                             IsEmailVerified = true,
@@ -965,7 +937,7 @@ namespace db_biometrics_mvp.Backend.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 10, 10, 14, 2, 34, 215, DateTimeKind.Utc).AddTicks(1208),
+                            CreatedAt = new DateTime(2025, 10, 10, 14, 0, 33, 722, DateTimeKind.Utc).AddTicks(5377),
                             Email = "test@system.com",
                             IsActive = true,
                             IsEmailVerified = true,
@@ -977,7 +949,7 @@ namespace db_biometrics_mvp.Backend.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2025, 10, 10, 14, 2, 34, 215, DateTimeKind.Utc).AddTicks(1210),
+                            CreatedAt = new DateTime(2025, 10, 10, 14, 0, 33, 722, DateTimeKind.Utc).AddTicks(5378),
                             Email = "tank108@uni.coventry.ac.uk",
                             IsActive = true,
                             IsEmailVerified = true,
@@ -1079,17 +1051,6 @@ namespace db_biometrics_mvp.Backend.Migrations
                 });
 
             modelBuilder.Entity("db_biometrics_mvp.Backend.Models.MouseMovement", b =>
-                {
-                    b.HasOne("db_biometrics_mvp.Backend.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("db_biometrics_mvp.Backend.Models.PasswordResetToken", b =>
                 {
                     b.HasOne("db_biometrics_mvp.Backend.Models.User", "User")
                         .WithMany()
