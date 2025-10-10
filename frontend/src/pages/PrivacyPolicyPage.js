@@ -5,7 +5,6 @@ import React from 'react';
 const PrivacyPolicyPage = () => {
   return (
     <div className="card">
-      <h2>Privacy Policy</h2>
       <div style={{ lineHeight: '1.6' }}>
         <h3>Information Collection</h3>
         <p>

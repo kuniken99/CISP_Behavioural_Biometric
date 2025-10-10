@@ -5,7 +5,6 @@ import React from 'react';
 const TermsOfUsePage = () => {
   return (
     <div className="card">
-      <h2>Terms & Conditions</h2>
       <div style={{ lineHeight: '1.6' }}>
         <h3>Acceptance of Terms</h3>
         <p>
