@@ -19,7 +19,7 @@ namespace db_biometrics_mvp.Backend.Models
         [Required]
         public string SessionId { get; set; } = string.Empty;
         
-        public DateTime LoginTime { get; set; }
+        public DateTime LoginTime { get; set; } = DateTime.UtcNow;
         
         public DateTime? LogoutTime { get; set; }
         
@@ -35,7 +35,7 @@ namespace db_biometrics_mvp.Backend.Models
         
         public int QueryCount { get; set; } = 0;
         
-        public DateTime LastActivity { get; set; }
+        public DateTime LastActivity { get; set; } = DateTime.UtcNow;
         
         public string Status { get; set; } = "Active"; // Active, Inactive, Suspended
     }

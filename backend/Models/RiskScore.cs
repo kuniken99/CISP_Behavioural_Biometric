@@ -18,7 +18,7 @@ namespace db_biometrics_mvp.Backend.Models
         
         public string SessionId { get; set; } = string.Empty;
         
-        public DateTime CalculatedTime { get; set; }
+        public DateTime CalculatedTime { get; set; } = DateTime.UtcNow;
         
         [Required]
         public decimal CurrentScore { get; set; } = 0.0m; // Current risk score (0.0 - 1.0)
@@ -47,7 +47,7 @@ namespace db_biometrics_mvp.Backend.Models
         
         public string AnomalyReasons { get; set; } = string.Empty; // JSON string of reasons for anomaly
         
-        public DateTime ExpiryTime { get; set; } // When this score expires
+        public DateTime ExpiryTime { get; set; } = DateTime.UtcNow.AddHours(1); // When this score expires
         
         public bool IsActive { get; set; } = true;
         

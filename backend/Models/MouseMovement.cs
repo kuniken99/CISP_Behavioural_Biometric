@@ -19,7 +19,7 @@ namespace db_biometrics_mvp.Backend.Models
         [Required]
         public string SessionId { get; set; } = string.Empty;
         
-        public DateTime Timestamp { get; set; }
+        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
         
         public double X { get; set; } = 0.0; // X coordinate
         

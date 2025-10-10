@@ -10,7 +10,7 @@ namespace db_biometrics_mvp.Backend.Models
         [Key]
         public int Id { get; set; }
         
-        public DateTime Timestamp { get; set; }
+        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
         
         public int? UserId { get; set; } // Nullable in case of system-wide events
         

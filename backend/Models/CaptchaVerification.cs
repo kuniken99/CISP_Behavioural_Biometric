@@ -19,7 +19,7 @@ namespace db_biometrics_mvp.Backend.Models
         [Required]
         public string SessionId { get; set; } = string.Empty;
         
-        public DateTime CreatedTime { get; set; }
+        public DateTime CreatedTime { get; set; } = DateTime.UtcNow;
         
         public DateTime? CompletedTime { get; set; }
         
@@ -35,7 +35,7 @@ namespace db_biometrics_mvp.Backend.Models
         
         public int AttemptNumber { get; set; } = 1;
         
-        public DateTime ExpiryTime { get; set; }
+        public DateTime ExpiryTime { get; set; } = DateTime.UtcNow.AddMinutes(5);
         
         public string IpAddress { get; set; } = string.Empty;
         

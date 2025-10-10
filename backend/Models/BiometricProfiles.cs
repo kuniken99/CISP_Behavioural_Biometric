@@ -16,9 +16,9 @@ namespace db_biometrics_mvp.Backend.Models
         [ForeignKey("UserId")]
         public virtual User User { get; set; }
         
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         
-        public DateTime LastUpdated { get; set; }
+        public DateTime LastUpdated { get; set; } = DateTime.UtcNow;
         
         public string ProfileVersion { get; set; } = "1.0";
         
@@ -42,7 +42,7 @@ namespace db_biometrics_mvp.Backend.Models
         
         public string ModelParameters { get; set; } = string.Empty; // JSON string of ML model parameters
         
-        public DateTime LastTrainingDate { get; set; }
+        public DateTime LastTrainingDate { get; set; } = DateTime.UtcNow;
         
         public string DeviceContext { get; set; } = string.Empty; // Device information when profile was created
         

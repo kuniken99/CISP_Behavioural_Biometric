@@ -14,6 +14,6 @@ namespace db_biometrics_mvp.Backend.Models
         public string SecretKey { get; set; } = string.Empty;
         
         public bool IsEnabled { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

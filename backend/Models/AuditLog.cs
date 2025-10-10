@@ -7,7 +7,7 @@ namespace db_biometrics_mvp.Backend.Models
     public class AuditLog
     {
         public int Id { get; set; }
-        public DateTime Timestamp { get; set; }
+        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
         [Required]
         public string Username { get; set; } = string.Empty;
         [Required]

@@ -21,7 +21,7 @@ namespace db_biometrics_mvp.Backend.Models
         
         public string PermissionLevel { get; set; } = string.Empty; // Full, Limited, ReadOnly
         
-        public DateTime GrantedDate { get; set; }
+        public DateTime GrantedDate { get; set; } = DateTime.UtcNow;
         
         public DateTime? ExpiryDate { get; set; }
         
@@ -31,7 +31,7 @@ namespace db_biometrics_mvp.Backend.Models
         
         public string Permissions { get; set; } = string.Empty; // JSON string of specific permissions
         
-        public DateTime LastAccess { get; set; }
+        public DateTime LastAccess { get; set; } = DateTime.UtcNow;
         
         public string AccessScope { get; set; } = string.Empty; // Database scope or system scope
         

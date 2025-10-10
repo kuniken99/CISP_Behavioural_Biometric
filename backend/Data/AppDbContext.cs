@@ -38,9 +38,6 @@ namespace db_biometrics_mvp.Backend.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configure decimal precision for all decimal properties
-            ConfigureDecimalPrecision(modelBuilder);
-
             // Seed initial data for MVP
             var adminPasswordHash = HashPassword("adminpass");
             var dbaPasswordHash = HashPassword("dbapass");
@@ -68,65 +65,6 @@ namespace db_biometrics_mvp.Backend.Data
                 new Alert { Id = 1, Timestamp = new DateTime(2025, 8, 23, 16, 55, 0, DateTimeKind.Utc), Type = "Security", Message = "Failed login attempt for 'baduser'", Severity = "Medium", Status = "Active" },
                 new Alert { Id = 2, Timestamp = new DateTime(2025, 8, 23, 16, 40, 0, DateTimeKind.Utc), Type = "Performance", Message = "High CPU usage detected on primary DB server", Severity = "Low", Status = "Active" }
             );
-        }
-
-        private void ConfigureDecimalPrecision(ModelBuilder modelBuilder)
-        {
-            // Configure BiometricProfile decimal properties
-            modelBuilder.Entity<BiometricProfile>()
-                .Property(e => e.ProfileAccuracy)
-                .HasPrecision(18, 4);
-                
-            modelBuilder.Entity<BiometricProfile>()
-                .Property(e => e.ThresholdScore)
-                .HasPrecision(18, 4);
-
-            // Configure CBBA decimal properties
-            modelBuilder.Entity<CBBA>()
-                .Property(e => e.Confidence)
-                .HasPrecision(18, 4);
-                
-            modelBuilder.Entity<CBBA>()
-                .Property(e => e.RiskScore)
-                .HasPrecision(18, 4);
-
-            // Configure RiskScore decimal properties
-            modelBuilder.Entity<RiskScore>()
-                .Property(e => e.BaselineScore)
-                .HasPrecision(18, 4);
-                
-            modelBuilder.Entity<RiskScore>()
-                .Property(e => e.BehavioralScore)
-                .HasPrecision(18, 4);
-                
-            modelBuilder.Entity<RiskScore>()
-                .Property(e => e.BiometricScore)
-                .HasPrecision(18, 4);
-                
-            modelBuilder.Entity<RiskScore>()
-                .Property(e => e.Confidence)
-                .HasPrecision(18, 4);
-                
-            modelBuilder.Entity<RiskScore>()
-                .Property(e => e.ContextualScore)
-                .HasPrecision(18, 4);
-                
-            modelBuilder.Entity<RiskScore>()
-                .Property(e => e.CurrentScore)
-                .HasPrecision(18, 4);
-                
-            modelBuilder.Entity<RiskScore>()
-                .Property(e => e.HistoricalScore)
-                .HasPrecision(18, 4);
-                
-            modelBuilder.Entity<RiskScore>()
-                .Property(e => e.PreviousScore)
-                .HasPrecision(18, 4);
-
-            // Configure SecurityLog decimal properties
-            modelBuilder.Entity<SecurityLog>()
-                .Property(e => e.RiskScore)
-                .HasPrecision(18, 4);
         }
 
         private static string HashPassword(string password)

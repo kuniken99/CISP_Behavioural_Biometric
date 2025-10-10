@@ -18,7 +18,7 @@ namespace db_biometrics_mvp.Backend.Models
         public bool IsActive { get; set; }
         public bool IsEmailVerified { get; set; }
         public bool IsTwoFactorEnabled { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? LastLoginAt { get; set; }
     }
 

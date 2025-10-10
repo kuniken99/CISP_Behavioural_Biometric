@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid'; // npm install uuid
+import Footer from './components/Footer';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsOfUsePage from './pages/TermsOfUsePage';
 
 const API_BASE_URL = 'http://localhost:5000/api'; // Your ASP.NET Core API base URL
 // const API_BASE_URL_SSL = 'https://localhost-5000.vscodessl-api.net/api';
@@ -1089,6 +1092,8 @@ function App() {
       case 'alert_system': return <AlertSystemPage />;
       case 'help': return <HelpDocumentationPage />;
       case 'website_admin': return <WebsiteAdministrationPage />;
+      case 'privacy_policy': return <PrivacyPolicyPage />;
+      case 'terms_conditions': return <TermsOfUsePage />;
       default: return <DashboardPage />;
     }
   };
@@ -1097,16 +1102,16 @@ function App() {
     <div className="app-container">
       <style>{`
         /* Basic CSS for the Admin Console */
-        body { margin: 0; font-family: 'Inter', sans-serif; background-color: #f4f7f6; color: #333; }
-        .app-container { display: flex; min-height: 100vh; }
-        .sidebar { width: 250px; background-color: #2c3e50; color: #ecf0f1; padding: 20px; box-shadow: 2px 0 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
-        .sidebar h1 { text-align: center; color: #ecf0f1; margin-bottom: 30px; font-size: 1.8em; }
+        body { margin: 0; font-family: 'Inter', sans-serif; background-color: #ffffff; color: #000000; }
+        .app-container { display: flex; min-height: 100vh; background-color: #ffffff; }
+        .sidebar { width: 250px; background-color: #ffffff; color: #000000; padding: 20px; box-shadow: 2px 0 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; border-right: 1px solid #e5e7eb; }
+        .sidebar h1 { text-align: center; color: #000000; margin-bottom: 30px; font-size: 1.8em; }
         .sidebar-nav ul { list-style: none; padding: 0; margin: 0; }
         .sidebar-nav li { margin-bottom: 10px; }
         .sidebar-nav button {
           background: none;
           border: none;
-          color: #ecf0f1;
+          color: #000000;
           padding: 10px 15px;
           text-align: left;
           width: 100%;
@@ -1115,30 +1120,32 @@ function App() {
           border-radius: 5px;
           transition: background-color 0.3s ease;
         }
-        .sidebar-nav button:hover, .sidebar-nav button.active { background-color: #34495e; }
-        .main-content { flex-grow: 1; padding: 20px; }
+        .sidebar-nav button:hover { background-color: #f3f4f6; }
+        .sidebar-nav button.active { background-color: #007AFF; color: #ffffff; }
+        .main-content { flex-grow: 1; padding: 20px; background-color: #ffffff; display: flex; flex-direction: column; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background-color: #fff; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .header h2 { margin: 0; color: #2c3e50; }
+        .header h2 { margin: 0; color: #000000; }
         .user-info { display: flex; align-items: center; }
-        .user-info span { margin-right: 15px; font-weight: bold; color: #34495e; }
+        .user-info span { margin-right: 15px; font-weight: bold; color: #000000; }
         .logout-button { background-color: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease; }
         .logout-button:hover { background-color: #c0392b; }
 
         .cbba-status {
-            background-color: #34495e;
-            color: #ecf0f1;
+            background-color: #f3f4f6;
+            color: #000000;
             padding: 10px 15px;
             border-radius: 5px;
             font-size: 0.9em;
             margin-top: auto; /* Pushes it to the bottom of the sidebar */
             text-align: center;
+            border: 1px solid #e5e7eb;
         }
         .cbba-status span.normal { color: #2ecc71; font-weight: bold; }
         .cbba-status span.anomaly { color: #e74c3c; font-weight: bold; }
 
         .card { background-color: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #34495e; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #000000; }
         .form-group input[type="text"],
         .form-group input[type="password"],
         .form-group input[type="number"],
@@ -1170,7 +1177,7 @@ function App() {
         .button.success:hover { background-color: #27ae60; }
         .button.danger { background-color: #e74c3c; color: white; }
         .button.danger:hover { background-color: #c0392b; }
-        .button.secondary { background-color: #bdc3c7; color: #333; }
+        .button.secondary { background-color: #bdc3c7; color: #000000; }
         .button.secondary:hover { background-color: #95a5a6; }
         .button.small { padding: 5px 10px; font-size: 0.9em; margin-right: 5px; }
 
@@ -1226,7 +1233,10 @@ function App() {
             </div>
           </div>
         )}
-        {renderPage()}
+        <div style={{ flex: 1 }}>
+          {renderPage()}
+        </div>
+        <Footer onNavigate={setCurrentPage} />
       </div>
     </div>
   );

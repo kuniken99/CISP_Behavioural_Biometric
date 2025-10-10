@@ -13,7 +13,7 @@ namespace db_biometrics_mvp.Backend.Models
         [Required]
         public string Token { get; set; } = string.Empty;
         
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime ExpiresAt { get; set; }
         public bool IsUsed { get; set; }
     }

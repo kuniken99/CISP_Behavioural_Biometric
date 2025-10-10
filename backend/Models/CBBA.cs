@@ -19,7 +19,7 @@ namespace db_biometrics_mvp.Backend.Models
         [Required]
         public string SessionId { get; set; } = string.Empty;
         
-        public DateTime StartTime { get; set; }
+        public DateTime StartTime { get; set; } = DateTime.UtcNow;
         
         public DateTime? EndTime { get; set; }
         
@@ -37,7 +37,7 @@ namespace db_biometrics_mvp.Backend.Models
         
         public string AnomalyDetails { get; set; } = string.Empty; // JSON string of anomaly information
         
-        public DateTime ProcessedTime { get; set; }
+        public DateTime ProcessedTime { get; set; } = DateTime.UtcNow;
         
         public string DeviceFingerprint { get; set; } = string.Empty;
         

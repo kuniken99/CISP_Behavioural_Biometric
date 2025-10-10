@@ -7,8 +7,8 @@
 body { 
   margin: 0; 
   font-family: var(--font-family-system);
-  background-color: var(--color-gray-50); 
-  color: var(--color-gray-900); 
+  background-color: #ffffff; 
+  color: #000000; 
   line-height: var(--line-height-normal);
 }
 
@@ -17,7 +17,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh; 
-  background-color: var(--color-gray-50);
+  background-color: #ffffff;
   position: relative;
   padding-top: var(--safe-area-inset-top);
   padding-bottom: var(--safe-area-inset-bottom);
@@ -3604,4 +3604,92 @@ tr:hover {
 
 .table-container::-webkit-scrollbar-thumb:hover {
   background: var(--color-gray-500);
+}
+
+/* Footer Styles */
+.footer {
+  background-color: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  padding: var(--space-lg) 0;
+  margin-top: auto;
+  width: 100%;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.footer-section h3 {
+  color: #000000;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 var(--space-xs) 0;
+}
+
+.footer-section p {
+  color: #000000;
+  font-size: var(--font-size-sm);
+  margin: 0;
+  max-width: 400px;
+  line-height: var(--line-height-relaxed);
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.footer-link {
+  color: #000000;
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.footer-divider {
+  color: #9ca3af;
+  font-size: var(--font-size-sm);
+}
+
+.footer-copyright {
+  background-color: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  padding: var(--space-md) 0;
+  text-align: center;
+}
+
+.footer-copyright p {
+  color: #6b7280;
+  font-size: var(--font-size-xs);
+  margin: 0;
+}
+
+/* Mobile responsive footer */
+@media (max-width: 768px) {
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--space-lg);
+  }
+  
+  .footer-section {
+    width: 100%;
+  }
+  
+  .footer-links {
+    justify-content: center;
+  }
 }
