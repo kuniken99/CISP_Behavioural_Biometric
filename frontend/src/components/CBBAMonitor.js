@@ -1,5 +1,7 @@
 // frontend/src/components/CBBAMonitor.js
 import React from 'react';
+import ActivityLogsIcon from '../assets/activity-logs-icon.svg';
+import ShieldIcon from '../assets/shield-icon.svg';
 
 const CBBAMonitor = ({ status = "Active", riskScore = 12, isAuthenticated = false }) => {
   if (!isAuthenticated) {
@@ -7,46 +9,45 @@ const CBBAMonitor = ({ status = "Active", riskScore = 12, isAuthenticated = fals
   }
 
   return (
-    <div className="cbba-monitor-fixed" style={{
-      position: 'fixed',
-      bottom: '20px',
-      left: '20px',
-      width: '280px',
+    <div className="cbba-monitor" style={{
       backgroundColor: '#ffffff',
-      border: '2px solid #007bff',
+      border: '1px solid #e5e7eb',
       borderRadius: '8px',
       padding: '15px',
       color: '#000000',
-      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-      zIndex: 1000,
+      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
       minHeight: '120px'
     }}>
       <div style={{
         marginBottom: '12px'
       }}>
         <h4 style={{
-          fontSize: '1.2rem',
-          fontWeight: '700',
-          margin: '0 0 8px 0',
-          color: '#007bff',
-          textAlign: 'center'
+          fontSize: '1.1rem',
+          fontWeight: '600',
+          margin: '0 0 12px 0',
+          color: '#1F2937',
+          textAlign: 'left'
         }}>
           CBBA Monitoring
         </h4>
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '6px',
-          fontSize: '0.8rem'
+          gap: '8px',
+          fontSize: '0.9rem'
         }}>
-          <svg width="14" height="14" viewBox="0 0 16 16" style={{ flexShrink: 0 }}>
-            <path 
-              d="M8 2l1.09 3.26L12 5 9.91 6.74 11 10l-3-2.25L5 10l1.09-3.26L4 5l2.91.26L8 2z" 
-              fill={status === 'Active' ? '#34C759' : '#FF3B30'}
-            />
-          </svg>
+          <img 
+            src={ActivityLogsIcon} 
+            alt="Activity Logs" 
+            style={{ 
+              width: '16px', 
+              height: '16px', 
+              flexShrink: 0 
+            }} 
+          />
           <span style={{
-            color: '#666666'
+            color: '#374151',
+            fontWeight: '500'
           }}>
             Status: {status}
           </span>
@@ -58,29 +59,37 @@ const CBBAMonitor = ({ status = "Active", riskScore = 12, isAuthenticated = fals
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: '8px'
+          marginBottom: '10px'
         }}>
           <span style={{
-            fontSize: '0.8rem',
-            color: '#666666'
+            fontSize: '0.9rem',
+            color: '#374151',
+            fontWeight: '500'
           }}>
             Risk Score:
           </span>
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '6px'
+            gap: '8px',
+            backgroundColor: riskScore <= 20 ? '#D1FAE5' : riskScore <= 50 ? '#FEF3C7' : '#FEE2E2',
+            padding: '6px 10px',
+            borderRadius: '8px',
+            border: `1px solid ${riskScore <= 20 ? '#10B981' : riskScore <= 50 ? '#F59E0B' : '#EF4444'}`
           }}>
-            <div style={{
-              width: '10px',
-              height: '10px',
-              borderRadius: '50%',
-              backgroundColor: riskScore <= 20 ? '#34C759' : riskScore <= 50 ? '#FF9500' : '#FF3B30'
-            }}></div>
+            <img 
+              src={ShieldIcon} 
+              alt="Shield" 
+              style={{ 
+                width: '14px', 
+                height: '14px', 
+                flexShrink: 0 
+              }} 
+            />
             <span style={{
               fontSize: '0.9rem',
               fontWeight: '600',
-              color: '#000000'
+              color: riskScore <= 20 ? '#065F46' : riskScore <= 50 ? '#92400E' : '#991B1B'
             }}>
               {riskScore}%
             </span>
@@ -89,16 +98,16 @@ const CBBAMonitor = ({ status = "Active", riskScore = 12, isAuthenticated = fals
         
         <div style={{
           width: '100%',
-          height: '6px',
-          backgroundColor: '#f0f0f0',
-          borderRadius: '3px',
+          height: '8px',
+          backgroundColor: '#E5E7EB',
+          borderRadius: '4px',
           overflow: 'hidden'
         }}>
           <div style={{
             width: `${Math.min(riskScore, 100)}%`,
             height: '100%',
-            backgroundColor: riskScore <= 20 ? '#34C759' : riskScore <= 50 ? '#FF9500' : '#FF3B30',
-            borderRadius: '3px',
+            backgroundColor: riskScore <= 20 ? '#10B981' : riskScore <= 50 ? '#F59E0B' : '#EF4444',
+            borderRadius: '4px',
             transition: 'width 0.3s ease'
           }}></div>
         </div>

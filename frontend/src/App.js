@@ -1106,7 +1106,7 @@ function App() {
         /* Basic CSS for the Admin Console */
         body { margin: 0; font-family: 'Inter', sans-serif; background-color: #ffffff; color: #000000; }
         .app-container { display: flex; flex-direction: column; min-height: 100vh; background-color: #ffffff; }
-        .main-app-wrapper { display: flex; flex: 1; min-height: calc(100vh - 200px); }
+        .main-app-wrapper { display: flex; flex: 1; }
         .sidebar { width: 250px; background-color: #f8f9fa; color: #000000; padding: 20px; box-shadow: 2px 0 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; border-right: 1px solid #e5e7eb; min-height: 100vh; }
         .sidebar h1 { text-align: center; color: #000000; margin-bottom: 30px; font-size: 1.8em; }
         .sidebar-nav ul { list-style: none; padding: 0; margin: 0; }
@@ -1130,7 +1130,7 @@ function App() {
         }
         .sidebar-nav button:hover { background-color: #e9ecef; }
         .sidebar-nav button.active { background-color: #007bff; color: #ffffff; }
-        .main-content { flex-grow: 1; padding: 25px 30px 20px; background-color: #ffffff; display: flex; flex-direction: column; overflow-y: auto; margin-bottom: 20px; }
+        .main-content { flex-grow: 1; padding: 25px 30px 20px; background-color: #ffffff; display: flex; flex-direction: column; overflow-y: auto; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; background-color: #ffffff; padding: 20px 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .header h2 { margin: 0; color: #000000; font-size: 1.8rem; font-weight: 600; }
         .user-info { display: flex; align-items: center; }
@@ -1202,6 +1202,16 @@ function App() {
           padding: 40px 0 20px 0;
           width: 100%;
           color: #000000;
+          position: relative;
+          z-index: 1;
+        }
+        
+        .footer-cbba-container {
+          position: absolute;
+          bottom: 100%;
+          left: 0px;
+          margin-bottom: 0px;
+          z-index: 10;
         }
         
         .footer-content {
@@ -1274,19 +1284,33 @@ function App() {
           margin: 0;
         }
         
+        /* CBBA Monitor - Match sidebar width */
+        .cbba-monitor {
+          width: 250px !important; /* Same as sidebar width */
+        }
+        
         /* Responsive adjustments for CBBA Monitor */
         @media (max-width: 768px) {
-          .cbba-monitor-fixed {
-            bottom: 10px !important;
-            left: 10px !important;
-            width: 260px !important;
+          .footer-cbba-container {
+            left: 0px;
+            position: relative;
+            bottom: auto;
+            margin-bottom: 20px;
+          }
+          
+          .cbba-monitor {
+            width: 230px !important; /* Slightly smaller for mobile */
           }
         }
         
         @media (max-width: 480px) {
-          .cbba-monitor-fixed {
+          .footer-cbba-container {
+            left: 0px;
+          }
+          
+          .cbba-monitor {
             width: calc(100vw - 40px) !important;
-            max-width: 280px !important;
+            max-width: 250px !important;
           }
         }
       `}</style>
@@ -1373,16 +1397,15 @@ function App() {
       </div>
       </div>
       
-      {/* CBBA Monitor - Fixed at bottom left */}
-      {isAuthenticated && (
-        <CBBAMonitor 
-          status="Active" 
-          riskScore={lastCbbaScore ? Math.round(Math.abs(lastCbbaScore * 100)) : 12}
-          isAuthenticated={isAuthenticated}
-        />
-      )}
-      
-      <Footer onNavigate={setCurrentPage} />
+      <Footer onNavigate={setCurrentPage} cbbaComponent={
+        isAuthenticated ? (
+          <CBBAMonitor 
+            status="Active" 
+            riskScore={lastCbbaScore ? Math.round(Math.abs(lastCbbaScore * 100)) : 12}
+            isAuthenticated={isAuthenticated}
+          />
+        ) : null
+      } />
     </div>
   );
 }
