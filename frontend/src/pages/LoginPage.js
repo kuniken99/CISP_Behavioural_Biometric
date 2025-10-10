@@ -124,7 +124,7 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
           {/* Google reCAPTCHA v2 */}
           <div className="recaptcha-container">
             <ReCAPTCHA
-              sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY || "6LfogeErAAAAAPl-jd4Opxslssej0QCL87ZWtYov"}
+              sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"}
               onChange={handleRecaptchaVerify}
               onExpired={handleRecaptchaExpired}
               size="normal"

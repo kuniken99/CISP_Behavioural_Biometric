@@ -43,7 +43,8 @@ namespace db_biometrics_mvp.Backend.Controllers
                 return BadRequest(new { message = "reCAPTCHA verification failed. Please try again." });
             }
 
-            var user = await _context.Users.SingleOrDefaultAsync(u => u.Username == loginDto.Username && u.IsActive);
+            var user = await _context.Users.SingleOrDefaultAsync(u => 
+                (u.Username == loginDto.Username || u.Email == loginDto.Username) && u.IsActive);
 
             if (user == null || !VerifyPassword(loginDto.Password, user.PasswordHash))
             {
