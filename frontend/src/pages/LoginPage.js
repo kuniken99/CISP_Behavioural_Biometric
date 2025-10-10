@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { API_BASE_URL } from '../utils/config';
 import eyeIcon from '../assets/eye-icon.svg';
@@ -11,6 +11,7 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [recaptchaVerified, setRecaptchaVerified] = useState(false);
   const [recaptchaToken, setRecaptchaToken] = useState('');
+  const recaptchaRef = useRef(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,10 +44,14 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
         } catch {
           setError(errorText || 'Login failed');
         }
+        // Reset reCAPTCHA after failed login attempt
+        resetRecaptcha();
       }
     } catch (err) {
       setError('Network error during login.');
       console.error(err);
+      // Reset reCAPTCHA after network error
+      resetRecaptcha();
     }
   };
 
@@ -59,6 +64,15 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
   const handleRecaptchaExpired = () => {
     setRecaptchaVerified(false);
     setRecaptchaToken('');
+  };
+
+  // Reset reCAPTCHA widget
+  const resetRecaptcha = () => {
+    if (recaptchaRef.current) {
+      recaptchaRef.current.reset();
+      setRecaptchaVerified(false);
+      setRecaptchaToken('');
+    }
   };
 
   return (
@@ -124,6 +138,7 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
           {/* Google reCAPTCHA v2 */}
           <div className="recaptcha-container">
             <ReCAPTCHA
+              ref={recaptchaRef}
               sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"}
               onChange={handleRecaptchaVerify}
               onExpired={handleRecaptchaExpired}

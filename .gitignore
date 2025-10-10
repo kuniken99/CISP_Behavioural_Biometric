@@ -1,1 +1,53 @@
+# .NET Core
+backend/bin/
+backend/obj/
 backend/db_biometrics_mvp.Backend/obj/
+backend/db_biometrics_mvp.Backend/bin/
+
+# Secrets and sensitive configuration
+appsettings.Production.json
+appsettings.Local.json
+*.secret
+*.key
+
+# Environment variables
+.env.local
+.env.production
+.env.secrets
+
+# User secrets (already excluded by default but being explicit)
+# These are stored outside the project directory by .NET
+# %APPDATA%\Microsoft\UserSecrets\
+
+# React
+frontend/node_modules/
+frontend/build/
+frontend/.env.local
+frontend/.env.production
+frontend/.env.secrets
+
+# Python
+cbba_python_service/__pycache__/
+cbba_python_service/*.pyc
+cbba_python_service/.env
+cbba_python_service/venv/
+cbba_python_service/.venv/
+
+# IDE
+.vs/
+.vscode/settings.json
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
