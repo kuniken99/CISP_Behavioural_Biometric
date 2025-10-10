@@ -1130,7 +1130,7 @@ function App() {
         }
         .sidebar-nav button:hover { background-color: #e9ecef; }
         .sidebar-nav button.active { background-color: #007bff; color: #ffffff; }
-        .main-content { flex-grow: 1; margin-left: 250px; margin-right: 20px; padding: 25px 30px 20px; background-color: #ffffff; display: flex; flex-direction: column; overflow-y: auto; min-height: 100vh; }
+        .main-content { flex-grow: 1; margin-left: 270px; padding: 25px 30px 20px; background-color: #ffffff; display: flex; flex-direction: column; overflow-y: auto; min-height: 100vh; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; background-color: #ffffff; padding: 20px 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .header h2 { margin: 0; color: #000000; font-size: 1.8rem; font-weight: 600; }
         .user-info { display: flex; align-items: center; }
@@ -1199,9 +1199,10 @@ function App() {
           background-color: #f8f9fa;
           border-top: 1px solid #e5e7eb;
           margin-top: auto;
-          margin-left: 250px;
+          margin-left: 290px;
+          margin-right: 20px;
           padding: 40px 0 20px 0;
-          width: calc(100% - 250px);
+          width: calc(100% - 290px);
           color: #000000;
           position: relative;
           z-index: 1;
@@ -1296,6 +1297,7 @@ function App() {
         @media (max-width: 768px) {
           .footer {
             margin-left: 0 !important;
+            margin-right: 0 !important;
             width: 100% !important;
           }
           
@@ -1312,6 +1314,7 @@ function App() {
           
           .main-content {
             margin-left: 0 !important;
+            margin-right: 0 !important;
           }
         }
         
