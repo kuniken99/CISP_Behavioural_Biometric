@@ -1107,7 +1107,7 @@ function App() {
         body { margin: 0; font-family: 'Inter', sans-serif; background-color: #ffffff; color: #000000; }
         .app-container { display: flex; flex-direction: column; min-height: 100vh; background-color: #ffffff; }
         .main-app-wrapper { display: flex; flex: 1; }
-        .sidebar { width: 250px; background-color: #f8f9fa; color: #000000; padding: 20px; box-shadow: 2px 0 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; border-right: 1px solid #e5e7eb; min-height: 100vh; }
+        .sidebar { width: 250px; background-color: #f8f9fa; color: #000000; padding: 20px; box-shadow: 2px 0 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; border-right: 1px solid #e5e7eb; min-height: 95vh; }
         .sidebar h1 { text-align: center; color: #000000; margin-bottom: 30px; font-size: 1.8em; }
         .sidebar-nav ul { list-style: none; padding: 0; margin: 0; }
         .sidebar-nav li { margin-bottom: 10px; }
