@@ -12,6 +12,7 @@ using db_biometrics_mvp.Backend.Data;
 using db_biometrics_mvp.Backend.Models;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization; // For password hashing
+using db_biometrics_mvp.Backend.Services;
 
 namespace db_biometrics_mvp.Backend.Controllers
 {
@@ -21,11 +22,13 @@ namespace db_biometrics_mvp.Backend.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IRecaptchaService _recaptchaService;
 
-        public AuthController(AppDbContext context, IConfiguration configuration)
+        public AuthController(AppDbContext context, IConfiguration configuration, IRecaptchaService recaptchaService)
         {
             _context = context;
             _configuration = configuration;
+            _recaptchaService = recaptchaService;
         }
 
 
@@ -33,6 +36,13 @@ namespace db_biometrics_mvp.Backend.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
+            // Verify reCAPTCHA first
+            var isRecaptchaValid = await _recaptchaService.VerifyTokenAsync(loginDto.RecaptchaToken);
+            if (!isRecaptchaValid)
+            {
+                return BadRequest(new { message = "reCAPTCHA verification failed. Please try again." });
+            }
+
             var user = await _context.Users.SingleOrDefaultAsync(u => u.Username == loginDto.Username && u.IsActive);
 
             if (user == null || !VerifyPassword(loginDto.Password, user.PasswordHash))

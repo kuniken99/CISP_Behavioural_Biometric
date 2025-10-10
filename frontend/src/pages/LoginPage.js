@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
+import ReCAPTCHA from 'react-google-recaptcha';
 import { API_BASE_URL } from '../utils/config';
+import eyeIcon from '../assets/eye-icon.svg';
+import '../styles/LoginPage.css';
 
 const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
   const [email, setEmail] = useState('');
@@ -7,6 +10,7 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [recaptchaVerified, setRecaptchaVerified] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,7 +25,11 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
       const response = await fetch(`${API_BASE_URL}/Auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: email, password }),
+        body: JSON.stringify({ 
+          username: email, 
+          password: password,
+          recaptchaToken: recaptchaToken 
+        }),
       });
 
       if (response.ok) {
@@ -42,9 +50,15 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
     }
   };
 
-  // Mock reCAPTCHA verification
-  const handleRecaptchaVerify = () => {
-    setRecaptchaVerified(true);
+  // Google reCAPTCHA verification
+  const handleRecaptchaVerify = (token) => {
+    setRecaptchaVerified(!!token);
+    setRecaptchaToken(token || '');
+  };
+
+  const handleRecaptchaExpired = () => {
+    setRecaptchaVerified(false);
+    setRecaptchaToken('');
   };
 
   return (
@@ -56,7 +70,7 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
           <div className="form-group">
             <label>Email</label>
             <input 
-              type="email" 
+              type="text" 
               placeholder="Enter your email"
               value={email} 
               onChange={(e) => setEmail(e.target.value)} 
@@ -82,7 +96,7 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
-                {showPassword ? '👁️‍🗨️' : '👁️'}
+                <img src={eyeIcon} alt="Toggle password visibility" className="eye-icon" />
               </button>
             </div>
           </div>
@@ -107,19 +121,15 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
             </div>
           </div>
 
-          {/* Mock reCAPTCHA */}
+          {/* Google reCAPTCHA v2 */}
           <div className="recaptcha-container">
-            <div className="recaptcha-placeholder">
-              <span>reCAPTCHA placeholder</span>
-            </div>
-            <button 
-              type="button"
-              className="recaptcha-verify-btn"
-              onClick={handleRecaptchaVerify}
-              disabled={recaptchaVerified}
-            >
-              {recaptchaVerified ? '✓ Verified' : 'Verify'}
-            </button>
+            <ReCAPTCHA
+              sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY || "6LfogeErAAAAAPl-jd4Opxslssej0QCL87ZWtYov"}
+              onChange={handleRecaptchaVerify}
+              onExpired={handleRecaptchaExpired}
+              size="normal"
+              theme="light"
+            />
           </div>
 
           {error && <div className="error">{error}</div>}

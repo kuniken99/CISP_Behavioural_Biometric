@@ -1305,6 +1305,18 @@ body {
   outline-offset: 2px;
 }
 
+/* Eye icon styling */
+.eye-icon {
+  width: 20px;
+  height: 20px;
+  opacity: 0.6;
+  transition: opacity var(--transition-fast);
+}
+
+.password-toggle:hover .eye-icon {
+  opacity: 0.8;
+}
+
 /* Form links and actions */
 .form-links {
   display: flex;
@@ -1354,51 +1366,47 @@ body {
 
 /* reCAPTCHA container */
 .recaptcha-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-lg);
-  background-color: var(--color-gray-50);
-  border-radius: var(--border-radius-lg);
-  border: var(--border-width) solid var(--color-gray-200);
+  margin: var(--space-lg) 0;
 }
 
-.recaptcha-placeholder {
+.recaptcha-checkbox {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 300px;
-  height: 78px;
-  background-color: var(--color-white);
+  justify-content: space-between;
+  padding: var(--space-md);
+  background-color: var(--color-gray-50);
   border: var(--border-width) solid var(--color-gray-300);
   border-radius: var(--border-radius-md);
-  font-size: var(--font-size-sm);
-  color: var(--color-gray-600);
-  text-align: center;
-}
-
-.recaptcha-verify-btn {
-  background-color: var(--color-success);
-  color: var(--color-white);
-  border: none;
-  padding: var(--space-sm) var(--space-md);
-  border-radius: var(--border-radius-md);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
   cursor: pointer;
-  transition: background-color var(--transition-fast);
-  min-height: 36px;
+  transition: all var(--transition-fast);
 }
 
-.recaptcha-verify-btn:hover {
-  background-color: #28A745;
+.recaptcha-checkbox:hover {
+  background-color: var(--color-gray-100);
+  border-color: var(--color-gray-400);
 }
 
-.recaptcha-verify-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.recaptcha-checkbox input[type="checkbox"] {
+  margin: 0 var(--space-sm) 0 0;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.recaptcha-checkbox label {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-700);
+  cursor: pointer;
+  margin: 0;
+  font-weight: var(--font-weight-normal);
+}
+
+.recaptcha-logo {
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-500);
+  font-weight: var(--font-weight-medium);
 }
 
 /* Error messages */

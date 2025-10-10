@@ -3,14 +3,102 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace db_biometrics_mvp.Backend.Migrations
 {
     /// <inheritdoc />
-    public partial class AddCBBASystemTables : Migration
+    public partial class InitialCreateWithUsers : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Alerts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Severity = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Alerts", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AuditLogs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Action = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Details = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IpAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SessionId = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AuditLogs", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DbConfigurations",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MaxConnections = table.Column<int>(type: "int", nullable: false),
+                    QueryTimeoutSeconds = table.Column<int>(type: "int", nullable: false),
+                    BackupSchedule = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EnableAuditing = table.Column<bool>(type: "bit", nullable: false),
+                    LogLevel = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DbConfigurations", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsEmailVerified = table.Column<bool>(type: "bit", nullable: false),
+                    IsTwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastLoginAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WebsiteContents",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WebsiteContents", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "BiometricProfiles",
                 columns: table => new
@@ -28,12 +116,12 @@ namespace db_biometrics_mvp.Backend.Migrations
                     AverageMouseVelocity = table.Column<double>(type: "float", nullable: false),
                     PreferredClickPatterns = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SessionCount = table.Column<int>(type: "int", nullable: false),
-                    ProfileAccuracy = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ProfileAccuracy = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     ModelParameters = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastTrainingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeviceContext = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ThresholdScore = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ThresholdScore = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false),
                     AdaptationRate = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -91,10 +179,10 @@ namespace db_biometrics_mvp.Backend.Migrations
                     StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     BiometricData = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RiskScore = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    RiskScore = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false),
                     AuthenticationStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ModelVersion = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Confidence = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Confidence = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false),
                     IsAnomaly = table.Column<bool>(type: "bit", nullable: false),
                     AnomalyDetails = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProcessedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -137,6 +225,29 @@ namespace db_biometrics_mvp.Backend.Migrations
                     table.PrimaryKey("PK_DBAConsoles", x => x.Id);
                     table.ForeignKey(
                         name: "FK_DBAConsoles_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EmailVerificationTokens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsUsed = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmailVerificationTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EmailVerificationTokens_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -252,23 +363,23 @@ namespace db_biometrics_mvp.Backend.Migrations
                     UserId = table.Column<int>(type: "int", nullable: false),
                     SessionId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CalculatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CurrentScore = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PreviousScore = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    BaselineScore = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CurrentScore = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false),
+                    PreviousScore = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false),
+                    BaselineScore = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false),
                     RiskLevel = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CalculationMethod = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ModelVersion = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FactorsConsidered = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BiometricScore = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    BehavioralScore = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ContextualScore = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    HistoricalScore = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    BiometricScore = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false),
+                    BehavioralScore = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false),
+                    ContextualScore = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false),
+                    HistoricalScore = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false),
                     IsAnomaly = table.Column<bool>(type: "bit", nullable: false),
                     AnomalyReasons = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ExpiryTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     Recommendations = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Confidence = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    Confidence = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -302,7 +413,7 @@ namespace db_biometrics_mvp.Backend.Migrations
                     ResolvedTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ResolvedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ResolutionNotes = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RiskScore = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    RiskScore = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false),
                     Category = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RequiresInvestigation = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -315,6 +426,63 @@ namespace db_biometrics_mvp.Backend.Migrations
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
+
+            migrationBuilder.CreateTable(
+                name: "TwoFactorAuths",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    SecretKey = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TwoFactorAuths", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TwoFactorAuths_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Alerts",
+                columns: new[] { "Id", "Message", "Severity", "Status", "Timestamp", "Type" },
+                values: new object[,]
+                {
+                    { 1, "Failed login attempt for 'baduser'", "Medium", "Active", new DateTime(2025, 8, 23, 16, 55, 0, 0, DateTimeKind.Utc), "Security" },
+                    { 2, "High CPU usage detected on primary DB server", "Low", "Active", new DateTime(2025, 8, 23, 16, 40, 0, 0, DateTimeKind.Utc), "Performance" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "AuditLogs",
+                columns: new[] { "Id", "Action", "Details", "IpAddress", "SessionId", "Timestamp", "Username" },
+                values: new object[] { 1, "DB_INIT", "Initial database migration completed.", "127.0.0.1", null, new DateTime(2025, 8, 23, 17, 0, 0, 0, DateTimeKind.Utc), "system" });
+
+            migrationBuilder.InsertData(
+                table: "DbConfigurations",
+                columns: new[] { "Id", "BackupSchedule", "EnableAuditing", "LogLevel", "MaxConnections", "QueryTimeoutSeconds" },
+                values: new object[] { 1, "Daily 02:00 AM", true, "INFO", 100, 30 });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "CreatedAt", "Email", "IsActive", "IsEmailVerified", "IsTwoFactorEnabled", "LastLoginAt", "PasswordHash", "Role", "Username" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2025, 10, 10, 13, 6, 57, 790, DateTimeKind.Utc).AddTicks(1450), "admin@system.com", true, true, true, null, "713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca", "admin", "admin" },
+                    { 2, new DateTime(2025, 10, 10, 13, 6, 57, 790, DateTimeKind.Utc).AddTicks(2278), "dba@system.com", true, true, true, null, "9af50a3ade35be3c6d8ef3ecf3cbedf85c141d0e550c9f1a3fa3e67b6ab55804", "dba", "dbauser" },
+                    { 3, new DateTime(2025, 10, 10, 13, 6, 57, 790, DateTimeKind.Utc).AddTicks(2280), "test@system.com", true, true, false, null, "9af50a3ade35be3c6d8ef3ecf3cbedf85c141d0e550c9f1a3fa3e67b6ab55804", "user", "testuser" },
+                    { 4, new DateTime(2025, 10, 10, 13, 6, 57, 790, DateTimeKind.Utc).AddTicks(2282), "tank108@uni.coventry.ac.uk", true, true, true, null, "713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca", "admin", "tank108" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "WebsiteContents",
+                columns: new[] { "Id", "Content" },
+                values: new object[] { 1, "# Welcome to DBA Admin Console\n\nThis is a placeholder for website content." });
 
             migrationBuilder.CreateIndex(
                 name: "IX_BiometricProfiles_UserId",
@@ -334,6 +502,11 @@ namespace db_biometrics_mvp.Backend.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_DBAConsoles_UserId",
                 table: "DBAConsoles",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmailVerificationTokens_UserId",
+                table: "EmailVerificationTokens",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -360,11 +533,22 @@ namespace db_biometrics_mvp.Backend.Migrations
                 name: "IX_SecurityLogs_UserId",
                 table: "SecurityLogs",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TwoFactorAuths_UserId",
+                table: "TwoFactorAuths",
+                column: "UserId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Alerts");
+
+            migrationBuilder.DropTable(
+                name: "AuditLogs");
+
             migrationBuilder.DropTable(
                 name: "BiometricProfiles");
 
@@ -376,6 +560,12 @@ namespace db_biometrics_mvp.Backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "DBAConsoles");
+
+            migrationBuilder.DropTable(
+                name: "DbConfigurations");
+
+            migrationBuilder.DropTable(
+                name: "EmailVerificationTokens");
 
             migrationBuilder.DropTable(
                 name: "KeyStrokes");
@@ -391,6 +581,15 @@ namespace db_biometrics_mvp.Backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "SecurityLogs");
+
+            migrationBuilder.DropTable(
+                name: "TwoFactorAuths");
+
+            migrationBuilder.DropTable(
+                name: "WebsiteContents");
+
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }

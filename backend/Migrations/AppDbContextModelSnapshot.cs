@@ -171,8 +171,8 @@ namespace db_biometrics_mvp.Backend.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("ProfileAccuracy")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)");
 
                     b.Property<string>("ProfileVersion")
                         .IsRequired()
@@ -182,8 +182,8 @@ namespace db_biometrics_mvp.Backend.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("ThresholdScore")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)");
 
                     b.Property<string>("TypingRhythm")
                         .IsRequired()
@@ -220,8 +220,8 @@ namespace db_biometrics_mvp.Backend.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Confidence")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)");
 
                     b.Property<string>("DeviceFingerprint")
                         .IsRequired()
@@ -248,8 +248,8 @@ namespace db_biometrics_mvp.Backend.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("RiskScore")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)");
 
                     b.Property<string>("SessionId")
                         .IsRequired()
@@ -676,16 +676,16 @@ namespace db_biometrics_mvp.Backend.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("BaselineScore")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)");
 
                     b.Property<decimal>("BehavioralScore")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)");
 
                     b.Property<decimal>("BiometricScore")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)");
 
                     b.Property<DateTime>("CalculatedTime")
                         .HasColumnType("datetime2");
@@ -695,16 +695,16 @@ namespace db_biometrics_mvp.Backend.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Confidence")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)");
 
                     b.Property<decimal>("ContextualScore")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)");
 
                     b.Property<decimal>("CurrentScore")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)");
 
                     b.Property<DateTime>("ExpiryTime")
                         .HasColumnType("datetime2");
@@ -714,8 +714,8 @@ namespace db_biometrics_mvp.Backend.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("HistoricalScore")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -728,8 +728,8 @@ namespace db_biometrics_mvp.Backend.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("PreviousScore")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)");
 
                     b.Property<string>("Recommendations")
                         .IsRequired()
@@ -803,8 +803,8 @@ namespace db_biometrics_mvp.Backend.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("RiskScore")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)");
 
                     b.Property<string>("SessionId")
                         .IsRequired()
@@ -910,7 +910,7 @@ namespace db_biometrics_mvp.Backend.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 8, 23, 9, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2025, 10, 10, 13, 6, 57, 790, DateTimeKind.Utc).AddTicks(1450),
                             Email = "admin@system.com",
                             IsActive = true,
                             IsEmailVerified = true,
@@ -922,7 +922,7 @@ namespace db_biometrics_mvp.Backend.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 8, 23, 9, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2025, 10, 10, 13, 6, 57, 790, DateTimeKind.Utc).AddTicks(2278),
                             Email = "dba@system.com",
                             IsActive = true,
                             IsEmailVerified = true,
@@ -934,7 +934,7 @@ namespace db_biometrics_mvp.Backend.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 8, 23, 9, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2025, 10, 10, 13, 6, 57, 790, DateTimeKind.Utc).AddTicks(2280),
                             Email = "test@system.com",
                             IsActive = true,
                             IsEmailVerified = true,
@@ -942,6 +942,18 @@ namespace db_biometrics_mvp.Backend.Migrations
                             PasswordHash = "9af50a3ade35be3c6d8ef3ecf3cbedf85c141d0e550c9f1a3fa3e67b6ab55804",
                             Role = "user",
                             Username = "testuser"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2025, 10, 10, 13, 6, 57, 790, DateTimeKind.Utc).AddTicks(2282),
+                            Email = "tank108@uni.coventry.ac.uk",
+                            IsActive = true,
+                            IsEmailVerified = true,
+                            IsTwoFactorEnabled = true,
+                            PasswordHash = "713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca",
+                            Role = "admin",
+                            Username = "tank108"
                         });
                 });
 

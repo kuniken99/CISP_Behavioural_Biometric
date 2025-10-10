@@ -34,71 +34,78 @@ namespace db_biometrics_mvp.Backend.Data
         public DbSet<EmailVerificationToken> EmailVerificationTokens { get; set; } = default!;
         public DbSet<TwoFactorAuth> TwoFactorAuths { get; set; } = default!;
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.ConfigureWarnings(warnings =>
+                warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configure decimal precision for all decimal properties
+            // Configure decimal properties to avoid truncation warnings
             modelBuilder.Entity<BiometricProfile>()
                 .Property(e => e.ProfileAccuracy)
-                .HasPrecision(18, 4);
+                .HasPrecision(18, 6);
             
             modelBuilder.Entity<BiometricProfile>()
                 .Property(e => e.ThresholdScore)
-                .HasPrecision(18, 4);
-
+                .HasPrecision(18, 6);
+            
             modelBuilder.Entity<CBBA>()
                 .Property(e => e.Confidence)
-                .HasPrecision(18, 4);
+                .HasPrecision(18, 6);
             
             modelBuilder.Entity<CBBA>()
                 .Property(e => e.RiskScore)
-                .HasPrecision(18, 4);
-
+                .HasPrecision(18, 6);
+            
             modelBuilder.Entity<RiskScore>()
                 .Property(e => e.BaselineScore)
-                .HasPrecision(18, 4);
+                .HasPrecision(18, 6);
             
             modelBuilder.Entity<RiskScore>()
                 .Property(e => e.BehavioralScore)
-                .HasPrecision(18, 4);
+                .HasPrecision(18, 6);
             
             modelBuilder.Entity<RiskScore>()
                 .Property(e => e.BiometricScore)
-                .HasPrecision(18, 4);
+                .HasPrecision(18, 6);
             
             modelBuilder.Entity<RiskScore>()
                 .Property(e => e.Confidence)
-                .HasPrecision(18, 4);
+                .HasPrecision(18, 6);
             
             modelBuilder.Entity<RiskScore>()
                 .Property(e => e.ContextualScore)
-                .HasPrecision(18, 4);
+                .HasPrecision(18, 6);
             
             modelBuilder.Entity<RiskScore>()
                 .Property(e => e.CurrentScore)
-                .HasPrecision(18, 4);
+                .HasPrecision(18, 6);
             
             modelBuilder.Entity<RiskScore>()
                 .Property(e => e.HistoricalScore)
-                .HasPrecision(18, 4);
+                .HasPrecision(18, 6);
             
             modelBuilder.Entity<RiskScore>()
                 .Property(e => e.PreviousScore)
-                .HasPrecision(18, 4);
-
+                .HasPrecision(18, 6);
+            
             modelBuilder.Entity<SecurityLog>()
                 .Property(e => e.RiskScore)
-                .HasPrecision(18, 4);
+                .HasPrecision(18, 6);
 
             // Seed initial data for MVP
             var adminPasswordHash = HashPassword("adminpass");
             var dbaPasswordHash = HashPassword("dbapass");
 
             modelBuilder.Entity<User>().HasData(
-                new User { Id = 1, Username = "admin", Email = "admin@system.com", PasswordHash = adminPasswordHash, Role = "admin", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = true, CreatedAt = new DateTime(2025, 8, 23, 9, 0, 0, DateTimeKind.Utc) },
-                new User { Id = 2, Username = "dbauser", Email = "dba@system.com", PasswordHash = dbaPasswordHash, Role = "dba", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = true, CreatedAt = new DateTime(2025, 8, 23, 9, 0, 0, DateTimeKind.Utc) },
-                new User { Id = 3, Username = "testuser", Email = "test@system.com", PasswordHash = dbaPasswordHash, Role = "user", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = false, CreatedAt = new DateTime(2025, 8, 23, 9, 0, 0, DateTimeKind.Utc) }
+                new User { Id = 1, Username = "admin", Email = "admin@system.com", PasswordHash = adminPasswordHash, Role = "admin", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = true },
+                new User { Id = 2, Username = "dbauser", Email = "dba@system.com", PasswordHash = dbaPasswordHash, Role = "dba", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = true },
+                new User { Id = 3, Username = "testuser", Email = "test@system.com", PasswordHash = dbaPasswordHash, Role = "user", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = false },
+                new User { Id = 4, Username = "tank108", Email = "tank108@uni.coventry.ac.uk", PasswordHash = adminPasswordHash, Role = "admin", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = true }
             );
 
             modelBuilder.Entity<DbConfiguration>().HasData(

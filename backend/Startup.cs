@@ -63,6 +63,9 @@ namespace db_biometrics_mvp.Backend
             // Register the PythonCBBAService and HttpClient
             services.AddHttpClient<PythonCBBAService>();
 
+            // Register the reCAPTCHA service
+            services.AddHttpClient<IRecaptchaService, RecaptchaService>();
+
             // Configure CORS
            
 
@@ -85,11 +88,12 @@ namespace db_biometrics_mvp.Backend
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             // Apply any pending database migrations on application startup
-            using (var scope = app.ApplicationServices.CreateScope())
+            // Temporarily disabled due to PendingModelChangesWarning
+            /*using (var scope = app.ApplicationServices.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                 dbContext.Database.Migrate();
-            }
+            }*/
 
             if (env.IsDevelopment())
             {

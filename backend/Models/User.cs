@@ -49,6 +49,8 @@ namespace db_biometrics_mvp.Backend.Models
         public string Username { get; set; } = string.Empty;
         [Required]
         public string Password { get; set; } = string.Empty;
+        [Required]
+        public string RecaptchaToken { get; set; } = string.Empty;
     }
 
     // DTO for role assignment
