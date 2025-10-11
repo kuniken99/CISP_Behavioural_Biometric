@@ -8,11 +8,13 @@ import EmailVerificationPage from './EmailVerificationPage';
 
 const AuthWrapper = ({ onLogin }) => {
   const [currentAuthPage, setCurrentAuthPage] = useState('login');
-  const [registrationEmail, setRegistrationEmail] = useState('');
+  const [verificationEmail, setVerificationEmail] = useState('');
+  const [verificationContext, setVerificationContext] = useState('registration'); // 'registration' or 'login'
 
   const handleAuthPageChange = (page, data = {}) => {
     if (page === 'verify-email' && data.email) {
-      setRegistrationEmail(data.email);
+      setVerificationEmail(data.email);
+      setVerificationContext(data.context || 'registration');
     }
     setCurrentAuthPage(page);
   };
@@ -30,7 +32,7 @@ const AuthWrapper = ({ onLogin }) => {
       case 'register':
         return <RegistrationPage setCurrentAuthPage={handleAuthPageChange} />;
       case 'verify-email':
-        return <EmailVerificationPage setCurrentAuthPage={handleAuthPageChange} email={registrationEmail} />;
+        return <EmailVerificationPage setCurrentAuthPage={handleAuthPageChange} email={verificationEmail} context={verificationContext} />;
       default:
         return <LoginPage onLogin={onLogin} setCurrentAuthPage={handleAuthPageChange} />;
     }

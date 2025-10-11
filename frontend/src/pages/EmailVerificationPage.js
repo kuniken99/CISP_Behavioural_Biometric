@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { API_BASE_URL } from '../utils/config';
 import '../styles/LoginPage.css';
 
-const EmailVerificationPage = ({ setCurrentAuthPage, email }) => {
+const EmailVerificationPage = ({ setCurrentAuthPage, email, context = 'registration' }) => {
   const [isResending, setIsResending] = useState(false);
   const [resendMessage, setResendMessage] = useState('');
 
@@ -54,10 +54,15 @@ const EmailVerificationPage = ({ setCurrentAuthPage, email }) => {
           </div>
         </div>
 
-        <h2 className="auth-title">Verify Your Email</h2>
+        <h2 className="auth-title">
+          {context === 'login' ? 'Email Verification Required' : 'Verify Your Email'}
+        </h2>
         
         <p className="verification-text">
-          We've sent a confirmation link to your email
+          {context === 'login' 
+            ? 'Please verify your email address to complete login' 
+            : 'We\'ve sent a confirmation link to your email'
+          }
         </p>
 
         <div className="email-display">
@@ -65,7 +70,10 @@ const EmailVerificationPage = ({ setCurrentAuthPage, email }) => {
         </div>
 
         <p className="verification-instructions">
-          Please check your email and click on the confirmation link to proceed.
+          {context === 'login' 
+            ? 'Check your email and click the verification link to activate your account and log in.' 
+            : 'Please check your email and click on the confirmation link to proceed.'
+          }
         </p>
 
         <p className="verification-note">

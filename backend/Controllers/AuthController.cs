@@ -59,8 +59,10 @@ namespace db_biometrics_mvp.Backend.Controllers
             if (!user.IsEmailVerified)
             {
                 return Unauthorized(new { 
-                    message = "Please verify your email address before logging in. Check your email for the verification link.",
-                    emailNotVerified = true 
+                    message = "Please verify your email address before logging in.",
+                    emailNotVerified = true,
+                    email = user.Email,
+                    username = user.Username
                 });
             }
 
@@ -252,60 +254,80 @@ namespace db_biometrics_mvp.Backend.Controllers
                 return BadRequest(new { message = "Email already exists." });
             }
 
-            // Create new user
-            var user = new User
-            {
-                Username = registerDto.Username,
-                Email = registerDto.Email,
-                PasswordHash = HashPassword(registerDto.Password),
-                Role = uniqueCode.Role, // Use role from unique code
-                IsActive = true,
-                IsEmailVerified = false, // Will be verified via email
-                CreatedAt = DateTime.UtcNow
-            };
-
-            _context.Users.Add(user);
-
-            // Mark unique code as used
-            uniqueCode.IsUsed = true;
-            uniqueCode.UsedByUserId = user.Id;
-            uniqueCode.UsedAt = DateTime.UtcNow;
-            _context.UniqueCodes.Update(uniqueCode);
-
-            await _context.SaveChangesAsync();
-
-            // Create email verification token
-            var verificationToken = Guid.NewGuid().ToString("N");
-            var emailVerificationToken = new EmailVerificationToken
-            {
-                UserId = user.Id,
-                Token = verificationToken,
-                CreatedAt = DateTime.UtcNow,
-                ExpiresAt = DateTime.UtcNow.AddHours(24), // 24-hour expiration
-                IsUsed = false
-            };
-
-            _context.EmailVerificationTokens.Add(emailVerificationToken);
-            await _context.SaveChangesAsync();
-
-            // Send email verification
-            var emailSent = await _emailService.SendEmailVerificationAsync(user.Email, verificationToken);
-            if (!emailSent)
-            {
-                _logger.LogWarning("Failed to send verification email to {Email}", user.Email);
-            }
+            // Use database transaction to ensure atomicity
+            using var transaction = await _context.Database.BeginTransactionAsync();
             
-            // Log activity
-            await _context.AuditLogs.AddAsync(new AuditLog 
-            { 
-                Username = registerDto.Username, 
-                Action = "USER_REGISTRATION", 
-                Details = $"New user registered with email: {registerDto.Email}", 
-                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" 
-            });
-            await _context.SaveChangesAsync();
+            try
+            {
+                // Create new user (but don't mark unique code as used yet)
+                var user = new User
+                {
+                    Username = registerDto.Username,
+                    Email = registerDto.Email,
+                    PasswordHash = HashPassword(registerDto.Password),
+                    Role = uniqueCode.Role, // Use role from unique code
+                    IsActive = true,
+                    IsEmailVerified = false, // Will be verified via email
+                    CreatedAt = DateTime.UtcNow
+                };
 
-            return Ok(new { message = "Registration successful. Please check your email for verification instructions." });
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync(); // Save to get user ID
+
+                // Create email verification token
+                var verificationToken = Guid.NewGuid().ToString("N");
+                var emailVerificationToken = new EmailVerificationToken
+                {
+                    UserId = user.Id,
+                    Token = verificationToken,
+                    CreatedAt = DateTime.UtcNow,
+                    ExpiresAt = DateTime.UtcNow.AddHours(24), // 24-hour expiration
+                    IsUsed = false
+                };
+
+                _context.EmailVerificationTokens.Add(emailVerificationToken);
+                await _context.SaveChangesAsync();
+
+                // Send email verification (this is the critical step that could fail)
+                var emailSent = await _emailService.SendEmailVerificationAsync(user.Email, verificationToken);
+                if (!emailSent)
+                {
+                    _logger.LogError("Failed to send verification email to {Email} during registration", user.Email);
+                    // Rollback transaction if email sending fails
+                    await transaction.RollbackAsync();
+                    return StatusCode(500, new { message = "Registration failed: Unable to send verification email. Please try again." });
+                }
+
+                // Only mark unique code as used if everything succeeded (including email sending)
+                uniqueCode.IsUsed = true;
+                uniqueCode.UsedByUserId = user.Id;
+                uniqueCode.UsedAt = DateTime.UtcNow;
+                _context.UniqueCodes.Update(uniqueCode);
+                await _context.SaveChangesAsync();
+                
+                // Log activity
+                await _context.AuditLogs.AddAsync(new AuditLog 
+                { 
+                    Username = registerDto.Username, 
+                    Action = "USER_REGISTRATION", 
+                    Details = $"New user registered with email: {registerDto.Email}", 
+                    IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" 
+                });
+                await _context.SaveChangesAsync();
+
+                // Commit transaction - everything succeeded
+                await transaction.CommitAsync();
+                
+                _logger.LogInformation("User registration completed successfully for {Email}", user.Email);
+                return Ok(new { message = "Registration successful. Please check your email for verification instructions." });
+            }
+            catch (Exception ex)
+            {
+                // Rollback transaction on any error
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, "Registration failed for email {Email}", registerDto.Email);
+                return StatusCode(500, new { message = "Registration failed due to an unexpected error. Please try again." });
+            }
         }
 
         [AllowAnonymous]

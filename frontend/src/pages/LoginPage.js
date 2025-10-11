@@ -40,6 +40,18 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
         const errorText = await response.text();
         try {
           const errorData = JSON.parse(errorText);
+          
+          // Check if user needs email verification
+          if (errorData.emailNotVerified) {
+            // Redirect to email verification page with user's email and login context
+            setCurrentAuthPage('verify-email', { 
+              email: errorData.email, 
+              username: errorData.username,
+              context: 'login'
+            });
+            return;
+          }
+          
           setError(errorData.message || 'Login failed');
         } catch {
           setError(errorText || 'Login failed');

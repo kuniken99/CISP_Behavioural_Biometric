@@ -81,8 +81,11 @@ const RegistrationPage = ({ setCurrentAuthPage }) => {
       });
 
       if (response.ok) {
-        // Navigate to email verification page
-        setCurrentAuthPage('verify-email', { email: formData.email });
+        // Navigate to email verification page with registration context
+        setCurrentAuthPage('verify-email', { 
+          email: formData.email,
+          context: 'registration'
+        });
       } else {
         const errorText = await response.text();
         try {
