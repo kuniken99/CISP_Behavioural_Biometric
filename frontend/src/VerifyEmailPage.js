@@ -106,6 +106,11 @@ function VerifyEmailPage() {
                   type="button"
                   className="button primary"
                   onClick={handleLoginRedirect}
+                  style={{ 
+                    backgroundColor: '#000000', 
+                    color: '#ffffff',
+                    border: '1px solid #000000'
+                  }}
                 >
                   Continue to Setup
                 </button>

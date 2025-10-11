@@ -43,7 +43,18 @@ const AuthWrapper = ({ onLogin }) => {
         return <TwoFactorSetupPage 
           setCurrentAuthPage={handleAuthPageChange} 
           email={twoFactorEmail} 
-          onSetupComplete={() => onLogin(null, 'user', 'user')} // Complete login after 2FA setup
+          onSetupComplete={(token, user) => {
+            // Use the actual user data from 2FA setup response
+            if (user && token) {
+              onLogin(token, user.username, user.role);
+            } else {
+              // Fallback - try to extract from stored token
+              const storedToken = localStorage.getItem('jwt_token');
+              if (storedToken) {
+                onLogin(storedToken, 'user', 'user');
+              }
+            }
+          }}
         />;
       case 'twofa-login':
         return <TwoFactorLoginPage 

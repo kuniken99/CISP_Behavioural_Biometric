@@ -123,7 +123,7 @@ function TwoFactorSetupPage({ setCurrentAuthPage, email, onSetupComplete }) {
         // Call the completion callback after a short delay to show success message
         setTimeout(() => {
           if (onSetupComplete) {
-            onSetupComplete();
+            onSetupComplete(data.token, data.user);
           }
         }, 2000);
       } else {
@@ -163,8 +163,13 @@ function TwoFactorSetupPage({ setCurrentAuthPage, email, onSetupComplete }) {
     return (
       <div className="auth-container">
         <div className="auth-card">
-          <div className="verification-success">
-            <div className="success-icon">✓</div>
+          <div className="verification-success" style={{ textAlign: 'center' }}>
+            <div className="success-icon" style={{ 
+              display: 'inline-flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              margin: '0 auto 20px auto'
+            }}>✓</div>
             <h2 className="auth-title">Setup Complete!</h2>
             <p>Two-factor authentication has been successfully configured for your account.</p>
             <p>You will now be redirected to the dashboard...</p>
