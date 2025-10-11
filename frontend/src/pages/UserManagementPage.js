@@ -240,50 +240,22 @@ const UserManagementPage = () => {
 
   return (
     <div className="card">
-      <h3>Create New User</h3>
+      {/* Unique Code Generation Section - Now First */}
+      <h2>Generate Registration Codes</h2>
+      <p style={{ color: '#6b7280', marginBottom: '20px' }}>
+        Generate unique codes for new user registration. These codes are required during the sign-up process.
+      </p>
       <form onSubmit={(e) => { e.preventDefault(); e.stopPropagation(); return false; }} className="form-group-inline">
         <div className="form-group">
-          <label>Username:</label>
-          <input 
-            type="text" 
-            value={newUser.username} 
-            onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                e.stopPropagation();
-                handleCreateUser();
-                return false;
-              }
-            }}
-          />
-        </div>
-        <div className="form-group">
-          <label>Password:</label>
-          <input 
-            type="password" 
-            value={newUser.password} 
-            onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                e.stopPropagation();
-                handleCreateUser();
-                return false;
-              }
-            }}
-          />
-        </div>
-        <div className="form-group">
-          <label>Role:</label>
+          <label>Role for New Users:</label>
           <select 
-            value={newUser.role} 
-            onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+            value={newCodeData.role} 
+            onChange={(e) => setNewCodeData({ ...newCodeData, role: e.target.value })}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
                 e.stopPropagation();
-                handleCreateUser();
+                handleGenerateUniqueCode();
                 return false;
               }
             }}
@@ -293,37 +265,154 @@ const UserManagementPage = () => {
             <option value="admin">Admin</option>
           </select>
         </div>
+        <div className="form-group">
+          <label>Expires In (Days):</label>
+          <input 
+            type="number" 
+            min="1"
+            max="365"
+            value={newCodeData.expiresInDays} 
+            onChange={(e) => setNewCodeData({ ...newCodeData, expiresInDays: parseInt(e.target.value) || 7 })}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                e.stopPropagation();
+                handleGenerateUniqueCode();
+                return false;
+              }
+            }}
+          />
+        </div>
+        <div className="form-group">
+          <label>Note (Optional):</label>
+          <input 
+            type="text" 
+            placeholder="e.g., For new team members"
+            value={newCodeData.note} 
+            onChange={(e) => setNewCodeData({ ...newCodeData, note: e.target.value })}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                e.stopPropagation();
+                handleGenerateUniqueCode();
+                return false;
+              }
+            }}
+          />
+        </div>
       </form>
       <button 
         type="button" 
-        className="button primary" 
-        onClick={handleCreateUser}
+        className="button success" 
+        onClick={handleGenerateUniqueCode}
+        disabled={codeGenerationLoading}
         style={{ 
           backgroundColor: '#000000', 
           color: '#ffffff',
           border: '1px solid #000000'
         }}
       >
-        Create User
+        {codeGenerationLoading ? 'Generating...' : 'Generate Unique Code'}
       </button>
 
-      {/* Unique Code Generation Section */}
+      {/* Active Unique Codes Table */}
+      <h4 style={{ marginTop: '30px' }}>Active Registration Codes</h4>
+      <table style={{ marginTop: '15px' }}>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Role</th>
+            <th>Created</th>
+            <th>Expires</th>
+            <th>Note</th>
+            <th>Used</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {uniqueCodes.map(code => (
+            <tr key={code.id}>
+              <td style={{ fontFamily: 'monospace', backgroundColor: '#f3f4f6', padding: '4px 8px', borderRadius: '4px' }}>
+                {code.code}
+              </td>
+              <td>{code.role}</td>
+              <td>{new Date(code.createdAt).toLocaleDateString()}</td>
+              <td>{new Date(code.expiresAt).toLocaleDateString()}</td>
+              <td>{code.note || '-'}</td>
+              <td>
+                <span style={code.isUsed ? usedStatusStyle : availableStatusStyle}>
+                  {code.isUsed ? 'Yes' : 'No'}
+                </span>
+              </td>
+              <td>
+                <div style={{ display: 'flex', gap: '5px' }}>
+                  <button 
+                    type="button" 
+                    className="button danger small"
+                    onClick={() => handleDeleteCode(code.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+          {uniqueCodes.length === 0 && (
+            <tr>
+              <td colSpan="7" style={{ textAlign: 'center', color: '#6b7280' }}>
+                No active registration codes
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+
+      {/* Create New User Section - Now Second */}
       <div style={{ marginTop: '40px', paddingTop: '30px', borderTop: '2px solid #e5e7eb' }}>
-        <h3>Generate Registration Codes</h3>
-        <p style={{ color: '#6b7280', marginBottom: '20px' }}>
-          Generate unique codes for new user registration. These codes are required during the sign-up process.
-        </p>
+        <h2>Create New User</h2>
         <form onSubmit={(e) => { e.preventDefault(); e.stopPropagation(); return false; }} className="form-group-inline">
           <div className="form-group">
-            <label>Role for New Users:</label>
-            <select 
-              value={newCodeData.role} 
-              onChange={(e) => setNewCodeData({ ...newCodeData, role: e.target.value })}
+            <label>Username:</label>
+            <input 
+              type="text" 
+              value={newUser.username} 
+              onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
                   e.stopPropagation();
-                  handleGenerateUniqueCode();
+                  handleCreateUser();
+                  return false;
+                }
+              }}
+            />
+          </div>
+          <div className="form-group">
+            <label>Password:</label>
+            <input 
+              type="password" 
+              value={newUser.password} 
+              onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleCreateUser();
+                  return false;
+                }
+              }}
+            />
+          </div>
+          <div className="form-group">
+            <label>Role:</label>
+            <select 
+              value={newUser.role} 
+              onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleCreateUser();
                   return false;
                 }
               }}
@@ -333,107 +422,19 @@ const UserManagementPage = () => {
               <option value="admin">Admin</option>
             </select>
           </div>
-          <div className="form-group">
-            <label>Expires In (Days):</label>
-            <input 
-              type="number" 
-              min="1"
-              max="365"
-              value={newCodeData.expiresInDays} 
-              onChange={(e) => setNewCodeData({ ...newCodeData, expiresInDays: parseInt(e.target.value) || 7 })}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleGenerateUniqueCode();
-                  return false;
-                }
-              }}
-            />
-          </div>
-          <div className="form-group">
-            <label>Note (Optional):</label>
-            <input 
-              type="text" 
-              placeholder="e.g., For new team members"
-              value={newCodeData.note} 
-              onChange={(e) => setNewCodeData({ ...newCodeData, note: e.target.value })}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleGenerateUniqueCode();
-                  return false;
-                }
-              }}
-            />
-          </div>
         </form>
         <button 
           type="button" 
-          className="button success" 
-          onClick={handleGenerateUniqueCode}
-          disabled={codeGenerationLoading}
+          className="button primary" 
+          onClick={handleCreateUser}
           style={{ 
             backgroundColor: '#000000', 
             color: '#ffffff',
             border: '1px solid #000000'
           }}
         >
-          {codeGenerationLoading ? 'Generating...' : 'Generate Unique Code'}
+          Create User
         </button>
-
-        {/* Active Unique Codes Table */}
-        <h4 style={{ marginTop: '30px' }}>Active Registration Codes</h4>
-        <table style={{ marginTop: '15px' }}>
-          <thead>
-            <tr>
-              <th>Code</th>
-              <th>Role</th>
-              <th>Created</th>
-              <th>Expires</th>
-              <th>Note</th>
-              <th>Used</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {uniqueCodes.map(code => (
-              <tr key={code.id}>
-                <td style={{ fontFamily: 'monospace', backgroundColor: '#f3f4f6', padding: '4px 8px', borderRadius: '4px' }}>
-                  {code.code}
-                </td>
-                <td>{code.role}</td>
-                <td>{new Date(code.createdAt).toLocaleDateString()}</td>
-                <td>{new Date(code.expiresAt).toLocaleDateString()}</td>
-                <td>{code.note || '-'}</td>
-                <td>
-                  <span style={code.isUsed ? usedStatusStyle : availableStatusStyle}>
-                    {code.isUsed ? 'Yes' : 'No'}
-                  </span>
-                </td>
-                <td>
-                  <div style={{ display: 'flex', gap: '5px' }}>
-                    <button 
-                      type="button" 
-                      className="button danger small"
-                      onClick={() => handleDeleteCode(code.id)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {uniqueCodes.length === 0 && (
-              <tr>
-                <td colSpan="7" style={{ textAlign: 'center', color: '#6b7280' }}>
-                  No active registration codes
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
       </div>
 
       <h3>Existing Users</h3>
