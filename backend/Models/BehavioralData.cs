@@ -6,21 +6,21 @@ namespace db_biometrics_mvp.Backend.Models
 {
     public class BiometricEvent
     {
-        public string Type { get; set; }
+        public string Type { get; set; } = string.Empty;
         public double Time { get; set; }
-        public string Key { get; set; }
+        public string Key { get; set; } = string.Empty;
         public double? X { get; set; }
         public double? Y { get; set; }
-        public string Button { get; set; }
+        public string Button { get; set; } = string.Empty;
         public bool? Pressed { get; set; }
     }
 
     public class DbActionEvent
     {
         public double Timestamp { get; set; }
-        public string User { get; set; }
-        public string SessionId { get; set; }
-        public string EventType { get; set; }
+        public string User { get; set; } = string.Empty;
+        public string SessionId { get; set; } = string.Empty;
+        public string EventType { get; set; } = string.Empty;
         public int QuerySizeKb { get; set; }
         // Add more DB-specific context as needed
     }

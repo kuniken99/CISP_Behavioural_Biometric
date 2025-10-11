@@ -1,0 +1,60 @@
+{
+  "nextEntryId": 2001,
+  "entries": {
+    "Products": [
+      {
+        "Id": 101,
+        "Data": {
+          "name": "Laptop",
+          "price": 1200,
+          "stock": 50
+        }
+      },
+      {
+        "Id": 102,
+        "Data": {
+          "name": "Mouse",
+          "price": 25,
+          "stock": 200
+        }
+      },
+      {
+        "Id": 103,
+        "Data": {
+          "name": "Keyboard",
+          "price": 75,
+          "stock": 150
+        }
+      },
+      {
+        "Id": 2000,
+        "Data": {
+          "name": "Bottle",
+          "price": 25,
+          "stock": 5,
+          "id": 2000
+        }
+      }
+    ],
+    "Orders": [
+      {
+        "Id": 1001,
+        "Data": {
+          "product_id": 101,
+          "user_id": 1,
+          "quantity": 1,
+          "order_date": "2023-01-15"
+        }
+      },
+      {
+        "Id": 1002,
+        "Data": {
+          "product_id": 102,
+          "user_id": 2,
+          "quantity": 2,
+          "order_date": "2023-01-16"
+        }
+      }
+    ]
+  }
+}

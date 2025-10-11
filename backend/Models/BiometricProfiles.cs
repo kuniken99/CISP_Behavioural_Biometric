@@ -14,7 +14,7 @@ namespace db_biometrics_mvp.Backend.Models
         public int UserId { get; set; }
         
         [ForeignKey("UserId")]
-        public virtual User User { get; set; }
+        public virtual User User { get; set; } = null!;
         
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         

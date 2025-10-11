@@ -19,11 +19,7 @@ namespace db_biometrics_mvp.Backend.Services
         public PythonCBBAService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
-            _cbbaServiceUrl = configuration["PythonCBBAService:Url"];
-            if (string.IsNullOrEmpty(_cbbaServiceUrl))
-            {
-                throw new ArgumentNullException("PythonCBBAService:Url is not configured in appsettings.json");
-            }
+            _cbbaServiceUrl = configuration["PythonCBBAService:Url"] ?? throw new ArgumentNullException("PythonCBBAService:Url", "PythonCBBAService:Url is not configured in appsettings.json");
         }
 
         public async Task<CBBAPredictionResult> GetAnomalyPrediction(ContinuousBiometricPayload payload)
@@ -37,7 +33,7 @@ namespace db_biometrics_mvp.Backend.Services
                 response.EnsureSuccessStatusCode(); // Throws an exception if the HTTP response status is an error code
 
                 var responseString = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<CBBAPredictionResult>(responseString);
+                return JsonConvert.DeserializeObject<CBBAPredictionResult>(responseString) ?? new CBBAPredictionResult { IsAnomaly = false, AnomalyScore = 1.0, Error = "Failed to deserialize response" };
             }
             catch (HttpRequestException e)
             {
@@ -59,8 +55,8 @@ namespace db_biometrics_mvp.Backend.Services
         public bool IsAnomaly { get; set; }
 
         [JsonProperty("features")]
-        public Dictionary<string, double> Features { get; set; }
+        public Dictionary<string, double> Features { get; set; } = new Dictionary<string, double>();
 
-        public string Error { get; set; }
+        public string Error { get; set; } = string.Empty;
     }
 }

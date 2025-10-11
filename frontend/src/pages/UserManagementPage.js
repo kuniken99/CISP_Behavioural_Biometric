@@ -294,7 +294,18 @@ const UserManagementPage = () => {
           </select>
         </div>
       </form>
-      <button type="button" className="button primary" onClick={handleCreateUser}>Create User</button>
+      <button 
+        type="button" 
+        className="button primary" 
+        onClick={handleCreateUser}
+        style={{ 
+          backgroundColor: '#000000', 
+          color: '#ffffff',
+          border: '1px solid #000000'
+        }}
+      >
+        Create User
+      </button>
 
       {/* Unique Code Generation Section */}
       <div style={{ marginTop: '40px', paddingTop: '30px', borderTop: '2px solid #e5e7eb' }}>
@@ -363,6 +374,11 @@ const UserManagementPage = () => {
           className="button success" 
           onClick={handleGenerateUniqueCode}
           disabled={codeGenerationLoading}
+          style={{ 
+            backgroundColor: '#000000', 
+            color: '#ffffff',
+            border: '1px solid #000000'
+          }}
         >
           {codeGenerationLoading ? 'Generating...' : 'Generate Unique Code'}
         </button>

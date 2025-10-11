@@ -12,7 +12,7 @@ namespace db_biometrics_mvp.Backend.Controllers
     public class DashboardController : ControllerBase
     {
         [HttpGet("metrics")]
-        public async Task<IActionResult> GetDashboardMetrics()
+        public IActionResult GetDashboardMetrics()
         {
             // Simulate fetching real-time database metrics
             var metrics = new
