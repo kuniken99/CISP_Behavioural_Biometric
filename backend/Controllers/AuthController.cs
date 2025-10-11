@@ -430,7 +430,12 @@ namespace db_biometrics_mvp.Backend.Controllers
             
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Email verified successfully. You can now log in." });
+            return Ok(new { 
+                message = "Email verified successfully. You can now set up two-factor authentication.",
+                requiresTwoFactorSetup = true,
+                email = verificationToken.User.Email,
+                username = verificationToken.User.Username
+            });
         }
 
         [HttpOptions("login")]

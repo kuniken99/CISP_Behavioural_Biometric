@@ -1,10 +1,12 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { API_BASE_URL } from '../utils/config';
 import eyeIcon from '../assets/eye-icon.svg';
 import '../styles/LoginPage.css';
 
 const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
+  const location = useLocation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -12,6 +14,18 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
   const [recaptchaVerified, setRecaptchaVerified] = useState(false);
   const [recaptchaToken, setRecaptchaToken] = useState('');
   const recaptchaRef = useRef(null);
+
+  // Handle redirect from email verification to 2FA setup
+  useEffect(() => {
+    if (location.state?.redirectTo2FA && location.state?.userData) {
+      const userData = location.state.userData;
+      // Automatically redirect to 2FA setup
+      setCurrentAuthPage('twofa-setup', { 
+        email: userData.email, 
+        username: userData.username
+      });
+    }
+  }, [location.state, setCurrentAuthPage]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

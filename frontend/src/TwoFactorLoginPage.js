@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './styles/LoginPage.css';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
@@ -7,6 +7,14 @@ function TwoFactorLoginPage({ setCurrentAuthPage, email, onLogin }) {
   const [verificationCode, setVerificationCode] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const codeInputRef = useRef(null);
+
+  // Auto-focus the input field when component mounts
+  useEffect(() => {
+    if (codeInputRef.current) {
+      codeInputRef.current.focus();
+    }
+  }, []);
 
   const submitCode = async (code) => {
     if (!code.trim() || code.length !== 6) {
@@ -73,6 +81,7 @@ function TwoFactorLoginPage({ setCurrentAuthPage, email, onLogin }) {
           <div className="form-group">
             <label htmlFor="verificationCode">Authentication Code</label>
             <input
+              ref={codeInputRef}
               type="text"
               id="verificationCode"
               value={verificationCode}

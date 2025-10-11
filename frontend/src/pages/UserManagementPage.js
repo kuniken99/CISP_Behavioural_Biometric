@@ -148,32 +148,6 @@ const UserManagementPage = () => {
     }
   };
 
-  const handleDeactivateCode = async (codeId) => {
-    if (!window.confirm('Are you sure you want to deactivate this code?')) return;
-    
-    try {
-      const token = localStorage.getItem('jwt_token');
-      const response = await fetch(`${API_BASE_URL}/UserManagement/deactivate-unique-code`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ codeId }),
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        alert('Unique code deactivated successfully');
-        fetchUniqueCodes();
-      } else if (response.status === 404) {
-        setError('Unique code deactivation API is not yet available. Please update the backend to the latest version.');
-      } else {
-        const data = await response.json();
-        setError(data.message || 'Failed to deactivate code.');
-      }
-    } catch (err) {
-      setError('Network error deactivating code. Please check if the backend server is running and up to date.');
-    }
-  };
-
   const handleDeleteCode = async (codeId) => {
     if (!window.confirm('Are you sure you want to permanently delete this code? This action cannot be undone.')) return;
     
@@ -424,15 +398,6 @@ const UserManagementPage = () => {
                 </td>
                 <td>
                   <div style={{ display: 'flex', gap: '5px' }}>
-                    {!code.isUsed && (
-                      <button 
-                        type="button" 
-                        className="button secondary small"
-                        onClick={() => handleDeactivateCode(code.id)}
-                      >
-                        Deactivate
-                      </button>
-                    )}
                     <button 
                       type="button" 
                       className="button danger small"

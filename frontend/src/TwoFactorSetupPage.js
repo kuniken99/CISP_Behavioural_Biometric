@@ -15,12 +15,25 @@ function TwoFactorSetupPage({ setCurrentAuthPage, email, onSetupComplete }) {
   const [recaptchaVerified, setRecaptchaVerified] = useState(false);
   const [recaptchaToken, setRecaptchaToken] = useState('');
   const recaptchaRef = useRef(null);
+  const codeInputRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     // Initialize 2FA setup when component mounts
     initializeTwoFactor();
   }, [email]);
+
+  // Auto-focus the verification code input when QR code is loaded
+  useEffect(() => {
+    if (qrCodeImage && codeInputRef.current) {
+      // Add a small delay to ensure the QR code section is rendered
+      setTimeout(() => {
+        if (codeInputRef.current) {
+          codeInputRef.current.focus();
+        }
+      }, 100);
+    }
+  }, [qrCodeImage]);
 
   const initializeTwoFactor = async () => {
     setIsLoading(true);
@@ -103,7 +116,7 @@ function TwoFactorSetupPage({ setCurrentAuthPage, email, onSetupComplete }) {
         
         // Store the JWT token if provided
         if (data.token) {
-          localStorage.setItem('token', data.token);
+          localStorage.setItem('jwt_token', data.token);
         }
         
         setSetupComplete(true);
@@ -203,6 +216,7 @@ function TwoFactorSetupPage({ setCurrentAuthPage, email, onSetupComplete }) {
             <div className="form-group">
               <label htmlFor="verificationCode">6-digit code</label>
               <input
+                ref={codeInputRef}
                 type="text"
                 id="verificationCode"
                 value={verificationCode}
@@ -221,6 +235,7 @@ function TwoFactorSetupPage({ setCurrentAuthPage, email, onSetupComplete }) {
                 disabled={isLoading}
                 autoComplete="one-time-code"
                 required
+                autoFocus
               />
             </div>
 

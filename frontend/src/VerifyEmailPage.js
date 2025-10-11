@@ -33,6 +33,14 @@ function VerifyEmailPage() {
         if (response.ok) {
           setVerificationStatus('success');
           setMessage(data.message || 'Email verified successfully. You can now log in.');
+          
+          // If user needs 2FA setup, store their email for the setup process
+          if (data.requiresTwoFactorSetup && data.email) {
+            localStorage.setItem('pendingTwoFactorSetup', JSON.stringify({
+              email: data.email,
+              username: data.username
+            }));
+          }
         } else {
           setVerificationStatus('error');
           setMessage(data.message || 'Email verification failed. The link may be invalid or expired.');
@@ -50,7 +58,21 @@ function VerifyEmailPage() {
   }, [token]);
 
   const handleLoginRedirect = () => {
-    navigate('/login');
+    // Check if user needs to set up 2FA
+    const pendingSetup = localStorage.getItem('pendingTwoFactorSetup');
+    if (pendingSetup) {
+      // Redirect to 2FA setup with stored user info
+      navigate('/login', { 
+        state: { 
+          redirectTo2FA: true, 
+          userData: JSON.parse(pendingSetup) 
+        }
+      });
+      // Clear the stored data
+      localStorage.removeItem('pendingTwoFactorSetup');
+    } else {
+      navigate('/login');
+    }
   };
 
   const handleResendVerification = () => {
@@ -58,75 +80,74 @@ function VerifyEmailPage() {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-wrapper">
-        <div className="login-form">
-          <div className="login-header">
-            <h2>Email Verification</h2>
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="auth-header">
+          <h2 className="auth-title">Email Verification</h2>
+        </div>
+
+        {isLoading && (
+          <div className="verification-content">
+            <div className="verification-loading">
+              <div className="loading-spinner"></div>
+              <p>Verifying your email address...</p>
+            </div>
           </div>
+        )}
 
-          {isLoading && (
-            <div className="verification-content">
-              <div className="verification-loading">
-                <div className="loading-spinner"></div>
-                <p>Verifying your email address...</p>
+        {!isLoading && verificationStatus === 'success' && (
+          <div className="verification-content">
+            <div className="verification-success">
+              <div className="success-icon">✓</div>
+              <h3>Email Verified Successfully!</h3>
+              <p className="verification-message">{message}</p>
+              <div className="verification-actions">
+                <button 
+                  type="button"
+                  className="button primary"
+                  onClick={handleLoginRedirect}
+                >
+                  Continue to Setup
+                </button>
               </div>
             </div>
-          )}
-
-          {!isLoading && verificationStatus === 'success' && (
-            <div className="verification-content">
-              <div className="verification-success">
-                <div className="success-icon">✓</div>
-                <h3>Email Verified Successfully!</h3>
-                <p>{message}</p>
-                <div className="verification-actions">
-                  <button 
-                    type="button"
-                    className="btn-primary"
-                    onClick={handleLoginRedirect}
-                  >
-                    Go to Login
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {!isLoading && verificationStatus === 'error' && (
-            <div className="verification-content">
-              <div className="verification-error">
-                <div className="error-icon">✗</div>
-                <h3>Verification Failed</h3>
-                <p>{message}</p>
-                <div className="verification-actions">
-                  <button 
-                    type="button"
-                    className="btn-secondary"
-                    onClick={handleResendVerification}
-                  >
-                    Resend Verification Email
-                  </button>
-                  <button 
-                    type="button"
-                    className="btn-primary"
-                    onClick={handleLoginRedirect}
-                  >
-                    Back to Login
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="login-footer">
-            <p>
-              Need help? <Link to="/contact">Contact Support</Link>
-            </p>
-            <p className="copyright">
-              © 2025 CBBA Security System. All rights reserved.
-            </p>
           </div>
+        )}
+
+        {!isLoading && verificationStatus === 'error' && (
+          <div className="verification-content">
+            <div className="verification-error">
+              <div className="error-icon">✗</div>
+              <h3>Verification Failed</h3>
+              <p className="verification-message">{message}</p>
+              <div className="verification-actions">
+                <button 
+                  type="button"
+                  className="button secondary"
+                  onClick={handleResendVerification}
+                  style={{ marginRight: '10px' }}
+                >
+                  Resend Verification Email
+                </button>
+                <button 
+                  type="button"
+                  className="button primary"
+                  onClick={handleLoginRedirect}
+                >
+                  Back to Login
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="auth-footer">
+          <p>
+            Need help? <Link to="/contact">Contact Support</Link>
+          </p>
+          <p className="copyright">
+            © 2025 CBBA Security System. All rights reserved.
+          </p>
         </div>
       </div>
     </div>
