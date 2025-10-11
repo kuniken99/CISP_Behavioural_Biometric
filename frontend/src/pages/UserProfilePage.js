@@ -79,15 +79,6 @@ const UserProfilePage = ({ currentUser, userRole }) => {
 
   return (
     <div className="profile-container">
-      <div className="profile-header">
-        <div className="profile-title">
-          <div className="profile-icon-circle">
-            <span className="profile-icon-text">👤</span>
-          </div>
-          <h1>User Profile</h1>
-        </div>
-      </div>
-
       <div className="profile-content">
         <div className="profile-main">
           <div className="profile-section">

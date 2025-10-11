@@ -3,6 +3,7 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import LogoutIcon from '../../assets/logout-icon.svg';
 import ProfileIcon from '../../assets/profile-icon.svg';
+import UserProfileIcon from '../../assets/user-profile-icon.svg';
 // Page Icons
 import DashboardIcon from '../../assets/dashboard-icon.svg';
 import DbEntryManagementIcon from '../../assets/db-entry-management-icon.svg';
@@ -50,7 +51,7 @@ const Header = ({ currentUser, userRole, handleLogout }) => {
       'website_admin': WebsiteAdminIcon,
       'privacy_policy': ShieldIcon,
       'terms_conditions': ShieldIcon,
-      'user_profile': ProfileIcon
+      'user_profile': UserProfileIcon
     };
     return iconMap[pageKey] || DashboardIcon;
   };
