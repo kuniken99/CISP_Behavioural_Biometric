@@ -13,6 +13,7 @@ const DbEntryManagementPage = () => {
   const [error, setError] = useState('');
   const [newEntryData, setNewEntryData] = useState({});
   const [editingEntryId, setEditingEntryId] = useState(null);
+  const [editingEntryData, setEditingEntryData] = useState({});
 
   useEffect(() => {
     const fetchTables = async () => {
@@ -95,8 +96,44 @@ const DbEntryManagementPage = () => {
   };
 
   const handleEditEntry = (entry) => {
-    setNewEntryData({ ...entry }); // Populate form with entry data
-    setEditingEntryId(entry.id); // Set ID for editing
+    setEditingEntryId(entry.id);
+    setEditingEntryData({ ...entry });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingEntryId(null);
+    setEditingEntryData({});
+  };
+
+  const handleInlineUpdate = async () => {
+    setError('');
+    try {
+      const token = localStorage.getItem('jwt_token');
+      const response = await fetch(`${API_BASE_URL}/DbManagement/update-entry`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ tableName: selectedTable, entryId: editingEntryId, updatedEntry: editingEntryData }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        alert(data.message || 'Entry updated successfully');
+        setEditingEntryId(null);
+        setEditingEntryData({});
+        fetchEntries(selectedTable);
+      } else {
+        setError(data.message || 'Failed to update entry.');
+      }
+    } catch (err) {
+      setError('Network error updating entry.');
+    }
+  };
+
+  const handleFormEditEntry = (entry) => {
+    setNewEntryData({ ...entry });
+    setEditingEntryId(entry.id);
   };
 
   const handleUpdateEntry = async () => {
@@ -114,6 +151,8 @@ const DbEntryManagementPage = () => {
       const data = await response.json();
       if (response.ok) {
         alert(data.message);
+        setNewEntryData({});
+        setEditingEntryId(null);
         fetchEntries(selectedTable);
       } else {
         setError(data.message || 'Failed to update entry.');
@@ -204,16 +243,50 @@ const DbEntryManagementPage = () => {
                   {Object.entries(entry)
                     .filter(([key]) => key !== 'id')
                     .map(([key, value]) => (
-                      <td key={key}>{formatValue(value)}</td>
+                      <td key={key}>
+                        {editingEntryId === entry.id ? (
+                          <input 
+                            type="text" 
+                            value={editingEntryData[key] || ''}
+                            onChange={(e) => setEditingEntryData({ ...editingEntryData, [key]: e.target.value })}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleInlineUpdate();
+                                return false;
+                              }
+                              if (e.key === 'Escape') {
+                                handleCancelEdit();
+                              }
+                            }}
+                            style={{ width: '100%' }}
+                          />
+                        ) : (
+                          formatValue(value)
+                        )}
+                      </td>
                   ))}
                   <td>
-                    <button type="button" onClick={() => handleEditEntry(entry)} style={{ display: 'flex', alignItems: 'center', gap: '6px', marginRight: '5px' }}>
-                      <img src={EditIcon} alt="Edit" style={{ width: '16px', height: '16px' }} />
-                      Edit
-                    </button>
-                    <button type="button" onClick={() => handleDeleteEntry(entry.id)} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      Delete
-                    </button>
+                    {editingEntryId === entry.id ? (
+                      <div style={{ display: 'flex', gap: '5px' }}>
+                        <button type="button" className="button success small" onClick={handleInlineUpdate}>
+                          Save
+                        </button>
+                        <button type="button" className="button secondary small" onClick={handleCancelEdit}>
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', gap: '5px' }}>
+                        <button type="button" className="button secondary small" onClick={() => handleEditEntry(entry)}>
+                          Edit
+                        </button>
+                        <button type="button" className="button danger small" onClick={() => handleDeleteEntry(entry.id)}>
+                          Delete
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}

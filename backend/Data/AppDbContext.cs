@@ -107,7 +107,7 @@ namespace db_biometrics_mvp.Backend.Data
                 new User { Id = 1, Username = "admin", Email = "admin@system.com", PasswordHash = adminPasswordHash, Role = "admin", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = true },
                 new User { Id = 2, Username = "dbauser", Email = "dba@system.com", PasswordHash = dbaPasswordHash, Role = "dba", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = true },
                 new User { Id = 3, Username = "testuser", Email = "test@system.com", PasswordHash = dbaPasswordHash, Role = "user", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = false },
-                new User { Id = 4, Username = "tank108", Email = "tank108@uni.coventry.ac.uk", PasswordHash = adminPasswordHash, Role = "admin", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = true }
+                new User { Id = 4, Username = "tank108", Email = "tank108@uni.coventry.ac.uk", PasswordHash = adminPasswordHash, Role = "admin", IsActive = true, IsEmailVerified = false, IsTwoFactorEnabled = false }
             );
 
             modelBuilder.Entity<DbConfiguration>().HasData(

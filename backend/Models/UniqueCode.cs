@@ -48,4 +48,11 @@ namespace db_biometrics_mvp.Backend.Models
         [Required]
         public int CodeId { get; set; }
     }
+
+    // DTO for deleting unique code
+    public class DeleteUniqueCodeDto
+    {
+        [Required]
+        public int CodeId { get; set; }
+    }
 }

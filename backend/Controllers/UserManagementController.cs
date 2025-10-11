@@ -225,6 +225,33 @@ namespace db_biometrics_mvp.Backend.Controllers
             return Ok(new { message = "Unique code deactivated successfully." });
         }
 
+        [HttpDelete("delete-unique-code")]
+        public async Task<IActionResult> DeleteUniqueCode([FromBody] DeleteUniqueCodeDto dto)
+        {
+            var code = await _context.UniqueCodes.FindAsync(dto.CodeId);
+            if (code == null)
+            {
+                return NotFound(new { message = "Unique code not found." });
+            }
+
+            // Store code value for logging before deletion
+            var codeValue = code.Code;
+
+            _context.UniqueCodes.Remove(code);
+            await _context.SaveChangesAsync();
+
+            // Log activity
+            await _context.AuditLogs.AddAsync(new AuditLog { 
+                Username = User.Identity?.Name ?? "Unknown", 
+                Action = "DELETE_UNIQUE_CODE", 
+                Details = $"Permanently deleted unique code: {codeValue}", 
+                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" 
+            });
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Unique code deleted successfully." });
+        }
+
         // Helper method to generate random code
         private static string GenerateRandomCode(int length)
         {

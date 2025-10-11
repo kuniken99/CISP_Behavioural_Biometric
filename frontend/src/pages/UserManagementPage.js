@@ -174,6 +174,32 @@ const UserManagementPage = () => {
     }
   };
 
+  const handleDeleteCode = async (codeId) => {
+    if (!window.confirm('Are you sure you want to permanently delete this code? This action cannot be undone.')) return;
+    
+    try {
+      const token = localStorage.getItem('jwt_token');
+      const response = await fetch(`${API_BASE_URL}/UserManagement/delete-unique-code`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ codeId }),
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        alert('Unique code deleted successfully');
+        fetchUniqueCodes();
+      } else if (response.status === 404) {
+        setError('Unique code deletion API is not yet available. Please update the backend to the latest version.');
+      } else {
+        const data = await response.json();
+        setError(data.message || 'Failed to delete code.');
+      }
+    } catch (err) {
+      setError('Network error deleting code. Please check if the backend server is running and up to date.');
+    }
+  };
+
   const handleEditUser = (user) => {
     setEditingUserId(user.id);
     setEditingUser({ username: user.username, role: user.role });
@@ -397,15 +423,24 @@ const UserManagementPage = () => {
                   </span>
                 </td>
                 <td>
-                  {!code.isUsed && (
+                  <div style={{ display: 'flex', gap: '5px' }}>
+                    {!code.isUsed && (
+                      <button 
+                        type="button" 
+                        className="button secondary small"
+                        onClick={() => handleDeactivateCode(code.id)}
+                      >
+                        Deactivate
+                      </button>
+                    )}
                     <button 
                       type="button" 
                       className="button danger small"
-                      onClick={() => handleDeactivateCode(code.id)}
+                      onClick={() => handleDeleteCode(code.id)}
                     >
-                      Deactivate
+                      Delete
                     </button>
-                  )}
+                  </div>
                 </td>
               </tr>
             ))}
