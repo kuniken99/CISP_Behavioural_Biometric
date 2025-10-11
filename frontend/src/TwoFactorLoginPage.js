@@ -8,10 +8,8 @@ function TwoFactorLoginPage({ setCurrentAuthPage, email, onLogin }) {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!verificationCode.trim() || verificationCode.length !== 6) {
+  const submitCode = async (code) => {
+    if (!code.trim() || code.length !== 6) {
       setError('Please enter a valid 6-digit code');
       return;
     }
@@ -27,7 +25,7 @@ function TwoFactorLoginPage({ setCurrentAuthPage, email, onLogin }) {
         },
         body: JSON.stringify({
           email,
-          code: verificationCode.trim()
+          code: code.trim()
         })
       });
 
@@ -54,6 +52,11 @@ function TwoFactorLoginPage({ setCurrentAuthPage, email, onLogin }) {
     }
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await submitCode(verificationCode);
+  };
+
   return (
     <div className="auth-container">
       <div className="auth-card">
@@ -73,7 +76,15 @@ function TwoFactorLoginPage({ setCurrentAuthPage, email, onLogin }) {
               type="text"
               id="verificationCode"
               value={verificationCode}
-              onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').substring(0, 6))}
+              onChange={(e) => {
+                const newCode = e.target.value.replace(/\D/g, '').substring(0, 6);
+                setVerificationCode(newCode);
+                
+                // Auto-submit when 6 digits are entered
+                if (newCode.length === 6 && !isLoading) {
+                  submitCode(newCode);
+                }
+              }}
               placeholder="000000"
               maxLength="6"
               className="twofa-code-input"

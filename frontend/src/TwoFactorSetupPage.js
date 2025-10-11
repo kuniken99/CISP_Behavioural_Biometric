@@ -71,10 +71,8 @@ function TwoFactorSetupPage({ setCurrentAuthPage, email, onSetupComplete }) {
     }
   };
 
-  const handleVerifyCode = async (e) => {
-    e.preventDefault();
-    
-    if (!verificationCode.trim()) {
+  const submitVerifyCode = async (code) => {
+    if (!code.trim()) {
       setError('Please enter the 6-digit code');
       return;
     }
@@ -95,7 +93,7 @@ function TwoFactorSetupPage({ setCurrentAuthPage, email, onSetupComplete }) {
         },
         body: JSON.stringify({
           email,
-          code: verificationCode.trim(),
+          code: code.trim(),
           recaptchaToken: recaptchaToken
         })
       });
@@ -121,6 +119,11 @@ function TwoFactorSetupPage({ setCurrentAuthPage, email, onSetupComplete }) {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleVerifyCode = async (e) => {
+    e.preventDefault();
+    await submitVerifyCode(verificationCode);
   };
 
   if (isLoading && !qrCodeImage) {
@@ -196,7 +199,15 @@ function TwoFactorSetupPage({ setCurrentAuthPage, email, onSetupComplete }) {
                 type="text"
                 id="verificationCode"
                 value={verificationCode}
-                onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').substring(0, 6))}
+                onChange={(e) => {
+                  const newCode = e.target.value.replace(/\D/g, '').substring(0, 6);
+                  setVerificationCode(newCode);
+                  
+                  // Auto-submit when 6 digits are entered and reCAPTCHA is verified
+                  if (newCode.length === 6 && !isLoading && recaptchaVerified) {
+                    submitVerifyCode(newCode);
+                  }
+                }}
                 placeholder="e.g. 123456"
                 maxLength="6"
                 className="twofa-code-input"
