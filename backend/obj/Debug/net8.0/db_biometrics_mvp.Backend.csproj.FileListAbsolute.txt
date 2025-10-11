@@ -499,3 +499,5 @@ E:\CISP_Behavioural_Biometric\backend\obj\Debug\net8.0\refint\db_biometrics_mvp.
 E:\CISP_Behavioural_Biometric\backend\obj\Debug\net8.0\db_biometrics_mvp.Backend.pdb
 E:\CISP_Behavioural_Biometric\backend\obj\Debug\net8.0\db_biometrics_mvp.Backend.genruntimeconfig.cache
 E:\CISP_Behavioural_Biometric\backend\obj\Debug\net8.0\ref\db_biometrics_mvp.Backend.dll
+E:\CISP_Behavioural_Biometric\backend\bin\Debug\net8.0\Otp.NET.dll
+E:\CISP_Behavioural_Biometric\backend\bin\Debug\net8.0\QRCoder.dll

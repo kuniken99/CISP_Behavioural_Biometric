@@ -69,6 +69,9 @@ namespace db_biometrics_mvp.Backend
             // Register the Email service
             services.AddScoped<IEmailService, EmailService>();
 
+            // Register the Two-Factor Authentication service
+            services.AddScoped<ITwoFactorAuthService, TwoFactorAuthService>();
+
             // Configure CORS
            
 

@@ -51,6 +51,26 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
             });
             return;
           }
+
+          // Check if user needs 2FA setup
+          if (errorData.twoFactorRequired) {
+            // Redirect to 2FA setup page
+            setCurrentAuthPage('twofa-setup', { 
+              email: errorData.email, 
+              username: errorData.username
+            });
+            return;
+          }
+
+          // Check if user needs to enter 2FA code
+          if (errorData.requiresTwoFactorCode) {
+            // Redirect to 2FA login page
+            setCurrentAuthPage('twofa-login', { 
+              email: errorData.email, 
+              username: errorData.username
+            });
+            return;
+          }
           
           setError(errorData.message || 'Login failed');
         } catch {

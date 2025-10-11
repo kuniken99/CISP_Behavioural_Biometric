@@ -20,6 +20,9 @@ namespace db_biometrics_mvp.Backend.Models
         public bool IsTwoFactorEnabled { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? LastLoginAt { get; set; }
+
+        // Navigation property for Two-Factor Authentication
+        public TwoFactorAuth? TwoFactorAuth { get; set; }
     }
 
     // DTO for user creation

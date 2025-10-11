@@ -66,8 +66,24 @@ namespace db_biometrics_mvp.Backend.Controllers
                 });
             }
 
-            var token = GenerateJwtToken(user);
-            return Ok(new { token, username = user.Username, role = user.Role });
+            // Check if 2FA is required but not set up
+            if (!user.IsTwoFactorEnabled)
+            {
+                return Unauthorized(new { 
+                    message = "Two-factor authentication setup is required before logging in.",
+                    twoFactorRequired = true,
+                    email = user.Email,
+                    username = user.Username
+                });
+            }
+
+            // If user has 2FA enabled, they need to provide TOTP code
+            return Unauthorized(new { 
+                message = "Please enter your two-factor authentication code.",
+                requiresTwoFactorCode = true,
+                email = user.Email,
+                username = user.Username
+            });
         }
 
         // Helper for password hashing (match AppDbContext)
