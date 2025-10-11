@@ -126,5 +126,112 @@ namespace db_biometrics_mvp.Backend.Controllers
 
             return Ok(new { message = "User status updated successfully." });
         }
+
+        [HttpGet("unique-codes")]
+        public async Task<IActionResult> GetUniqueCodes()
+        {
+            var codes = await _context.UniqueCodes
+                                    .Where(c => c.IsActive)
+                                    .OrderByDescending(c => c.CreatedAt)
+                                    .Select(c => new { 
+                                        c.Id, 
+                                        c.Code, 
+                                        c.Role, 
+                                        c.Note, 
+                                        c.IsUsed, 
+                                        c.CreatedAt, 
+                                        c.ExpiresAt,
+                                        c.CreatedBy
+                                    })
+                                    .ToListAsync();
+
+            // Log activity
+            await _context.AuditLogs.AddAsync(new AuditLog { 
+                Username = User.Identity?.Name ?? "Unknown", 
+                Action = "VIEW_UNIQUE_CODES", 
+                Details = "Viewed unique registration codes.", 
+                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" 
+            });
+            await _context.SaveChangesAsync();
+
+            return Ok(codes);
+        }
+
+        [HttpPost("generate-unique-code")]
+        public async Task<IActionResult> GenerateUniqueCode([FromBody] GenerateUniqueCodeDto dto)
+        {
+            // Generate a unique 8-character code
+            string code;
+            do
+            {
+                code = GenerateRandomCode(8);
+            } while (await _context.UniqueCodes.AnyAsync(c => c.Code == code));
+
+            var uniqueCode = new UniqueCode
+            {
+                Code = code,
+                Role = dto.Role,
+                Note = dto.Note,
+                ExpiresAt = DateTime.UtcNow.AddDays(dto.ExpiresInDays),
+                CreatedBy = User.Identity?.Name ?? "Unknown"
+            };
+
+            _context.UniqueCodes.Add(uniqueCode);
+            await _context.SaveChangesAsync();
+
+            // Log activity
+            await _context.AuditLogs.AddAsync(new AuditLog { 
+                Username = User.Identity?.Name ?? "Unknown", 
+                Action = "GENERATE_UNIQUE_CODE", 
+                Details = $"Generated unique code: {code} for role: {dto.Role}", 
+                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" 
+            });
+            await _context.SaveChangesAsync();
+
+            return Ok(new { 
+                message = "Unique code generated successfully.", 
+                code = code,
+                expiresAt = uniqueCode.ExpiresAt
+            });
+        }
+
+        [HttpPost("deactivate-unique-code")]
+        public async Task<IActionResult> DeactivateUniqueCode([FromBody] DeactivateUniqueCodeDto dto)
+        {
+            var code = await _context.UniqueCodes.FindAsync(dto.CodeId);
+            if (code == null)
+            {
+                return NotFound(new { message = "Unique code not found." });
+            }
+
+            if (code.IsUsed)
+            {
+                return BadRequest(new { message = "Cannot deactivate a code that has already been used." });
+            }
+
+            code.IsActive = false;
+            _context.UniqueCodes.Update(code);
+            await _context.SaveChangesAsync();
+
+            // Log activity
+            await _context.AuditLogs.AddAsync(new AuditLog { 
+                Username = User.Identity?.Name ?? "Unknown", 
+                Action = "DEACTIVATE_UNIQUE_CODE", 
+                Details = $"Deactivated unique code: {code.Code}", 
+                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" 
+            });
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Unique code deactivated successfully." });
+        }
+
+        // Helper method to generate random code
+        private static string GenerateRandomCode(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            var random = new Random();
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
     }
 }

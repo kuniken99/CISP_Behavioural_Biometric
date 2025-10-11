@@ -12,6 +12,8 @@ import Sidebar from './components/Layout/Sidebar';
 // Import all page components
 import AuthWrapper from './pages/AuthWrapper';
 import SetNewPasswordPage from './pages/SetNewPasswordPage';
+import VerifyEmailPage from './VerifyEmailPage';
+import ResendVerificationPage from './ResendVerificationPage';
 import DashboardPage from './pages/DashboardPage';
 import DbEntryManagementPage from './pages/DbEntryManagementPage';
 import UserManagementPage from './pages/UserManagementPage';
@@ -94,6 +96,26 @@ function App() {
             <div className="app-container">
               <div className="main-content login-mode">
                 <SetNewPasswordPage />
+              </div>
+            </div>
+          } 
+        />
+        <Route 
+          path="/verify-email/:token" 
+          element={
+            <div className="app-container">
+              <div className="main-content login-mode">
+                <VerifyEmailPage />
+              </div>
+            </div>
+          } 
+        />
+        <Route 
+          path="/resend-verification" 
+          element={
+            <div className="app-container">
+              <div className="main-content login-mode">
+                <ResendVerificationPage />
               </div>
             </div>
           } 

@@ -4,13 +4,17 @@ import userManagementIcon from '../assets/user-management-icon.svg';
 
 const UserManagementPage = () => {
   const [users, setUsers] = useState([]);
+  const [uniqueCodes, setUniqueCodes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [newUser, setNewUser] = useState({ username: '', password: '', role: 'user' });
+  const [newCodeData, setNewCodeData] = useState({ role: 'user', expiresInDays: 7, note: '' });
+  const [codeGenerationLoading, setCodeGenerationLoading] = useState(false);
   // const [editingUserId, setEditingUserId] = useState(null); // Future functionality
 
   useEffect(() => {
     fetchUsers();
+    fetchUniqueCodes();
   }, []);
 
   const fetchUsers = async () => {
@@ -34,6 +38,31 @@ const UserManagementPage = () => {
     }
   };
 
+  const fetchUniqueCodes = async () => {
+    try {
+      const token = localStorage.getItem('jwt_token');
+      const response = await fetch(`${API_BASE_URL}/UserManagement/unique-codes`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setUniqueCodes(data);
+      } else if (response.status === 404) {
+        // API endpoint not yet implemented
+        setUniqueCodes([]);
+        console.log('Unique codes API endpoint not yet available');
+      } else {
+        const data = await response.json();
+        console.error('Failed to fetch unique codes:', data.message);
+        setUniqueCodes([]);
+      }
+    } catch (err) {
+      console.error('Network error fetching unique codes:', err);
+      setUniqueCodes([]);
+    }
+  };
+
   const handleCreateUser = async () => {
     setError('');
     try {
@@ -53,6 +82,61 @@ const UserManagementPage = () => {
       }
     } catch (err) {
       setError('Network error creating user.');
+    }
+  };
+
+  const handleGenerateUniqueCode = async () => {
+    setCodeGenerationLoading(true);
+    setError('');
+    try {
+      const token = localStorage.getItem('jwt_token');
+      const response = await fetch(`${API_BASE_URL}/UserManagement/generate-unique-code`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(newCodeData),
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        alert(`Unique code generated successfully: ${data.code}`);
+        setNewCodeData({ role: 'user', expiresInDays: 7, note: '' });
+        fetchUniqueCodes();
+      } else if (response.status === 404) {
+        setError('Unique code generation API is not yet available. Please update the backend to the latest version.');
+      } else {
+        const data = await response.json();
+        setError(data.message || 'Failed to generate unique code.');
+      }
+    } catch (err) {
+      setError('Network error generating unique code. Please check if the backend server is running and up to date.');
+    } finally {
+      setCodeGenerationLoading(false);
+    }
+  };
+
+  const handleDeactivateCode = async (codeId) => {
+    if (!window.confirm('Are you sure you want to deactivate this code?')) return;
+    
+    try {
+      const token = localStorage.getItem('jwt_token');
+      const response = await fetch(`${API_BASE_URL}/UserManagement/deactivate-unique-code`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ codeId }),
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        alert('Unique code deactivated successfully');
+        fetchUniqueCodes();
+      } else if (response.status === 404) {
+        setError('Unique code deactivation API is not yet available. Please update the backend to the latest version.');
+      } else {
+        const data = await response.json();
+        setError(data.message || 'Failed to deactivate code.');
+      }
+    } catch (err) {
+      setError('Network error deactivating code. Please check if the backend server is running and up to date.');
     }
   };
 
@@ -107,6 +191,121 @@ const UserManagementPage = () => {
         </div>
       </form>
       <button type="button" className="button primary" onClick={handleCreateUser}>Create User</button>
+
+      {/* Unique Code Generation Section */}
+      <div style={{ marginTop: '40px', paddingTop: '30px', borderTop: '2px solid #e5e7eb' }}>
+        <h3>Generate Registration Codes</h3>
+        <p style={{ color: '#6b7280', marginBottom: '20px' }}>
+          Generate unique codes for new user registration. These codes are required during the sign-up process.
+        </p>
+        <form onSubmit={(e) => e.preventDefault()} className="form-group-inline">
+          <div className="form-group">
+            <label>Role for New Users:</label>
+            <select 
+              value={newCodeData.role} 
+              onChange={(e) => setNewCodeData({ ...newCodeData, role: e.target.value })}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                }
+              }}
+            >
+              <option value="user">User</option>
+              <option value="dba">DBA</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Expires In (Days):</label>
+            <input 
+              type="number" 
+              min="1"
+              max="365"
+              value={newCodeData.expiresInDays} 
+              onChange={(e) => setNewCodeData({ ...newCodeData, expiresInDays: parseInt(e.target.value) || 7 })}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                }
+              }}
+            />
+          </div>
+          <div className="form-group">
+            <label>Note (Optional):</label>
+            <input 
+              type="text" 
+              placeholder="e.g., For new team members"
+              value={newCodeData.note} 
+              onChange={(e) => setNewCodeData({ ...newCodeData, note: e.target.value })}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                }
+              }}
+            />
+          </div>
+        </form>
+        <button 
+          type="button" 
+          className="button success" 
+          onClick={handleGenerateUniqueCode}
+          disabled={codeGenerationLoading}
+        >
+          {codeGenerationLoading ? 'Generating...' : 'Generate Unique Code'}
+        </button>
+
+        {/* Active Unique Codes Table */}
+        <h4 style={{ marginTop: '30px' }}>Active Registration Codes</h4>
+        <table style={{ marginTop: '15px' }}>
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Role</th>
+              <th>Created</th>
+              <th>Expires</th>
+              <th>Note</th>
+              <th>Used</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {uniqueCodes.map(code => (
+              <tr key={code.id}>
+                <td style={{ fontFamily: 'monospace', backgroundColor: '#f3f4f6', padding: '4px 8px', borderRadius: '4px' }}>
+                  {code.code}
+                </td>
+                <td>{code.role}</td>
+                <td>{new Date(code.createdAt).toLocaleDateString()}</td>
+                <td>{new Date(code.expiresAt).toLocaleDateString()}</td>
+                <td>{code.note || '-'}</td>
+                <td>
+                  <span className={`status-badge ${code.isUsed ? 'used' : 'available'}`}>
+                    {code.isUsed ? 'Yes' : 'No'}
+                  </span>
+                </td>
+                <td>
+                  {!code.isUsed && (
+                    <button 
+                      type="button" 
+                      className="button danger small"
+                      onClick={() => handleDeactivateCode(code.id)}
+                    >
+                      Deactivate
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+            {uniqueCodes.length === 0 && (
+              <tr>
+                <td colSpan="7" style={{ textAlign: 'center', color: '#6b7280' }}>
+                  No active registration codes
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
       <h3>Existing Users</h3>
       <table>

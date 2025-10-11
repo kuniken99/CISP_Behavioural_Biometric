@@ -24,13 +24,15 @@ namespace db_biometrics_mvp.Backend.Controllers
         private readonly IConfiguration _configuration;
         private readonly IRecaptchaService _recaptchaService;
         private readonly IEmailService _emailService;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(AppDbContext context, IConfiguration configuration, IRecaptchaService recaptchaService, IEmailService emailService)
+        public AuthController(AppDbContext context, IConfiguration configuration, IRecaptchaService recaptchaService, IEmailService emailService, ILogger<AuthController> logger)
         {
             _context = context;
             _configuration = configuration;
             _recaptchaService = recaptchaService;
             _emailService = emailService;
+            _logger = logger;
         }
 
 
@@ -51,6 +53,15 @@ namespace db_biometrics_mvp.Backend.Controllers
             if (user == null || !VerifyPassword(loginDto.Password, user.PasswordHash))
             {
                 return Unauthorized(new { message = "Invalid credentials." });
+            }
+
+            // Check if email is verified
+            if (!user.IsEmailVerified)
+            {
+                return Unauthorized(new { 
+                    message = "Please verify your email address before logging in. Check your email for the verification link.",
+                    emailNotVerified = true 
+                });
             }
 
             var token = GenerateJwtToken(user);
@@ -206,6 +217,182 @@ namespace db_biometrics_mvp.Backend.Controllers
             });
         }
         
+        [AllowAnonymous]
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegistrationDto registerDto)
+        {
+            // Verify reCAPTCHA first
+            var isRecaptchaValid = await _recaptchaService.VerifyTokenAsync(registerDto.RecaptchaToken);
+            if (!isRecaptchaValid)
+            {
+                return BadRequest(new { message = "reCAPTCHA verification failed. Please try again." });
+            }
+
+            // Validate unique code
+            var uniqueCode = await _context.UniqueCodes
+                .FirstOrDefaultAsync(c => c.Code == registerDto.UniqueCode && 
+                                         c.IsActive && 
+                                         !c.IsUsed && 
+                                         c.ExpiresAt > DateTime.UtcNow);
+
+            if (uniqueCode == null)
+            {
+                return BadRequest(new { message = "Invalid, expired, or already used unique code." });
+            }
+
+            // Check if username already exists
+            if (await _context.Users.AnyAsync(u => u.Username == registerDto.Username))
+            {
+                return BadRequest(new { message = "Username already exists." });
+            }
+
+            // Check if email already exists
+            if (await _context.Users.AnyAsync(u => u.Email == registerDto.Email))
+            {
+                return BadRequest(new { message = "Email already exists." });
+            }
+
+            // Create new user
+            var user = new User
+            {
+                Username = registerDto.Username,
+                Email = registerDto.Email,
+                PasswordHash = HashPassword(registerDto.Password),
+                Role = uniqueCode.Role, // Use role from unique code
+                IsActive = true,
+                IsEmailVerified = false, // Will be verified via email
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.Users.Add(user);
+
+            // Mark unique code as used
+            uniqueCode.IsUsed = true;
+            uniqueCode.UsedByUserId = user.Id;
+            uniqueCode.UsedAt = DateTime.UtcNow;
+            _context.UniqueCodes.Update(uniqueCode);
+
+            await _context.SaveChangesAsync();
+
+            // Create email verification token
+            var verificationToken = Guid.NewGuid().ToString("N");
+            var emailVerificationToken = new EmailVerificationToken
+            {
+                UserId = user.Id,
+                Token = verificationToken,
+                CreatedAt = DateTime.UtcNow,
+                ExpiresAt = DateTime.UtcNow.AddHours(24), // 24-hour expiration
+                IsUsed = false
+            };
+
+            _context.EmailVerificationTokens.Add(emailVerificationToken);
+            await _context.SaveChangesAsync();
+
+            // Send email verification
+            var emailSent = await _emailService.SendEmailVerificationAsync(user.Email, verificationToken);
+            if (!emailSent)
+            {
+                _logger.LogWarning("Failed to send verification email to {Email}", user.Email);
+            }
+            
+            // Log activity
+            await _context.AuditLogs.AddAsync(new AuditLog 
+            { 
+                Username = registerDto.Username, 
+                Action = "USER_REGISTRATION", 
+                Details = $"New user registered with email: {registerDto.Email}", 
+                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" 
+            });
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Registration successful. Please check your email for verification instructions." });
+        }
+
+        [AllowAnonymous]
+        [HttpPost("resend-verification")]
+        public async Task<IActionResult> ResendVerification([FromBody] ResendVerificationDto dto)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+            if (user == null)
+            {
+                // Don't reveal if email exists or not for security
+                return Ok(new { message = "If the email exists, a verification link has been sent." });
+            }
+
+            if (user.IsEmailVerified)
+            {
+                return BadRequest(new { message = "Email is already verified." });
+            }
+
+            // Invalidate any existing tokens for this user
+            var existingTokens = await _context.EmailVerificationTokens
+                .Where(t => t.UserId == user.Id && !t.IsUsed)
+                .ToListAsync();
+            
+            foreach (var token in existingTokens)
+            {
+                token.IsUsed = true;
+            }
+
+            // Create new verification token
+            var verificationToken = Guid.NewGuid().ToString("N");
+            var emailVerificationToken = new EmailVerificationToken
+            {
+                UserId = user.Id,
+                Token = verificationToken,
+                CreatedAt = DateTime.UtcNow,
+                ExpiresAt = DateTime.UtcNow.AddHours(24),
+                IsUsed = false
+            };
+
+            _context.EmailVerificationTokens.Add(emailVerificationToken);
+            await _context.SaveChangesAsync();
+
+            // Send verification email
+            var emailSent = await _emailService.SendEmailVerificationAsync(user.Email, verificationToken);
+            if (!emailSent)
+            {
+                _logger.LogWarning("Failed to send verification email to {Email}", user.Email);
+            }
+
+            return Ok(new { message = "Verification email sent successfully." });
+        }
+
+        [AllowAnonymous]
+        [HttpGet("verify-email/{token}")]
+        public async Task<IActionResult> VerifyEmail(string token)
+        {
+            var verificationToken = await _context.EmailVerificationTokens
+                .Include(t => t.User)
+                .FirstOrDefaultAsync(t => t.Token == token && !t.IsUsed && t.ExpiresAt > DateTime.UtcNow);
+
+            if (verificationToken == null)
+            {
+                return BadRequest(new { message = "Invalid or expired verification token." });
+            }
+
+            // Mark user as verified
+            verificationToken.User.IsEmailVerified = true;
+            verificationToken.IsUsed = true;
+            
+            // Update the user and token
+            _context.Users.Update(verificationToken.User);
+            _context.EmailVerificationTokens.Update(verificationToken);
+            
+            // Log activity
+            await _context.AuditLogs.AddAsync(new AuditLog 
+            { 
+                Username = verificationToken.User.Username, 
+                Action = "EMAIL_VERIFIED", 
+                Details = $"Email verification completed for: {verificationToken.User.Email}", 
+                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" 
+            });
+            
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Email verified successfully. You can now log in." });
+        }
+
         [HttpOptions("login")]
         public IActionResult OptionsLogin()
         {
@@ -216,6 +403,12 @@ namespace db_biometrics_mvp.Backend.Controllers
 
         [HttpOptions("reset-password")]
         public IActionResult OptionsResetPassword()
+        {
+            return Ok();
+        }
+
+        [HttpOptions("register")]
+        public IActionResult OptionsRegister()
         {
             return Ok();
         }

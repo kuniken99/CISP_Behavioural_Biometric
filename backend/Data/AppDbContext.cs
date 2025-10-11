@@ -34,6 +34,7 @@ namespace db_biometrics_mvp.Backend.Data
         public DbSet<EmailVerificationToken> EmailVerificationTokens { get; set; } = default!;
         public DbSet<TwoFactorAuth> TwoFactorAuths { get; set; } = default!;
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; } = default!;
+        public DbSet<UniqueCode> UniqueCodes { get; set; } = default!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

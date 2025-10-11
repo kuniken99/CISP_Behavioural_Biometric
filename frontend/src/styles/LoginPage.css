@@ -47,7 +47,10 @@
 }
 
 .form-group input[type="email"],
-.form-group input[type="password"] {
+.form-group input[type="password"],
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-input {
   width: 100%;
   padding: 12px 16px;
   border: 1px solid #d1d5db;
@@ -60,7 +63,10 @@
 }
 
 .form-group input[type="email"]:focus,
-.form-group input[type="password"]:focus {
+.form-group input[type="password"]:focus,
+.form-group input[type="text"]:focus,
+.form-group input[type="number"]:focus,
+.form-input:focus {
   outline: none;
   border-color: #3b82f6;
   background: white;
@@ -236,6 +242,172 @@
   margin-bottom: 16px;
 }
 
+/* Registration Page Specific Styles */
+.form-select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 16px;
+  background: #f9fafb;
+  color: #333;
+  box-sizing: border-box;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: white;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.checkbox-label input[type="checkbox"] {
+  margin: 0;
+  accent-color: #3b82f6;
+}
+
+.signup-link {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 14px;
+  color: #666;
+}
+
+/* Email Verification Page Styles */
+.verification-card {
+  text-align: center;
+  max-width: 480px;
+}
+
+.verification-icon {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.email-icon {
+  position: relative;
+  display: inline-block;
+}
+
+.check-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: white;
+  border-radius: 50%;
+  padding: 2px;
+}
+
+.verification-text {
+  font-size: 16px;
+  color: #666;
+  margin: 0 0 20px 0;
+}
+
+.email-display {
+  background: #f3f4f6;
+  padding: 16px 20px;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 16px;
+  color: #333;
+  margin: 20px 0;
+  border: 1px solid #e5e7eb;
+}
+
+.verification-instructions {
+  font-size: 14px;
+  color: #666;
+  margin: 20px 0;
+  line-height: 1.5;
+}
+
+.verification-note {
+  font-size: 13px;
+  color: #9ca3af;
+  margin: 16px 0 24px 0;
+  line-height: 1.4;
+}
+
+.support-link {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 14px;
+  color: #666;
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #333;
+  border: 1px solid #e5e7eb;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+.btn-secondary:disabled {
+  background: #f9fafb;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.message.success {
+  color: #059669;
+  background-color: #f0fdf4;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  border: 1px solid #bbf7d0;
+  margin: 16px 0;
+}
+
+.message.error {
+  color: #dc2626;
+  background-color: #fef2f2;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  border: 1px solid #fecaca;
+  margin: 16px 0;
+}
+
+/* Status badges for unique codes */
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-badge.used {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.status-badge.available {
+  background: #f0fdf4;
+  color: #059669;
+}
+
 /* Responsive */
 @media (max-width: 480px) {
   .auth-card {
@@ -253,5 +425,166 @@
     top: 15px;
     left: 15px;
     font-size: 13px;
+  }
+  
+  .verification-card {
+    max-width: none;
+  }
+  
+  .email-display {
+    font-size: 14px;
+    padding: 12px 16px;
+  }
+}
+
+/* Email Verification Page Styles */
+.verification-content {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.verification-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #1f2937;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.verification-success,
+.verification-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.success-icon,
+.error-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.success-icon {
+  background: #f0fdf4;
+  color: #059669;
+}
+
+.error-icon {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.verification-success h3,
+.verification-error h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.verification-success p,
+.verification-error p {
+  margin: 0;
+  font-size: 16px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.verification-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.verification-actions .btn-primary,
+.verification-actions .btn-secondary {
+  min-width: 120px;
+}
+
+/* Additional responsive styles for verification page */
+@media (max-width: 480px) {
+  .verification-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .verification-actions .btn-primary,
+  .verification-actions .btn-secondary {
+    width: 100%;
+  }
+  
+  .success-icon,
+  .error-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 28px;
+  }
+}
+
+/* Message Styles */
+.message {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.message.success {
+  background-color: #f0fdf4;
+  color: #059669;
+  border: 1px solid #bbf7d0;
+}
+
+.message.error {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  flex-direction: column;
+}
+
+.form-actions .btn-primary,
+.form-actions .btn-secondary {
+  width: 100%;
+}
+
+/* Responsive form actions */
+@media (min-width: 481px) {
+  .form-actions {
+    flex-direction: row;
+  }
+  
+  .form-actions .btn-primary,
+  .form-actions .btn-secondary {
+    flex: 1;
   }
 }
