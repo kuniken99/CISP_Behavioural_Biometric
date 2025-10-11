@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using db_biometrics_mvp.Backend.Data;
 
@@ -11,9 +12,11 @@ using db_biometrics_mvp.Backend.Data;
 namespace db_biometrics_mvp.Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251011093500_UpdateTank108EmailVerified")]
+    partial class UpdateTank108EmailVerified
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -988,7 +991,7 @@ namespace db_biometrics_mvp.Backend.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 10, 11, 9, 38, 56, 958, DateTimeKind.Utc).AddTicks(573),
+                            CreatedAt = new DateTime(2025, 10, 11, 9, 34, 56, 996, DateTimeKind.Utc).AddTicks(3171),
                             Email = "admin@system.com",
                             IsActive = true,
                             IsEmailVerified = true,
@@ -1000,7 +1003,7 @@ namespace db_biometrics_mvp.Backend.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 10, 11, 9, 38, 56, 958, DateTimeKind.Utc).AddTicks(1374),
+                            CreatedAt = new DateTime(2025, 10, 11, 9, 34, 56, 996, DateTimeKind.Utc).AddTicks(4070),
                             Email = "dba@system.com",
                             IsActive = true,
                             IsEmailVerified = true,
@@ -1012,7 +1015,7 @@ namespace db_biometrics_mvp.Backend.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 10, 11, 9, 38, 56, 958, DateTimeKind.Utc).AddTicks(1376),
+                            CreatedAt = new DateTime(2025, 10, 11, 9, 34, 56, 996, DateTimeKind.Utc).AddTicks(4073),
                             Email = "test@system.com",
                             IsActive = true,
                             IsEmailVerified = true,
@@ -1024,10 +1027,10 @@ namespace db_biometrics_mvp.Backend.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2025, 10, 11, 9, 38, 56, 958, DateTimeKind.Utc).AddTicks(1378),
+                            CreatedAt = new DateTime(2025, 10, 11, 9, 34, 56, 996, DateTimeKind.Utc).AddTicks(4074),
                             Email = "tank108@uni.coventry.ac.uk",
                             IsActive = true,
-                            IsEmailVerified = false,
+                            IsEmailVerified = true,
                             IsTwoFactorEnabled = false,
                             PasswordHash = "713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca",
                             Role = "admin",

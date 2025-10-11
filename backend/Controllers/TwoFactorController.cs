@@ -132,7 +132,19 @@ namespace db_biometrics_mvp.Backend.Controllers
 
             _logger.LogInformation("2FA setup completed for user {Email}", user.Email);
 
-            return Ok(new { message = "Two-factor authentication has been successfully set up!" });
+            // Generate JWT token for the user after successful 2FA setup
+            var token = GenerateJwtToken(user);
+
+            return Ok(new { 
+                message = "Two-factor authentication has been successfully set up!",
+                token = token,
+                user = new {
+                    id = user.Id,
+                    username = user.Username,
+                    email = user.Email,
+                    role = user.Role
+                }
+            });
         }
 
         [AllowAnonymous]

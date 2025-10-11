@@ -99,6 +99,13 @@ function TwoFactorSetupPage({ setCurrentAuthPage, email, onSetupComplete }) {
       });
 
       if (response.ok) {
+        const data = await response.json();
+        
+        // Store the JWT token if provided
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+        }
+        
         setSetupComplete(true);
         // Call the completion callback after a short delay to show success message
         setTimeout(() => {

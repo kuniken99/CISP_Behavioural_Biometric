@@ -76,14 +76,16 @@ namespace db_biometrics_mvp.Backend.Controllers
                     username = user.Username
                 });
             }
-
-            // If user has 2FA enabled, they need to provide TOTP code
-            return Unauthorized(new { 
-                message = "Please enter your two-factor authentication code.",
-                requiresTwoFactorCode = true,
-                email = user.Email,
-                username = user.Username
-            });
+            else
+            {
+                // If user has 2FA enabled, they need to provide TOTP code
+                return Unauthorized(new { 
+                    message = "Please enter your two-factor authentication code.",
+                    requiresTwoFactorCode = true,
+                    email = user.Email,
+                    username = user.Username
+                });
+            }
         }
 
         // Helper for password hashing (match AppDbContext)
