@@ -6,7 +6,6 @@ const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
-  const [currentPage, setCurrentPage] = useState('dashboard');
 
   // Check for existing token on mount
   useEffect(() => {
@@ -17,8 +16,6 @@ const useAuth = () => {
       setIsAuthenticated(true);
       setCurrentUser(user);
       setUserRole(role);
-    } else {
-      setCurrentPage('login');
     }
   }, []);
 
@@ -29,7 +26,6 @@ const useAuth = () => {
     setIsAuthenticated(true);
     setCurrentUser(username);
     setUserRole(role);
-    setCurrentPage('dashboard');
   };
 
   const handleLogout = () => {
@@ -39,16 +35,14 @@ const useAuth = () => {
     setIsAuthenticated(false);
     setCurrentUser(null);
     setUserRole(null);
-    setCurrentPage('login');
-    alert('Logged out successfully.');
+    // Don't show alert as it might cause navigation issues
+    // React Router will automatically redirect to login when isAuthenticated becomes false
   };
 
   return {
     isAuthenticated,
     currentUser,
     userRole,
-    currentPage,
-    setCurrentPage,
     handleLogin,
     handleLogout
   };

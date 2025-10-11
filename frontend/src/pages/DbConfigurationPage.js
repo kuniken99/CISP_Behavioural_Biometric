@@ -73,7 +73,7 @@ const DbConfigurationPage = () => {
               />
             </div>
           ))}
-          <button className="button primary" onClick={handleUpdateConfig} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <button type="button" className="button primary" onClick={handleUpdateConfig} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <img src={DbConfigurationIcon} alt="Update" style={{ width: '16px', height: '16px' }} />
             Update Configuration
           </button>

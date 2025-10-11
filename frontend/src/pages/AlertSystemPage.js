@@ -148,6 +148,7 @@ const AlertSystemPage = () => {
       {/* Clear Filters Button */}
       <div className="alert-actions-bar">
         <button 
+          type="button"
           onClick={() => {
             setSearchTerm('');
             setFilterType('All Types');
@@ -199,6 +200,7 @@ const AlertSystemPage = () => {
                 <td>
                   <div className="alert-actions">
                     <button 
+                      type="button"
                       onClick={() => handleViewAlert(alert)}
                       className="action-btn view-btn"
                       title="View Details"
@@ -206,6 +208,7 @@ const AlertSystemPage = () => {
                       <img src={EyeIcon} alt="View" className="action-icon" />
                     </button>
                     <button 
+                      type="button"
                       onClick={() => handleResolveAlert(alert)}
                       className="action-btn resolve-btn"
                       title="Resolve Alert"
@@ -225,7 +228,7 @@ const AlertSystemPage = () => {
         <div className="alert-details-panel">
           <div className="alert-details-header">
             <h3>Alert Details</h3>
-            <button onClick={() => setSelectedAlert(null)} className="close-btn">✕</button>
+            <button type="button" onClick={() => setSelectedAlert(null)} className="close-btn">✕</button>
           </div>
           <div className="alert-details-content">
             <div className="alert-info-grid">
@@ -275,7 +278,7 @@ const AlertSystemPage = () => {
             </div>
             
             <div className="alert-actions-bottom">
-              <button onClick={() => setShowResolveModal(true)} className="btn-resolve-alert">
+              <button type="button" onClick={() => setShowResolveModal(true)} className="btn-resolve-alert">
                 🔧 Mark as Resolved
               </button>
             </div>
@@ -289,7 +292,7 @@ const AlertSystemPage = () => {
           <div className="resolve-modal">
             <div className="modal-header">
               <h3>Resolve Alert</h3>
-              <button onClick={() => setShowResolveModal(false)} className="close-btn">✕</button>
+              <button type="button" onClick={() => setShowResolveModal(false)} className="close-btn">✕</button>
             </div>
             <div className="modal-content">
               <p>Add resolution notes for {selectedAlert?.id}</p>
@@ -304,10 +307,10 @@ const AlertSystemPage = () => {
                 />
               </div>
               <div className="modal-actions">
-                <button onClick={() => setShowResolveModal(false)} className="btn-cancel">
+                <button type="button" onClick={() => setShowResolveModal(false)} className="btn-cancel">
                   Cancel
                 </button>
-                <button onClick={handleMarkResolved} className="btn-resolve">
+                <button type="button" onClick={handleMarkResolved} className="btn-resolve">
                   🔧 Resolve Alert
                 </button>
               </div>

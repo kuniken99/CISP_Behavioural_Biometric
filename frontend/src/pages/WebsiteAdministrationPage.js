@@ -66,7 +66,7 @@ const WebsiteAdministrationPage = () => {
           style={{ width: '100%' }}
         ></textarea>
       </div>
-      <button className="button primary" onClick={handleUpdateContent} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+      <button type="button" className="button primary" onClick={handleUpdateContent} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
         <img src={WebsiteAdminIcon} alt="Update" style={{ width: '16px', height: '16px' }} />
         Update Content
       </button>

@@ -151,7 +151,7 @@ body {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
+  padding: 10px;
   border-radius: 50%;
   transition: background-color 0.2s ease;
   display: flex;
@@ -164,8 +164,8 @@ body {
 }
 
 .profile-icon {
-  width: 20px;
-  height: 20px;
+  width: 32px;
+  height: 32px;
 }
 
 .logout-button { 

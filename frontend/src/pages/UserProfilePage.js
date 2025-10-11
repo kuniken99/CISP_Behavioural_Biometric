@@ -88,7 +88,7 @@ const UserProfilePage = ({ currentUser, userRole }) => {
         </div>
         <div className="profile-user-info">
           <span className="logged-in-text">Logged in as: <strong>{userProfile.username}</strong> ({userProfile.role})</span>
-          <button className="logout-btn">
+          <button type="button" className="logout-btn">
             <span className="logout-icon">↗</span>
             Logout
           </button>
@@ -109,6 +109,7 @@ const UserProfilePage = ({ currentUser, userRole }) => {
                 <div className="profile-value">{userProfile.email}</div>
                 {!showChangeEmail ? (
                   <button 
+                    type="button"
                     className="change-btn"
                     onClick={() => setShowChangeEmail(true)}
                   >
@@ -123,8 +124,8 @@ const UserProfilePage = ({ currentUser, userRole }) => {
                       placeholder="Enter new email"
                       className="change-input"
                     />
-                    <button onClick={handleEmailChange} className="save-btn">Save</button>
-                    <button onClick={() => setShowChangeEmail(false)} className="cancel-btn">Cancel</button>
+                    <button type="button" onClick={handleEmailChange} className="save-btn">Save</button>
+                    <button type="button" onClick={() => setShowChangeEmail(false)} className="cancel-btn">Cancel</button>
                   </div>
                 )}
               </div>

@@ -69,10 +69,18 @@ const RoleBasedAccessControlPage = () => {
 
   return (
     <div className="card">
-      <div className="form-group-inline">
+      <form onSubmit={(e) => e.preventDefault()} className="form-group-inline">
         <div className="form-group">
           <label>Select User:</label>
-          <select value={selectedUser} onChange={(e) => setSelectedUser(e.target.value)}>
+          <select 
+            value={selectedUser} 
+            onChange={(e) => setSelectedUser(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+              }
+            }}
+          >
             <option value="">-- Select User --</option>
             {users.map(user => (
               <option key={user.id} value={user.id}>{user.username} ({user.role})</option>
@@ -81,15 +89,23 @@ const RoleBasedAccessControlPage = () => {
         </div>
         <div className="form-group">
           <label>Assign Role:</label>
-          <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
+          <select 
+            value={selectedRole} 
+            onChange={(e) => setSelectedRole(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+              }
+            }}
+          >
             <option value="">-- Select Role --</option>
             {roles.map(role => (
               <option key={role.name} value={role.name}>{role.name}</option>
             ))}
           </select>
         </div>
-      </div>
-      <button className="button primary" onClick={handleAssignRole} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+      </form>
+      <button type="button" className="button primary" onClick={handleAssignRole} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
         <img src={RoleAccessControlIcon} alt="Assign" style={{ width: '16px', height: '16px' }} />
         Assign Role
       </button>

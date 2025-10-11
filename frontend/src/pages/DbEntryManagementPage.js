@@ -161,15 +161,25 @@ const DbEntryManagementPage = () => {
 
   return (
     <div className="card">
-      <div className="form-group">
-        <label>Select Table:</label>
-        <select value={selectedTable} onChange={(e) => handleTableSelect(e.target.value)}>
-          <option value="">-- Select a Table --</option>
-          {tables.map(table => (
-            <option key={table.name} value={table.name}>{table.name}</option>
-          ))}
-        </select>
-      </div>
+      <form onSubmit={(e) => e.preventDefault()}>
+        <div className="form-group">
+          <label>Select Table:</label>
+          <select 
+            value={selectedTable} 
+            onChange={(e) => handleTableSelect(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+              }
+            }}
+          >
+            <option value="">-- Select a Table --</option>
+            {tables.map(table => (
+              <option key={table.name} value={table.name}>{table.name}</option>
+            ))}
+          </select>
+        </div>
+      </form>
 
       {loading && <p>Loading entries...</p>}
       {error && <p className="error">{error}</p>}
@@ -195,11 +205,11 @@ const DbEntryManagementPage = () => {
                       <td key={key}>{formatValue(value)}</td>
                   ))}
                   <td>
-                    <button onClick={() => handleEditEntry(entry)} style={{ display: 'flex', alignItems: 'center', gap: '6px', marginRight: '5px' }}>
+                    <button type="button" onClick={() => handleEditEntry(entry)} style={{ display: 'flex', alignItems: 'center', gap: '6px', marginRight: '5px' }}>
                       <img src={EditIcon} alt="Edit" style={{ width: '16px', height: '16px' }} />
                       Edit
                     </button>
-                    <button onClick={() => handleDeleteEntry(entry.id)} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <button type="button" onClick={() => handleDeleteEntry(entry.id)} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       Delete
                     </button>
                   </td>
@@ -209,7 +219,7 @@ const DbEntryManagementPage = () => {
           </table>
 
           <h3>{editingEntryId ? 'Edit Entry' : 'Add New Entry'}</h3>
-          <div className="form-group-inline">
+          <form onSubmit={(e) => e.preventDefault()} className="form-group-inline">
             {entries.length > 0 && Object.keys(entries[0]).filter(k => k !== 'id').map(key => (
               <div key={key} className="form-group">
                 <label>{key}:</label>
@@ -217,22 +227,27 @@ const DbEntryManagementPage = () => {
                   type="text"
                   value={formatValue(newEntryData[key] || '')}
                   onChange={(e) => setNewEntryData({ ...newEntryData, [key]: e.target.value })}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                    }
+                  }}
                 />
               </div>
             ))}
-          </div>
+          </form>
           {editingEntryId ? (
-            <button className="button success" onClick={handleUpdateEntry} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <button type="button" className="button success" onClick={handleUpdateEntry} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <img src={EditIcon} alt="Update" style={{ width: '16px', height: '16px' }} />
               Update Entry
             </button>
           ) : (
-            <button className="button primary" onClick={handleAddEntry} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <button type="button" className="button primary" onClick={handleAddEntry} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <img src={AddTaskIcon} alt="Add" style={{ width: '16px', height: '16px' }} />
               Add Entry
             </button>
           )}
-           <button className="button secondary" onClick={() => { setNewEntryData({}); setEditingEntryId(null); }} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+           <button type="button" className="button secondary" onClick={() => { setNewEntryData({}); setEditingEntryId(null); }} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
              <img src={ArrowBackIcon} alt="Clear" style={{ width: '16px', height: '16px' }} />
              Clear Form
            </button>

@@ -62,13 +62,18 @@ const UserManagementPage = () => {
   return (
     <div className="card">
       <h3>Create New User</h3>
-      <div className="form-group-inline">
+      <form onSubmit={(e) => e.preventDefault()} className="form-group-inline">
         <div className="form-group">
           <label>Username:</label>
           <input 
             type="text" 
             value={newUser.username} 
-            onChange={(e) => setNewUser({ ...newUser, username: e.target.value })} 
+            onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+              }
+            }}
           />
         </div>
         <div className="form-group">
@@ -76,7 +81,12 @@ const UserManagementPage = () => {
           <input 
             type="password" 
             value={newUser.password} 
-            onChange={(e) => setNewUser({ ...newUser, password: e.target.value })} 
+            onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+              }
+            }}
           />
         </div>
         <div className="form-group">
@@ -84,14 +94,19 @@ const UserManagementPage = () => {
           <select 
             value={newUser.role} 
             onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+              }
+            }}
           >
             <option value="user">User</option>
             <option value="dba">DBA</option>
             <option value="admin">Admin</option>
           </select>
         </div>
-      </div>
-      <button className="button primary" onClick={handleCreateUser}>Create User</button>
+      </form>
+      <button type="button" className="button primary" onClick={handleCreateUser}>Create User</button>
 
       <h3>Existing Users</h3>
       <table>
@@ -112,8 +127,8 @@ const UserManagementPage = () => {
               <td>{user.role}</td>
               <td>{user.isActive ? 'Active' : 'Inactive'}</td>
               <td>
-                <button className="button secondary small">Edit</button>
-                <button className="button danger small">
+                <button type="button" className="button secondary small">Edit</button>
+                <button type="button" className="button danger small">
                   {user.isActive ? 'Deactivate' : 'Activate'}
                 </button>
               </td>

@@ -33,8 +33,6 @@ function App() {
     isAuthenticated,
     currentUser,
     userRole,
-    currentPage,
-    setCurrentPage,
     handleLogin,
     handleLogout
   } = useAuth();
