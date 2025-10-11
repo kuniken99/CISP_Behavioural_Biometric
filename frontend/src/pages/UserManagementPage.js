@@ -2,6 +2,39 @@ import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../utils/config';
 import userManagementIcon from '../assets/user-management-icon.svg';
 
+// Inline styles for status badges
+const statusBadgeStyle = {
+  padding: '2px 8px',
+  borderRadius: '12px',
+  fontSize: '12px',
+  fontWeight: 'bold',
+  textTransform: 'uppercase'
+};
+
+const activeStatusStyle = {
+  ...statusBadgeStyle,
+  backgroundColor: '#10b981',
+  color: 'white'
+};
+
+const inactiveStatusStyle = {
+  ...statusBadgeStyle,
+  backgroundColor: '#ef4444',
+  color: 'white'
+};
+
+const availableStatusStyle = {
+  ...statusBadgeStyle,
+  backgroundColor: '#3b82f6',
+  color: 'white'
+};
+
+const usedStatusStyle = {
+  ...statusBadgeStyle,
+  backgroundColor: '#6b7280',
+  color: 'white'
+};
+
 const UserManagementPage = () => {
   const [users, setUsers] = useState([]);
   const [uniqueCodes, setUniqueCodes] = useState([]);
@@ -10,7 +43,8 @@ const UserManagementPage = () => {
   const [newUser, setNewUser] = useState({ username: '', password: '', role: 'user' });
   const [newCodeData, setNewCodeData] = useState({ role: 'user', expiresInDays: 7, note: '' });
   const [codeGenerationLoading, setCodeGenerationLoading] = useState(false);
-  // const [editingUserId, setEditingUserId] = useState(null); // Future functionality
+  const [editingUserId, setEditingUserId] = useState(null);
+  const [editingUser, setEditingUser] = useState({ username: '', role: 'user' });
 
   useEffect(() => {
     fetchUsers();
@@ -140,13 +174,74 @@ const UserManagementPage = () => {
     }
   };
 
+  const handleEditUser = (user) => {
+    setEditingUserId(user.id);
+    setEditingUser({ username: user.username, role: user.role });
+  };
+
+  const handleUpdateUser = async () => {
+    setError('');
+    try {
+      const token = localStorage.getItem('jwt_token');
+      const response = await fetch(`${API_BASE_URL}/UserManagement/update-user`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ 
+          userId: editingUserId, 
+          username: editingUser.username,
+          role: editingUser.role
+        }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        alert(data.message || 'User updated successfully');
+        setEditingUserId(null);
+        setEditingUser({ username: '', role: 'user' });
+        fetchUsers();
+      } else {
+        setError(data.message || 'Failed to update user.');
+      }
+    } catch (err) {
+      setError('Network error updating user.');
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingUserId(null);
+    setEditingUser({ username: '', role: 'user' });
+  };
+
+  const handleToggleUserStatus = async (user) => {
+    const action = user.isActive ? 'deactivate' : 'activate';
+    if (!window.confirm(`Are you sure you want to ${action} user "${user.username}"?`)) return;
+    
+    setError('');
+    try {
+      const token = localStorage.getItem('jwt_token');
+      const response = await fetch(`${API_BASE_URL}/UserManagement/toggle-user-status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ userId: user.id, isActive: !user.isActive }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        alert(data.message || `User ${action}d successfully`);
+        fetchUsers();
+      } else {
+        setError(data.message || `Failed to ${action} user.`);
+      }
+    } catch (err) {
+      setError(`Network error ${action}ing user.`);
+    }
+  };
+
   if (loading) return <div className="card"><p>Loading users...</p></div>;
   if (error) return <div className="card"><p className="error">{error}</p></div>;
 
   return (
     <div className="card">
       <h3>Create New User</h3>
-      <form onSubmit={(e) => e.preventDefault()} className="form-group-inline">
+      <form onSubmit={(e) => { e.preventDefault(); e.stopPropagation(); return false; }} className="form-group-inline">
         <div className="form-group">
           <label>Username:</label>
           <input 
@@ -156,6 +251,9 @@ const UserManagementPage = () => {
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
+                e.stopPropagation();
+                handleCreateUser();
+                return false;
               }
             }}
           />
@@ -169,6 +267,9 @@ const UserManagementPage = () => {
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
+                e.stopPropagation();
+                handleCreateUser();
+                return false;
               }
             }}
           />
@@ -181,6 +282,9 @@ const UserManagementPage = () => {
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
+                e.stopPropagation();
+                handleCreateUser();
+                return false;
               }
             }}
           >
@@ -198,7 +302,7 @@ const UserManagementPage = () => {
         <p style={{ color: '#6b7280', marginBottom: '20px' }}>
           Generate unique codes for new user registration. These codes are required during the sign-up process.
         </p>
-        <form onSubmit={(e) => e.preventDefault()} className="form-group-inline">
+        <form onSubmit={(e) => { e.preventDefault(); e.stopPropagation(); return false; }} className="form-group-inline">
           <div className="form-group">
             <label>Role for New Users:</label>
             <select 
@@ -207,6 +311,9 @@ const UserManagementPage = () => {
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
+                  e.stopPropagation();
+                  handleGenerateUniqueCode();
+                  return false;
                 }
               }}
             >
@@ -226,6 +333,9 @@ const UserManagementPage = () => {
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
+                  e.stopPropagation();
+                  handleGenerateUniqueCode();
+                  return false;
                 }
               }}
             />
@@ -240,6 +350,9 @@ const UserManagementPage = () => {
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
+                  e.stopPropagation();
+                  handleGenerateUniqueCode();
+                  return false;
                 }
               }}
             />
@@ -279,7 +392,7 @@ const UserManagementPage = () => {
                 <td>{new Date(code.expiresAt).toLocaleDateString()}</td>
                 <td>{code.note || '-'}</td>
                 <td>
-                  <span className={`status-badge ${code.isUsed ? 'used' : 'available'}`}>
+                  <span style={code.isUsed ? usedStatusStyle : availableStatusStyle}>
                     {code.isUsed ? 'Yes' : 'No'}
                   </span>
                 </td>
@@ -322,14 +435,80 @@ const UserManagementPage = () => {
           {users.map(user => (
             <tr key={user.id}>
               <td>{user.id}</td>
-              <td>{user.username}</td>
-              <td>{user.role}</td>
-              <td>{user.isActive ? 'Active' : 'Inactive'}</td>
               <td>
-                <button type="button" className="button secondary small">Edit</button>
-                <button type="button" className="button danger small">
-                  {user.isActive ? 'Deactivate' : 'Activate'}
-                </button>
+                {editingUserId === user.id ? (
+                  <input 
+                    type="text" 
+                    value={editingUser.username}
+                    onChange={(e) => setEditingUser({ ...editingUser, username: e.target.value })}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleUpdateUser();
+                        return false;
+                      }
+                      if (e.key === 'Escape') {
+                        handleCancelEdit();
+                      }
+                    }}
+                    style={{ width: '100%' }}
+                  />
+                ) : (
+                  user.username
+                )}
+              </td>
+              <td>
+                {editingUserId === user.id ? (
+                  <select 
+                    value={editingUser.role}
+                    onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleUpdateUser();
+                        return false;
+                      }
+                      if (e.key === 'Escape') {
+                        handleCancelEdit();
+                      }
+                    }}
+                    style={{ width: '100%' }}
+                  >
+                    <option value="user">User</option>
+                    <option value="dba">DBA</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                ) : (
+                  user.role
+                )}
+              </td>
+              <td>
+                <span style={user.isActive ? activeStatusStyle : inactiveStatusStyle}>
+                  {user.isActive ? 'Active' : 'Inactive'}
+                </span>
+              </td>
+              <td>
+                {editingUserId === user.id ? (
+                  <div style={{ display: 'flex', gap: '5px' }}>
+                    <button type="button" className="button success small" onClick={handleUpdateUser}>
+                      Save
+                    </button>
+                    <button type="button" className="button secondary small" onClick={handleCancelEdit}>
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', gap: '5px' }}>
+                    <button type="button" className="button secondary small" onClick={() => handleEditUser(user)}>
+                      Edit
+                    </button>
+                    <button type="button" className={`button ${user.isActive ? 'danger' : 'success'} small`} onClick={() => handleToggleUserStatus(user)}>
+                      {user.isActive ? 'Deactivate' : 'Activate'}
+                    </button>
+                  </div>
+                )}
               </td>
             </tr>
           ))}

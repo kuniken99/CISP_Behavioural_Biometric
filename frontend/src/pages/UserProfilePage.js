@@ -86,13 +86,6 @@ const UserProfilePage = ({ currentUser, userRole }) => {
           </div>
           <h1>User Profile</h1>
         </div>
-        <div className="profile-user-info">
-          <span className="logged-in-text">Logged in as: <strong>{userProfile.username}</strong> ({userProfile.role})</span>
-          <button type="button" className="logout-btn">
-            <span className="logout-icon">↗</span>
-            Logout
-          </button>
-        </div>
       </div>
 
       <div className="profile-content">

@@ -161,7 +161,7 @@ const DbEntryManagementPage = () => {
 
   return (
     <div className="card">
-      <form onSubmit={(e) => e.preventDefault()}>
+      <form onSubmit={(e) => { e.preventDefault(); return false; }}>
         <div className="form-group">
           <label>Select Table:</label>
           <select 
@@ -170,6 +170,8 @@ const DbEntryManagementPage = () => {
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
+                e.stopPropagation();
+                return false;
               }
             }}
           >
@@ -219,7 +221,7 @@ const DbEntryManagementPage = () => {
           </table>
 
           <h3>{editingEntryId ? 'Edit Entry' : 'Add New Entry'}</h3>
-          <form onSubmit={(e) => e.preventDefault()} className="form-group-inline">
+          <form onSubmit={(e) => { e.preventDefault(); e.stopPropagation(); return false; }} className="form-group-inline">
             {entries.length > 0 && Object.keys(entries[0]).filter(k => k !== 'id').map(key => (
               <div key={key} className="form-group">
                 <label>{key}:</label>
@@ -230,6 +232,14 @@ const DbEntryManagementPage = () => {
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault();
+                      e.stopPropagation();
+                      // If user presses Enter, trigger the appropriate action
+                      if (editingEntryId) {
+                        handleUpdateEntry();
+                      } else {
+                        handleAddEntry();
+                      }
+                      return false;
                     }
                   }}
                 />

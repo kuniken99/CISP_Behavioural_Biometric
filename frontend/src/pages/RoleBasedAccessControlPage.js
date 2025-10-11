@@ -69,7 +69,7 @@ const RoleBasedAccessControlPage = () => {
 
   return (
     <div className="card">
-      <form onSubmit={(e) => e.preventDefault()} className="form-group-inline">
+      <form onSubmit={(e) => { e.preventDefault(); e.stopPropagation(); return false; }} className="form-group-inline">
         <div className="form-group">
           <label>Select User:</label>
           <select 
@@ -78,6 +78,9 @@ const RoleBasedAccessControlPage = () => {
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
+                e.stopPropagation();
+                handleAssignRole();
+                return false;
               }
             }}
           >
@@ -95,6 +98,9 @@ const RoleBasedAccessControlPage = () => {
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
+                e.stopPropagation();
+                handleAssignRole();
+                return false;
               }
             }}
           >

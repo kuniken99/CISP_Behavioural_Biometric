@@ -39,8 +39,12 @@ function App() {
     handleLogout
   } = useAuth();
 
+  // Temporarily disable biometric tracking to debug auto-refresh issue
   // eslint-disable-next-line no-unused-vars
-  const { cbbaStatus, lastCbbaScore, sessionId } = useBiometricTracking(isAuthenticated, handleLogout);
+  // const { cbbaStatus, lastCbbaScore, sessionId } = useBiometricTracking(isAuthenticated, handleLogout);
+  const cbbaStatus = "CBBA: Disabled for debugging";
+  const lastCbbaScore = 0;
+  const sessionId = null;
 
   // Protected Route Component
   const ProtectedRoute = ({ children }) => {
