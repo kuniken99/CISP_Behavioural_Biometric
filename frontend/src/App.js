@@ -1,7 +1,7 @@
 // frontend/src/App.js
 
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import useAuth from './hooks/useAuth';
 import useBiometricTracking from './hooks/useBiometricTracking';
 import Footer from './components/Footer';
@@ -51,9 +51,21 @@ function App() {
     return isAuthenticated ? children : <Navigate to="/login" replace />;
   };
 
+  // Scroll to top component every time the user enter the page
+  const ScrollToTop = () => {
+    const location = useLocation();
+    
+    useEffect(() => {
+      window.scrollTo(0, 0);
+    }, [location.pathname]);
+    
+    return null;
+  };
+
   // Main Dashboard Layout Component
   const DashboardLayout = ({ children }) => (
     <div className="app-container">
+      <ScrollToTop />
       <div className="main-app-wrapper">
         <Sidebar />
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>

@@ -112,7 +112,7 @@ const ActivityLogPage = () => {
             <img src={SearchIcon} alt="Search" className="search-icon" />
             <input
               type="text"
-              placeholder="Search by user, action, details, IP, or log ID..."
+              placeholder="Search by user, action, or details..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="activity-search-input"

@@ -867,8 +867,8 @@ tr:nth-child(even) {
 .search-icon {
   position: absolute;
   left: 12px;
-  width: 16px;
-  height: 16px;
+  width: 22px;
+  height: 22px;
   opacity: 0.5;
   z-index: 1;
 }
@@ -896,8 +896,8 @@ tr:nth-child(even) {
 .filter-icon {
   position: absolute;
   left: 12px;
-  width: 14px;
-  height: 14px;
+  width: 22px;
+  height: 22px;
   opacity: 0.5;
   z-index: 1;
 }
