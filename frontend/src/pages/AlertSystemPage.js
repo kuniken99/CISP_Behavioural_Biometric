@@ -163,7 +163,7 @@ const AlertSystemPage = () => {
           <div style={{ width: '100px' }}></div>
           
           {/* Filters */}
-          <div className="filter-wrapper" style={{ flex: '1', minWidth: '150px' }}>
+          <div className="filter-wrapper" style={{ flex: '1', minWidth: '145px' }}>
             <img src={FilterIcon} alt="Type" className="filter-icon" style={{ marginRight: '8px' }} />
             <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
               <select 
@@ -197,7 +197,7 @@ const AlertSystemPage = () => {
             </div>
           </div>
           
-          <div className="filter-wrapper" style={{ flex: '1', minWidth: '180px' }}>
+          <div className="filter-wrapper" style={{ flex: '1', minWidth: '173px' }}>
             <img src={SeverityIcon} alt="Severity" className="filter-icon" style={{ marginRight: '8px' }} />
             <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
               <select 
@@ -232,7 +232,7 @@ const AlertSystemPage = () => {
             </div>
           </div>
           
-          <div className="filter-wrapper" style={{ flex: '1', minWidth: '170px' }}>
+          <div className="filter-wrapper" style={{ flex: '1', minWidth: '166px' }}>
             <img src={ToggleIcon} alt="Status" className="filter-icon" style={{ marginRight: '8px' }} />
             <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
               <select 

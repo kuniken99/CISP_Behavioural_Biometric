@@ -372,70 +372,122 @@ const ActivityLogPage = () => {
       <div className="card">
         <h2>Filters</h2>
         
-        {/* Responsive Search and Filter Section */}
-        <div className="responsive-filters-container">
-          {/* Search Section - Full width on mobile, 50% on tablet+ */}
-          <div className="search-section">
-            <div className="search-input-wrapper">
-              <img src={SearchIcon} alt="Search" className="search-icon" />
-              <input
-                type="text"
-                placeholder="Search by user, action, or details..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="activity-search-input"
+        {/* Search and Filter Section */}
+        <div style={{ display: 'flex', gap: '15px', alignItems: 'center', width: '100%' }}>
+          {/* Search Section */}
+          <div className="search-input-wrapper" style={{ minWidth: '50px' }}>
+            <img src={SearchIcon} alt="Search" className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search by user, action, or details..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="activity-search-input"
+            />
+          </div>
+          
+          <div style={{ width: '100px' }}></div>
+          
+          {/* Filters */}
+          <div className="filter-wrapper" style={{ flex: '1', minWidth: '145px' }}>
+            <img src={PersonIcon} alt="User" className="filter-icon" style={{ marginRight: '8px' }} />
+            <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
+              <select 
+                value={selectedUser} 
+                onChange={(e) => setSelectedUser(e.target.value)} 
+                className="activity-filter"
+                style={{ 
+                  paddingRight: '40px', 
+                  width: '100%',
+                  appearance: 'none',
+                  backgroundImage: 'none'
+                }}
+              >
+                {uniqueUsers.map(user => (
+                  <option key={user} value={user}>{user}</option>
+                ))}
+              </select>
+              <img 
+                src={DropdownIcon} 
+                alt="Dropdown" 
+                style={{ 
+                  position: 'absolute', 
+                  right: '12px', 
+                  top: '50%', 
+                  transform: 'translateY(-50%)', 
+                  width: '16px', 
+                  height: '16px',
+                  pointerEvents: 'none'
+                }} 
               />
             </div>
           </div>
           
-          {/* Filter Section - Stack on mobile, inline on tablet+ */}
-          <div className="filters-section">
-            <div className="filter-wrapper">
-              <img src={PersonIcon} alt="User" className="filter-icon" />
-              <div className="select-wrapper">
-                <select 
-                  value={selectedUser} 
-                  onChange={(e) => setSelectedUser(e.target.value)} 
-                  className="activity-filter"
-                >
-                  {uniqueUsers.map(user => (
-                    <option key={user} value={user}>{user}</option>
-                  ))}
-                </select>
-                <img src={DropdownIcon} alt="Dropdown" className="dropdown-icon" />
-              </div>
+          <div className="filter-wrapper" style={{ flex: '1', minWidth: '155px' }}>
+            <img src={FilterIcon} alt="Action" className="filter-icon" style={{ marginRight: '8px' }} />
+            <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
+              <select 
+                value={selectedAction} 
+                onChange={(e) => setSelectedAction(e.target.value)} 
+                className="activity-filter"
+                style={{ 
+                  paddingRight: '40px',
+                  width: '100%',
+                  appearance: 'none',
+                  backgroundImage: 'none'
+                }}
+              >
+                {uniqueActions.map(action => (
+                  <option key={action} value={action}>{action}</option>
+                ))}
+              </select>
+              <img 
+                src={DropdownIcon} 
+                alt="Dropdown" 
+                style={{ 
+                  position: 'absolute', 
+                  right: '12px', 
+                  top: '50%', 
+                  transform: 'translateY(-50%)', 
+                  width: '16px', 
+                  height: '16px',
+                  pointerEvents: 'none'
+                }} 
+              />
             </div>
-            
-            <div className="filter-wrapper">
-              <img src={FilterIcon} alt="Filter" className="filter-icon" />
-              <div className="select-wrapper">
-                <select 
-                  value={selectedAction} 
-                  onChange={(e) => setSelectedAction(e.target.value)} 
-                  className="activity-filter"
-                >
-                  {uniqueActions.map(action => (
-                    <option key={action} value={action}>{action}</option>
-                  ))}
-                </select>
-                <img src={DropdownIcon} alt="Dropdown" className="dropdown-icon" />
-              </div>
-            </div>
-            
-            <div className="filter-wrapper-severity">
-              <img src={SeverityIcon} alt="Severity" className="filter-icon" />
-              <div className="select-wrapper">
-                <select 
-                  value={selectedSeverity} 
-                  onChange={(e) => setSelectedSeverity(e.target.value)} 
-                  className="activity-filter"
-                >
-                  {uniqueSeverities.map(severity => (
-                    <option key={severity} value={severity}>{severity}</option>
-                  ))}
-                </select>
-                <img src={DropdownIcon} alt="Dropdown" className="dropdown-icon" />
-              </div>
+          </div>
+          
+          <div className="filter-wrapper" style={{ flex: '1', minWidth: '174px' }}>
+            <img src={SeverityIcon} alt="Severity" className="filter-icon" style={{ marginRight: '8px' }} />
+            <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
+              <select 
+                value={selectedSeverity} 
+                onChange={(e) => setSelectedSeverity(e.target.value)} 
+                className="activity-filter"
+                style={{ 
+                  paddingRight: '40px',
+                  width: '100%',
+                  appearance: 'none',
+                  backgroundImage: 'none'
+                }}
+              >
+                {uniqueSeverities.map(severity => (
+                  <option key={severity} value={severity}>{severity}</option>
+                ))}
+              </select>
+              <img 
+                src={DropdownIcon} 
+                alt="Dropdown" 
+                style={{ 
+                  position: 'absolute', 
+                  right: '12px', 
+                  top: '50%', 
+                  transform: 'translateY(-50%)', 
+                  width: '16px', 
+                  height: '16px',
+                  pointerEvents: 'none'
+                }} 
+              />
             </div>
           </div>
         </div>
