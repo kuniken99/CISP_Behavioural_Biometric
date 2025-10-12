@@ -67,19 +67,41 @@ const DbConfigurationPage = () => {
           {Object.entries(config).map(([key, value]) => (
             <div className="form-group" key={key}>
               <label>{key}:</label>
-              <input
-                type={typeof value === 'number' ? 'number' : 'text'}
-                value={value}
-                onChange={(e) => handleConfigChange(key, e.target.value)}
-              />
+              {key === 'enableAuditing' ? (
+                <label className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={value}
+                    onChange={(e) => handleConfigChange(key, e.target.checked)}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              ) : (
+                <input
+                  type={typeof value === 'number' ? 'number' : 'text'}
+                  value={value}
+                  onChange={(e) => handleConfigChange(key, e.target.value)}
+                />
+              )}
             </div>
           ))}
-          <button type="button" className="button primary" onClick={handleUpdateConfig} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <img src={DbConfigurationIcon} alt="Update" style={{ width: '16px', height: '16px' }} />
-            Update Configuration
-          </button>
+          
         </div>
       )}
+      <button 
+            type="button" 
+            className="button primary" 
+            onClick={handleUpdateConfig}
+            style={{ 
+              backgroundColor: '#000000', 
+              color: '#ffffff',
+              border: '1px solid #000000',
+              padding: '12px 24px',
+              fontSize: '1rem',
+            }}
+          >
+            Update Configuration
+          </button>
     </div>
   );
 };
