@@ -2087,8 +2087,9 @@ tr:hover {
 }
 
 .severity-high {
-  background-color: #f8d7da;
-  color: #721c24;
+  background-color: #dc2626;
+  color: #ffffff;
+  font-weight: 600;
 }
 
 .severity-medium {

@@ -52,6 +52,16 @@ namespace db_biometrics_mvp.Backend.Controllers
 
             if (user == null || !VerifyPassword(loginDto.Password, user.PasswordHash))
             {
+                // Log failed login attempt
+                await _context.AuditLogs.AddAsync(new AuditLog 
+                { 
+                    Username = loginDto.Username, 
+                    Action = "FAILED_LOGIN", 
+                    Details = $"Failed login attempt for username: {loginDto.Username}", 
+                    IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" 
+                });
+                await _context.SaveChangesAsync();
+                
                 return Unauthorized(new { message = "Invalid credentials." });
             }
 

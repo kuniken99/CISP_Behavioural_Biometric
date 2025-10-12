@@ -28,6 +28,28 @@ const ActivityLogPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const logsPerPage = 15;
 
+  // Helper function to determine severity based on action
+  const determineSeverity = useCallback((action) => {
+    const highSeverityActions = [
+      'FAILED_LOGIN', 'FAILED_TWO_FACTOR_LOGIN', 'DELETE_USER', 'DEACTIVATE_USER', 
+      'TOGGLE_USER_STATUS', 'USER_STATUS_CHANGE', 'SECURITY_BREACH', 
+      'UNAUTHORIZED_ACCESS', 'PRIVILEGE_ESCALATION', 'DATA_BREACH'
+    ];
+    const mediumSeverityActions = [
+      'TWO_FACTOR_LOGIN_SUCCESS', 'CREATE_USER', 'UPDATE_USER', 'LOGIN', 'LOGOUT', 
+      'PASSWORD_CHANGE', 'EMAIL_CHANGE', 'ROLE_CHANGE', 'USER_ACTIVATION', 'USER_DEACTIVATION'
+    ];
+    const lowSeverityActions = [
+      'VIEW_USERS', 'VIEW_LOGS', 'VIEW_ALERTS', 'VIEW_DASHBOARD', 
+      'VIEW_CONFIG', 'VIEW_PROFILE', 'SEARCH', 'FILTER'
+    ];
+    
+    if (highSeverityActions.some(act => action.includes(act))) return 'High';
+    if (mediumSeverityActions.some(act => action.includes(act))) return 'Medium';
+    if (lowSeverityActions.some(act => action.includes(act))) return 'Low';
+    return 'Medium'; // Default to Medium for unknown actions
+  }, []);
+
   useEffect(() => {
     const fetchLogs = async () => {
       try {
@@ -52,9 +74,12 @@ const ActivityLogPage = () => {
               severityCache.set(log.action, severity);
             }
             
+            // Convert UTC timestamp to GMT+8
+            const utcDate = new Date(log.timestamp);
+            const gmt8Date = new Date(utcDate.getTime() + (8 * 60 * 60 * 1000)); // Add 8 hours
+            
             return {
-              timestamp: new Date(log.timestamp).toLocaleString('en-US', {
-                timeZone: 'Asia/Singapore', // GMT+8
+              timestamp: gmt8Date.toLocaleString('en-US', {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit',
@@ -81,17 +106,7 @@ const ActivityLogPage = () => {
       }
     };
     fetchLogs();
-  }, []);
-
-  // Helper function to determine severity based on action
-  const determineSeverity = useCallback((action) => {
-    const highSeverityActions = ['DELETE_USER', 'DEACTIVATE_USER', 'FAILED_LOGIN', 'SECURITY_BREACH'];
-    const mediumSeverityActions = ['CREATE_USER', 'UPDATE_USER', 'LOGIN', 'LOGOUT'];
-    
-    if (highSeverityActions.some(act => action.includes(act))) return 'High';
-    if (mediumSeverityActions.some(act => action.includes(act))) return 'Medium';
-    return 'Low';
-  }, []);
+  }, [determineSeverity]);
 
   // Memoize filtered logs for better performance
   const filteredLogs = useMemo(() => {
@@ -121,6 +136,11 @@ const ActivityLogPage = () => {
     return filtered;
   }, [logs, debouncedSearchTerm, selectedUser, selectedAction, selectedSeverity]);
 
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearchTerm, selectedUser, selectedAction, selectedSeverity]);
+
   // Extract unique users and actions for dynamic filters
   const uniqueUsers = useMemo(() => {
     const users = [...new Set(logs.map(log => log.user))].sort();
@@ -130,6 +150,11 @@ const ActivityLogPage = () => {
   const uniqueActions = useMemo(() => {
     const actions = [...new Set(logs.map(log => log.action))].sort();
     return ['All Actions', ...actions];
+  }, [logs]);
+
+  const uniqueSeverities = useMemo(() => {
+    const severities = [...new Set(logs.map(log => log.severity))].sort();
+    return ['All Severities', ...severities];
   }, [logs]);
 
   // Paginate filtered logs
@@ -216,8 +241,9 @@ const ActivityLogPage = () => {
                   backgroundImage: 'none'
                 }}
               >
-                <option>darrell</option>
-                <option>All Users</option>
+                {uniqueUsers.map(user => (
+                  <option key={user} value={user}>{user}</option>
+                ))}
               </select>
               <img 
                 src={DropdownIcon} 
@@ -249,11 +275,9 @@ const ActivityLogPage = () => {
                   backgroundImage: 'none'
                 }}
               >
-                <option>All Actions</option>
-                <option>LOGIN</option>
-                <option>VIEW_USERS</option>
-                <option>VIEW_LOGS</option>
-                <option>VIEW_ALERTS</option>
+                {uniqueActions.map(action => (
+                  <option key={action} value={action}>{action}</option>
+                ))}
               </select>
               <img 
                 src={DropdownIcon} 
@@ -285,10 +309,9 @@ const ActivityLogPage = () => {
                   backgroundImage: 'none'
                 }}
               >
-                <option>All Severities</option>
-                <option>High</option>
-                <option>Medium</option>
-                <option>Low</option>
+                {uniqueSeverities.map(severity => (
+                  <option key={severity} value={severity}>{severity}</option>
+                ))}
               </select>
               <img 
                 src={DropdownIcon} 
@@ -370,8 +393,8 @@ const ActivityLogPage = () => {
               disabled={currentPage === 1}
               style={{
                 padding: '8px 12px',
-                backgroundColor: currentPage === 1 ? '#f3f4f6' : '#3b82f6',
-                color: currentPage === 1 ? '#9ca3af' : 'white',
+                backgroundColor: currentPage === 1 ? '#f3f4f6' : '#000000',
+                color: currentPage === 1 ? '#9ca3af' : '#ffffff',
                 border: 'none',
                 borderRadius: '4px',
                 cursor: currentPage === 1 ? 'not-allowed' : 'pointer'
@@ -389,8 +412,8 @@ const ActivityLogPage = () => {
               disabled={currentPage === totalPages}
               style={{
                 padding: '8px 12px',
-                backgroundColor: currentPage === totalPages ? '#f3f4f6' : '#3b82f6',
-                color: currentPage === totalPages ? '#9ca3af' : 'white',
+                backgroundColor: currentPage === totalPages ? '#f3f4f6' : '#000000',
+                color: currentPage === totalPages ? '#9ca3af' : '#ffffff',
                 border: 'none',
                 borderRadius: '4px',
                 cursor: currentPage === totalPages ? 'not-allowed' : 'pointer'

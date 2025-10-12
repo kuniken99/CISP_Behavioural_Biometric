@@ -1026,8 +1026,9 @@ tr:nth-child(even) {
 }
 
 .severity-badge.high {
-  background-color: #fef2f2;
-  color: #dc2626;
+  background-color: #dc2626;
+  color: #ffffff;
+  font-weight: 600;
 }
 
 .severity-badge.medium {

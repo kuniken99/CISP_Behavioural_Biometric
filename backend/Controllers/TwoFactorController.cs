@@ -165,6 +165,16 @@ namespace db_biometrics_mvp.Backend.Controllers
             
             if (!isValid)
             {
+                // Log failed 2FA attempt
+                await _context.AuditLogs.AddAsync(new AuditLog 
+                { 
+                    Username = user.Username, 
+                    Action = "FAILED_TWO_FACTOR_LOGIN", 
+                    Details = $"Failed 2FA login attempt for user {user.Email}", 
+                    IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" 
+                });
+                await _context.SaveChangesAsync();
+                
                 return BadRequest(new { message = "Invalid verification code. Please try again." });
             }
 
