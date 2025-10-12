@@ -149,7 +149,7 @@ const AlertSystemPage = () => {
         {/* Search and Filter Section */}
         <div style={{ display: 'flex', gap: '15px', alignItems: 'center', width: '100%' }}>
           {/* Search Section */}
-          <div className="search-input-wrapper" style={{ flex: '2', minWidth: '400px' }}>
+          <div className="search-input-wrapper" style={{ minWidth: '50px' }}>
             <img src={SearchIcon} alt="Search" className="search-icon" />
             <input
               type="text"
@@ -197,7 +197,7 @@ const AlertSystemPage = () => {
             </div>
           </div>
           
-          <div className="filter-wrapper" style={{ flex: '1', minWidth: '150px' }}>
+          <div className="filter-wrapper" style={{ flex: '1', minWidth: '180px' }}>
             <img src={SeverityIcon} alt="Severity" className="filter-icon" style={{ marginRight: '8px' }} />
             <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
               <select 
@@ -232,7 +232,7 @@ const AlertSystemPage = () => {
             </div>
           </div>
           
-          <div className="filter-wrapper" style={{ flex: '1', minWidth: '150px' }}>
+          <div className="filter-wrapper" style={{ flex: '1', minWidth: '170px' }}>
             <img src={ToggleIcon} alt="Status" className="filter-icon" style={{ marginRight: '8px' }} />
             <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
               <select 

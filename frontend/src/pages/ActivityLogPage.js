@@ -422,7 +422,7 @@ const ActivityLogPage = () => {
               </div>
             </div>
             
-            <div className="filter-wrapper">
+            <div className="filter-wrapper-severity">
               <img src={SeverityIcon} alt="Severity" className="filter-icon" />
               <div className="select-wrapper">
                 <select 
