@@ -43,6 +43,10 @@ const WebsiteAdministrationPage = () => {
       const data = await response.json();
       if (response.ok) {
         setSuccess(data.message || 'Website content updated successfully!');
+        // Clear success message after 3 seconds
+        setTimeout(() => {
+          setSuccess('');
+        }, 3000);
       } else {
         setError(data.message || 'Failed to update website content.');
       }

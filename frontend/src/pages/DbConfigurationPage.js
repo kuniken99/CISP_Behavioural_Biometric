@@ -47,6 +47,10 @@ const DbConfigurationPage = () => {
       const data = await response.json();
       if (response.ok) {
         setSuccess(data.message || 'Configuration updated successfully!');
+        // Clear success message after 3 seconds
+        setTimeout(() => {
+          setSuccess('');
+        }, 3000);
       } else {
         setError(data.message || 'Failed to update configuration.');
       }
