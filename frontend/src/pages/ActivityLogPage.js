@@ -105,11 +105,15 @@ const ActivityLogPage = () => {
   if (error) return <p className="error">{error}</p>;
 
   return (
-    <div className="activity-logs-container">
-      {/* Search and Filter Controls */}
-      <div className="activity-controls">
-        <div className="search-section">
-          <div className="search-input-wrapper">
+    <>
+      {/* Card 1: Filters */}
+      <div className="card">
+        <h2>Activity Log Filters</h2>
+        
+        {/* Search and Filter Section - One Line */}
+        <div style={{ display: 'flex', gap: '15px', alignItems: 'center', width: '100%' }}>
+          {/* Search Section */}
+          <div className="search-input-wrapper" style={{ flex: '2', minWidth: '400px' }}>
             <img src={SearchIcon} alt="Search" className="search-icon" />
             <input
               type="text"
@@ -119,12 +123,11 @@ const ActivityLogPage = () => {
               className="activity-search-input"
             />
           </div>
-        </div>
         
-        <div className="filter-section">
-          <div className="filter-wrapper">
+          {/* Filter Section */}
+          <div className="filter-wrapper" style={{ flex: '1', minWidth: '150px' }}>
             <img src={PersonIcon} alt="User" className="filter-icon" />
-            <div style={{ position: 'relative', display: 'inline-block', flex: '1' }}>
+            <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
               <select 
                 value={selectedUser} 
                 onChange={(e) => setSelectedUser(e.target.value)} 
@@ -155,9 +158,9 @@ const ActivityLogPage = () => {
             </div>
           </div>
           
-          <div className="filter-wrapper">
+          <div className="filter-wrapper" style={{ flex: '1', minWidth: '150px' }}>
             <img src={FilterIcon} alt="Filter" className="filter-icon" />
-            <div style={{ position: 'relative', display: 'inline-block', flex: '1' }}>
+            <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
               <select 
                 value={selectedAction} 
                 onChange={(e) => setSelectedAction(e.target.value)} 
@@ -191,9 +194,9 @@ const ActivityLogPage = () => {
             </div>
           </div>
           
-          <div className="filter-wrapper">
+          <div className="filter-wrapper" style={{ flex: '1', minWidth: '150px' }}>
             <img src={SeverityIcon} alt="Severity" className="filter-icon" />
-            <div style={{ position: 'relative', display: 'inline-block', flex: '1' }}>
+            <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
               <select 
                 value={selectedSeverity} 
                 onChange={(e) => setSelectedSeverity(e.target.value)} 
@@ -226,53 +229,56 @@ const ActivityLogPage = () => {
             </div>
           </div>
         </div>
+
+        {/* Results Summary and Clear Button */}
+        <div className="results-summary">
+          <span>Showing {filteredLogs.length} of {logs.length} logs</span>
+          <button type="button" onClick={clearFilters} className="clear-filters-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 6h18M9 12h6M11 18h2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Clear All Filters
+          </button>
+        </div>
       </div>
 
-      {/* Results Summary */}
-      <div className="results-summary">
-        <span>Showing {filteredLogs.length} of {logs.length} logs</span>
-        <button type="button" onClick={clearFilters} className="clear-filters-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 6h18M9 12h6M11 18h2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          Clear All Filters
-        </button>
-      </div>
-
-      {/* Activity Logs Table */}
-      <div className="activity-table-container">
-        <table className="activity-table">
-          <thead>
-            <tr>
-              <th>Timestamp</th>
-              <th>User</th>
-              <th>Action</th>
-              <th>Details</th>
-              <th>Severity</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredLogs.map((log, index) => (
-              <tr key={index}>
-                <td>{log.timestamp}</td>
-                <td>{log.user}</td>
-                <td>
-                  <span className={`action-badge ${log.action.toLowerCase().replace('_', '-')}`}>
-                    {log.action}
-                  </span>
-                </td>
-                <td>{log.details}</td>
-                <td>
-                  <span className={`severity-badge ${log.severity.toLowerCase()}`}>
-                    {log.severity}
-                  </span>
-                </td>
+      {/* Card 2: Activity Logs Table */}
+      <div className="card">
+        <h2>Activity Logs</h2>
+        <div className="activity-table-container">
+          <table className="activity-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>User</th>
+                <th>Action</th>
+                <th>Details</th>
+                <th>Severity</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredLogs.map((log, index) => (
+                <tr key={index}>
+                  <td>{log.timestamp}</td>
+                  <td>{log.user}</td>
+                  <td>
+                    <span className={`action-badge ${log.action.toLowerCase().replace('_', '-')}`}>
+                      {log.action}
+                    </span>
+                  </td>
+                  <td>{log.details}</td>
+                  <td>
+                    <span className={`severity-badge ${log.severity.toLowerCase()}`}>
+                      {log.severity}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

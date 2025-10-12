@@ -60,6 +60,7 @@ const DbConfigurationPage = () => {
 
   return (
     <div className="card">
+      <h2>Configuration Settings</h2>
       {success && <p className="success">{success}</p>}
       {config && (
         <div className="form-group-grid">

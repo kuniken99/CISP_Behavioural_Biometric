@@ -190,7 +190,7 @@ body {
 /* Improved card spacing */
 .card { 
   background-color: #fff; 
-  padding: 10px 32px; 
+  padding: 0px 32px 10px; 
   border-radius: 12px; 
   box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
   margin-bottom: 24px; 
@@ -1279,7 +1279,6 @@ tr:nth-child(even) {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
   padding: 12px 0;
   color: #64748b;
   font-size: 0.9rem;
@@ -1314,8 +1313,6 @@ tr:nth-child(even) {
   background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  border: 1px solid #f1f5f9;
-  overflow: hidden;
 }
 
 .activity-table {
