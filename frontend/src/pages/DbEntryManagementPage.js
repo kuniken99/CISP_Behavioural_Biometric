@@ -200,56 +200,60 @@ const DbEntryManagementPage = () => {
   };
 
   return (
-    <div className="card">
-      <form onSubmit={(e) => { e.preventDefault(); return false; }}>
-        <div className="form-group">
-          <label>Select Table:</label>
-          <div style={{ position: 'relative', display: 'inline-block', width: '300px' }}>
-            <select 
-              value={selectedTable} 
-              onChange={(e) => handleTableSelect(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  return false;
-                }
-              }}
-              style={{ 
-                width: '100%', 
-                paddingRight: '40px',
-                appearance: 'none',
-                backgroundImage: 'none'
-              }}
-            >
-              <option value="">-- Select a Table --</option>
-              {tables.map(table => (
-                <option key={table.name} value={table.name}>{table.name}</option>
-              ))}
-            </select>
-            <img 
-              src={DropdownIcon} 
-              alt="Dropdown" 
-              style={{ 
-                position: 'absolute', 
-                right: '12px', 
-                top: '50%', 
-                transform: 'translateY(-50%)', 
-                width: '16px', 
-                height: '16px',
-                pointerEvents: 'none'
-              }} 
-            />
+    <>
+      {/* Card 1: Table Selection */}
+      <div className="card">
+        <h2>Select Table</h2>
+        <form onSubmit={(e) => { e.preventDefault(); return false; }}>
+          <div className="form-group">
+            <div style={{ position: 'relative', display: 'inline-block', width: '250px' }}>
+              <select 
+                value={selectedTable} 
+                onChange={(e) => handleTableSelect(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                  }
+                }}
+                style={{ 
+                  width: '100%', 
+                  paddingRight: '40px',
+                  appearance: 'none',
+                  backgroundImage: 'none'
+                }}
+              >
+                <option value="">-- Select a Table --</option>
+                {tables.map(table => (
+                  <option key={table.name} value={table.name}>{table.name}</option>
+                ))}
+              </select>
+              <img 
+                src={DropdownIcon} 
+                alt="Dropdown" 
+                style={{ 
+                  position: 'absolute', 
+                  right: '12px', 
+                  top: '50%', 
+                  transform: 'translateY(-50%)', 
+                  width: '16px', 
+                  height: '16px',
+                  pointerEvents: 'none'
+                }} 
+              />
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
 
-      {loading && <p>Loading entries...</p>}
-      {error && <p className="error">{error}</p>}
+        {loading && <p>Loading entries...</p>}
+        {error && <p className="error">{error}</p>}
+      </div>
 
+      {/* Card 2: Entries Display */}
       {selectedTable && (
-        <>
-          <h3>Entries for {selectedTable}</h3>
+        <div className="card">
+          <h2>Entries for {selectedTable}</h2>
           <table>
             <thead>
               <tr>
@@ -314,8 +318,13 @@ const DbEntryManagementPage = () => {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
 
-          <h3>{editingEntryId ? 'Edit Entry' : 'Add New Entry'}</h3>
+      {/* Card 3: Add/Edit Entry Form */}
+      {selectedTable && (
+        <div className="card">
+          <h2>{editingEntryId ? 'Edit Entry' : 'Add New Entry'}</h2>
           <form onSubmit={(e) => { e.preventDefault(); e.stopPropagation(); return false; }} className="form-group-inline">
             {entries.length > 0 && Object.keys(entries[0]).filter(k => k !== 'id').map(key => (
               <div key={key} className="form-group">
@@ -355,9 +364,9 @@ const DbEntryManagementPage = () => {
               Clear Form
             </button>
           </div>
-        </>
+        </div>
       )}
-    </div>
+    </>
   );
 };
 

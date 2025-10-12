@@ -187,12 +187,14 @@ body {
   height: 16px;
 }
 
+/* Improved card spacing */
 .card { 
   background-color: #fff; 
-  padding: 25px; 
-  border-radius: 8px; 
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
-  margin-bottom: 20px; 
+  padding: 10px 32px; 
+  border-radius: 12px; 
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
+  margin-bottom: 24px; 
+  border: 1px solid #f1f5f9;
 }
 
 .form-group { 
@@ -1370,29 +1372,6 @@ tr:nth-child(even) {
   color: #dc2626;
 }
 
-/* Improved card spacing */
-.card { 
-  background-color: #fff; 
-  padding: 32px; 
-  border-radius: 12px; 
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
-  margin-bottom: 24px; 
-  border: 1px solid #f1f5f9;
-}
-
-.card h2 {
-  margin-top: 0;
-  margin-bottom: 24px;
-  color: #1e293b;
-  font-weight: 600;
-}
-
-.card h3 {
-  margin-top: 24px;
-  margin-bottom: 16px;
-  color: #1e293b;
-  font-weight: 600;
-}
 
 /* Improved form spacing */
 .form-group { 
