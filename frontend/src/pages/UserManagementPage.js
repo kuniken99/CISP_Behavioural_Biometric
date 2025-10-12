@@ -241,9 +241,9 @@ const UserManagementPage = () => {
   return (
     <div className="card">
       {/* Unique Code Generation Section - Now First */}
-      <h2>Generate Registration Codes</h2>
+      <h2>1. Generate Registration Codes</h2>
       <p style={{ color: '#6b7280', marginBottom: '20px' }}>
-        Generate unique codes for new user registration. These codes are required during the sign-up process.
+        Unique codes for new user registration. These codes are required during the sign-up process.
       </p>
       <form onSubmit={(e) => { e.preventDefault(); e.stopPropagation(); return false; }} className="form-group-inline">
         <div className="form-group">
@@ -369,7 +369,7 @@ const UserManagementPage = () => {
 
       {/* Create New User Section - Now Second */}
       <div style={{ marginTop: '40px', paddingTop: '30px', borderTop: '2px solid #e5e7eb' }}>
-        <h2>Create New User</h2>
+        <h2>2. Create New User</h2>
         <form onSubmit={(e) => { e.preventDefault(); e.stopPropagation(); return false; }} className="form-group-inline">
           <div className="form-group">
             <label>Username:</label>
@@ -423,18 +423,32 @@ const UserManagementPage = () => {
             </select>
           </div>
         </form>
-        <button 
-          type="button" 
-          className="button primary" 
-          onClick={handleCreateUser}
-          style={{ 
-            backgroundColor: '#000000', 
-            color: '#ffffff',
-            border: '1px solid #000000'
-          }}
-        >
-          Create User
-        </button>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <button 
+            type="button" 
+            className="button primary" 
+            onClick={handleCreateUser}
+            style={{ 
+              backgroundColor: '#000000', 
+              color: '#ffffff',
+              border: '1px solid #000000'
+            }}
+          >
+            Create User
+          </button>
+          <button 
+            type="button" 
+            className="button secondary" 
+            onClick={() => { setNewUser({ username: '', password: '', role: 'user' }); }} 
+            style={{ 
+              backgroundColor: '#ffffff', 
+              color: '#000000', 
+              border: '1px solid #ccc' 
+            }}
+          >
+            Clear Form
+          </button>
+        </div>
       </div>
 
       <h3>Existing Users</h3>
