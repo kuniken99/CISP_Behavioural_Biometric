@@ -25,7 +25,7 @@ body {
   width: 250px; 
   background-color: #f8f9fa; 
   color: #000000; 
-  padding: 20px; 
+  padding: 10px 20px; 
   box-shadow: 2px 0 5px rgba(0,0,0,0.1); 
   display: flex; 
   flex-direction: column; 
@@ -89,9 +89,7 @@ body {
 
 .main-content { 
   flex-grow: 1; 
-  margin-left: 270px; 
-  margin-right: 20px; 
-  padding: 25px 30px 20px; 
+  margin-left: 290px; 
   background-color: #ffffff; 
   display: flex; 
   flex-direction: column; 
@@ -138,7 +136,7 @@ body {
 .user-info { 
   display: flex; 
   align-items: center; 
-  gap: 16px;
+  gap: 12px;
 }
 
 .user-info span { 
@@ -151,7 +149,6 @@ body {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 10px;
   border-radius: 50%;
   transition: background-color 0.2s ease;
   display: flex;
@@ -161,11 +158,6 @@ body {
 
 .profile-button:hover {
   background-color: #f3f4f6;
-}
-
-.profile-icon {
-  width: 32px;
-  height: 32px;
 }
 
 .logout-button { 
@@ -362,10 +354,8 @@ tr:nth-child(even) {
   background-color: #f8f9fa;
   border-top: 1px solid #e5e7eb;
   margin-top: auto;
-  margin-left: 290px;
-  margin-right: 20px;
+  margin-left: 295px;
   padding: 40px 0 20px 0;
-  width: calc(100% - 310px);
   color: #000000;
   position: relative;
   z-index: 1;
@@ -437,7 +427,7 @@ tr:nth-child(even) {
 .cbba-monitor {
   position: fixed !important;
   bottom: 20px !important;
-  left: 20px !important;
+  left: 25px !important;
   width: 210px !important;
   z-index: 1000 !important;
   background-color: #ffffff !important;
