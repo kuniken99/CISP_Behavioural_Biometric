@@ -123,41 +123,103 @@ const ActivityLogPage = () => {
         <div className="filter-section">
           <div className="filter-wrapper">
             <img src={PersonIcon} alt="User" className="filter-icon" />
-            <select 
-              value={selectedUser} 
-              onChange={(e) => setSelectedUser(e.target.value)} 
-              className="activity-filter"
-            >
-              <option>darrell</option>
-              <option>All Users</option>
-            </select>
+            <div style={{ position: 'relative', display: 'inline-block', flex: '1' }}>
+              <select 
+                value={selectedUser} 
+                onChange={(e) => setSelectedUser(e.target.value)} 
+                className="activity-filter"
+                style={{ 
+                  paddingRight: '40px', 
+                  width: '100%',
+                  appearance: 'none',
+                  backgroundImage: 'none'
+                }}
+              >
+                <option>darrell</option>
+                <option>All Users</option>
+              </select>
+              <img 
+                src={DropdownIcon} 
+                alt="Dropdown" 
+                style={{ 
+                  position: 'absolute', 
+                  right: '12px', 
+                  top: '50%', 
+                  transform: 'translateY(-50%)', 
+                  width: '16px', 
+                  height: '16px',
+                  pointerEvents: 'none'
+                }} 
+              />
+            </div>
           </div>
           
           <div className="filter-wrapper">
             <img src={FilterIcon} alt="Filter" className="filter-icon" />
-            <select 
-              value={selectedAction} 
-              onChange={(e) => setSelectedAction(e.target.value)} 
-              className="activity-filter"
-            >
-              <option>All Actions</option>
-              <option>LOGIN</option>
-              <option>VIEW_USERS</option>
-              <option>VIEW_LOGS</option>
-              <option>VIEW_ALERTS</option>
-            </select>
+            <div style={{ position: 'relative', display: 'inline-block', flex: '1' }}>
+              <select 
+                value={selectedAction} 
+                onChange={(e) => setSelectedAction(e.target.value)} 
+                className="activity-filter"
+                style={{ 
+                  paddingRight: '40px', 
+                  width: '100%',
+                  appearance: 'none',
+                  backgroundImage: 'none'
+                }}
+              >
+                <option>All Actions</option>
+                <option>LOGIN</option>
+                <option>VIEW_USERS</option>
+                <option>VIEW_LOGS</option>
+                <option>VIEW_ALERTS</option>
+              </select>
+              <img 
+                src={DropdownIcon} 
+                alt="Dropdown" 
+                style={{ 
+                  position: 'absolute', 
+                  right: '12px', 
+                  top: '50%', 
+                  transform: 'translateY(-50%)', 
+                  width: '16px', 
+                  height: '16px',
+                  pointerEvents: 'none'
+                }} 
+              />
+            </div>
           </div>
           
-          <select 
-            value={selectedSeverity} 
-            onChange={(e) => setSelectedSeverity(e.target.value)} 
-            className="activity-filter"
-          >
-            <option>All Severities</option>
-            <option>High</option>
-            <option>Medium</option>
-            <option>Low</option>
-          </select>
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <select 
+              value={selectedSeverity} 
+              onChange={(e) => setSelectedSeverity(e.target.value)} 
+              className="activity-filter"
+              style={{ 
+                paddingRight: '40px',
+                appearance: 'none',
+                backgroundImage: 'none'
+              }}
+            >
+              <option>All Severities</option>
+              <option>High</option>
+              <option>Medium</option>
+              <option>Low</option>
+            </select>
+            <img 
+              src={DropdownIcon} 
+              alt="Dropdown" 
+              style={{ 
+                position: 'absolute', 
+                right: '12px', 
+                top: '50%', 
+                transform: 'translateY(-50%)', 
+                width: '16px', 
+                height: '16px',
+                pointerEvents: 'none'
+              }} 
+            />
+          </div>
         </div>
       </div>
 

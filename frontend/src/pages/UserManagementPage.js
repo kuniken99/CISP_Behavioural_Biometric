@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../utils/config';
 import userManagementIcon from '../assets/user-management-icon.svg';
 import EditIcon from '../assets/edit-icon.svg';
+import DropdownIcon from '../assets/dropdown-icon.svg';
 
 // Inline styles for status badges
 const statusBadgeStyle = {
@@ -249,22 +250,43 @@ const UserManagementPage = () => {
       <form onSubmit={(e) => { e.preventDefault(); e.stopPropagation(); return false; }} className="form-group-inline">
         <div className="form-group">
           <label>Role for New Users:</label>
-          <select 
-            value={newCodeData.role} 
-            onChange={(e) => setNewCodeData({ ...newCodeData, role: e.target.value })}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                e.stopPropagation();
-                handleGenerateUniqueCode();
-                return false;
-              }
-            }}
-          >
-            <option value="user">User</option>
-            <option value="dba">DBA</option>
-            <option value="admin">Admin</option>
-          </select>
+          <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
+            <select 
+              value={newCodeData.role} 
+              onChange={(e) => setNewCodeData({ ...newCodeData, role: e.target.value })}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleGenerateUniqueCode();
+                  return false;
+                }
+              }}
+              style={{ 
+                width: '100%', 
+                paddingRight: '40px',
+                appearance: 'none',
+                backgroundImage: 'none'
+              }}
+            >
+              <option value="user">User</option>
+              <option value="dba">DBA</option>
+              <option value="admin">Admin</option>
+            </select>
+            <img 
+              src={DropdownIcon} 
+              alt="Dropdown" 
+              style={{ 
+                position: 'absolute', 
+                right: '12px', 
+                top: '50%', 
+                transform: 'translateY(-50%)', 
+                width: '16px', 
+                height: '16px',
+                pointerEvents: 'none'
+              }} 
+            />
+          </div>
         </div>
         <div className="form-group">
           <label>Expires In (Days):</label>
@@ -406,22 +428,43 @@ const UserManagementPage = () => {
           </div>
           <div className="form-group">
             <label>Role:</label>
-            <select 
-              value={newUser.role} 
-              onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleCreateUser();
-                  return false;
-                }
-              }}
-            >
-              <option value="user">User</option>
-              <option value="dba">DBA</option>
-              <option value="admin">Admin</option>
-            </select>
+            <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
+              <select 
+                value={newUser.role} 
+                onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleCreateUser();
+                    return false;
+                  }
+                }}
+                style={{ 
+                  width: '100%', 
+                  paddingRight: '40px',
+                  appearance: 'none',
+                  backgroundImage: 'none'
+                }}
+              >
+                <option value="user">User</option>
+                <option value="dba">DBA</option>
+                <option value="admin">Admin</option>
+              </select>
+              <img 
+                src={DropdownIcon} 
+                alt="Dropdown" 
+                style={{ 
+                  position: 'absolute', 
+                  right: '12px', 
+                  top: '50%', 
+                  transform: 'translateY(-50%)', 
+                  width: '16px', 
+                  height: '16px',
+                  pointerEvents: 'none'
+                }} 
+              />
+            </div>
           </div>
         </form>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -492,26 +535,46 @@ const UserManagementPage = () => {
               </td>
               <td>
                 {editingUserId === user.id ? (
-                  <select 
-                    value={editingUser.role}
-                    onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleUpdateUser();
-                        return false;
-                      }
-                      if (e.key === 'Escape') {
-                        handleCancelEdit();
-                      }
-                    }}
-                    style={{ width: '100%' }}
-                  >
-                    <option value="user">User</option>
-                    <option value="dba">DBA</option>
-                    <option value="admin">Admin</option>
-                  </select>
+                  <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
+                    <select 
+                      value={editingUser.role}
+                      onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleUpdateUser();
+                          return false;
+                        }
+                        if (e.key === 'Escape') {
+                          handleCancelEdit();
+                        }
+                      }}
+                      style={{ 
+                        width: '100%', 
+                        paddingRight: '40px',
+                        appearance: 'none',
+                        backgroundImage: 'none'
+                      }}
+                    >
+                      <option value="user">User</option>
+                      <option value="dba">DBA</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                    <img 
+                      src={DropdownIcon} 
+                      alt="Dropdown" 
+                      style={{ 
+                        position: 'absolute', 
+                        right: '12px', 
+                        top: '50%', 
+                        transform: 'translateY(-50%)', 
+                        width: '16px', 
+                        height: '16px',
+                        pointerEvents: 'none'
+                      }} 
+                    />
+                  </div>
                 ) : (
                   user.role
                 )}

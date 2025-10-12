@@ -125,23 +125,81 @@ const AlertSystemPage = () => {
         <div className="alert-filters">
           <div className="filter-wrapper">
             <img src={FilterIcon} alt="Filter" className="filter-icon" />
-            <select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="alert-filter">
-              <option>All Types</option>
-              <option>Security</option>
-              <option>Performance</option>
-            </select>
+            <div style={{ position: 'relative', display: 'inline-block', flex: '1' }}>
+              <select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="alert-filter" style={{ 
+                paddingRight: '40px', 
+                width: '100%',
+                appearance: 'none',
+                backgroundImage: 'none'
+              }}>
+                <option>All Types</option>
+                <option>Security</option>
+                <option>Performance</option>
+              </select>
+              <img 
+                src={DropdownIcon} 
+                alt="Dropdown" 
+                style={{ 
+                  position: 'absolute', 
+                  right: '12px', 
+                  top: '50%', 
+                  transform: 'translateY(-50%)', 
+                  width: '16px', 
+                  height: '16px',
+                  pointerEvents: 'none'
+                }} 
+              />
+            </div>
           </div>
-          <select value={filterSeverity} onChange={(e) => setFilterSeverity(e.target.value)} className="alert-filter">
-            <option>All Severities</option>
-            <option>High</option>
-            <option>Medium</option>
-            <option>Low</option>
-          </select>
-          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="alert-filter">
-            <option>All Statuses</option>
-            <option>Active</option>
-            <option>Resolved</option>
-          </select>
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <select value={filterSeverity} onChange={(e) => setFilterSeverity(e.target.value)} className="alert-filter" style={{ 
+              paddingRight: '40px',
+              appearance: 'none',
+              backgroundImage: 'none'
+            }}>
+              <option>All Severities</option>
+              <option>High</option>
+              <option>Medium</option>
+              <option>Low</option>
+            </select>
+            <img 
+              src={DropdownIcon} 
+              alt="Dropdown" 
+              style={{ 
+                position: 'absolute', 
+                right: '12px', 
+                top: '50%', 
+                transform: 'translateY(-50%)', 
+                width: '16px', 
+                height: '16px',
+                pointerEvents: 'none'
+              }} 
+            />
+          </div>
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="alert-filter" style={{ 
+              paddingRight: '40px',
+              appearance: 'none',
+              backgroundImage: 'none'
+            }}>
+              <option>All Statuses</option>
+              <option>Active</option>
+              <option>Resolved</option>
+            </select>
+            <img 
+              src={DropdownIcon} 
+              alt="Dropdown" 
+              style={{ 
+                position: 'absolute', 
+                right: '12px', 
+                top: '50%', 
+                transform: 'translateY(-50%)', 
+                width: '16px', 
+                height: '16px',
+                pointerEvents: 'none'
+              }} 
+            />
+          </div>
         </div>
       </div>
 

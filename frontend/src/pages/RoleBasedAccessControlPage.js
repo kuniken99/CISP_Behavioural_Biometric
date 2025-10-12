@@ -1,6 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../utils/config';
 import RoleAccessControlIcon from '../assets/role-access-control-icon.svg';
+import DropdownIcon from '../assets/dropdown-icon.svg';
+
+// Inline styles for status badges
+const statusBadgeStyle = {
+  padding: '2px 8px',
+  borderRadius: '12px',
+  fontSize: '12px',
+  fontWeight: 'bold',
+  textTransform: 'uppercase'
+};
+
+const activeStatusStyle = {
+  ...statusBadgeStyle,
+  backgroundColor: '#10b981',
+  color: 'white'
+};
+
+const inactiveStatusStyle = {
+  ...statusBadgeStyle,
+  backgroundColor: '#ef4444',
+  color: 'white'
+};
 
 const RoleBasedAccessControlPage = () => {
   const [users, setUsers] = useState([]);
@@ -75,43 +97,85 @@ const RoleBasedAccessControlPage = () => {
         <form onSubmit={(e) => { e.preventDefault(); e.stopPropagation(); return false; }} className="form-group-inline">
           <div className="form-group">
             <label>Select User:</label>
-            <select 
-              value={selectedUser} 
-              onChange={(e) => setSelectedUser(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleAssignRole();
-                  return false;
-                }
-              }}
-            >
-              <option value="">-- Select User --</option>
-              {users.map(user => (
-                <option key={user.id} value={user.id}>{user.username} ({user.role})</option>
-              ))}
-            </select>
+            <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
+              <select 
+                value={selectedUser} 
+                onChange={(e) => setSelectedUser(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleAssignRole();
+                    return false;
+                  }
+                }}
+                style={{ 
+                  width: '100%', 
+                  paddingRight: '40px',
+                  appearance: 'none',
+                  backgroundImage: 'none'
+                }}
+              >
+                <option value="">-- Select User --</option>
+                {users.map(user => (
+                  <option key={user.id} value={user.id}>{user.username} ({user.role})</option>
+                ))}
+              </select>
+              <img 
+                src={DropdownIcon} 
+                alt="Dropdown" 
+                style={{ 
+                  position: 'absolute', 
+                  right: '12px', 
+                  top: '50%', 
+                  transform: 'translateY(-50%)', 
+                  width: '16px', 
+                  height: '16px',
+                  pointerEvents: 'none'
+                }} 
+              />
+            </div>
           </div>
           <div className="form-group">
             <label>Assign Role:</label>
-            <select 
-              value={selectedRole} 
-              onChange={(e) => setSelectedRole(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleAssignRole();
-                  return false;
-                }
-              }}
-            >
-              <option value="">-- Select Role --</option>
-              {roles.map(role => (
-                <option key={role.name} value={role.name}>{role.name}</option>
-              ))}
-            </select>
+            <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
+              <select 
+                value={selectedRole} 
+                onChange={(e) => setSelectedRole(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleAssignRole();
+                    return false;
+                  }
+                }}
+                style={{ 
+                  width: '100%', 
+                  paddingRight: '40px',
+                  appearance: 'none',
+                  backgroundImage: 'none'
+                }}
+              >
+                <option value="">-- Select Role --</option>
+                {roles.map(role => (
+                  <option key={role.name} value={role.name}>{role.name}</option>
+                ))}
+              </select>
+              <img 
+                src={DropdownIcon} 
+                alt="Dropdown" 
+                style={{ 
+                  position: 'absolute', 
+                  right: '12px', 
+                  top: '50%', 
+                  transform: 'translateY(-50%)', 
+                  width: '16px', 
+                  height: '16px',
+                  pointerEvents: 'none'
+                }} 
+              />
+            </div>
           </div>
         </form>
         <button 
@@ -144,7 +208,11 @@ const RoleBasedAccessControlPage = () => {
               <tr key={user.id}>
                 <td>{user.username}</td>
                 <td>{user.role}</td>
-                <td>{user.isActive ? 'Active' : 'Inactive'}</td>
+                <td>
+                  <span style={user.isActive ? activeStatusStyle : inactiveStatusStyle}>
+                    {user.isActive ? 'Active' : 'Inactive'}
+                  </span>
+                </td>
               </tr>
             ))}
           </tbody>
