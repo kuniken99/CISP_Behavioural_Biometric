@@ -3,9 +3,15 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import SidebarIcon from '../SidebarIcon';
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    // Close mobile menu on navigation
+    if (onClose) onClose();
+  };
 
   const menuItems = [
     { key: 'dashboard', label: 'Dashboard', icon: 'dashboard', path: '/dashboard' },
@@ -20,7 +26,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="sidebar">
+    <div className={`sidebar ${isOpen ? 'open' : ''}`}>
       <h1>DBA Console</h1>
       <nav className="sidebar-nav">
         <ul>
@@ -28,7 +34,7 @@ const Sidebar = () => {
             <li key={item.key}>
               <button 
                 className={location.pathname === item.path ? 'active' : ''} 
-                onClick={() => navigate(item.path)}
+                onClick={() => handleNavigation(item.path)}
               >
                 <SidebarIcon type={item.icon} />
                 {item.label}

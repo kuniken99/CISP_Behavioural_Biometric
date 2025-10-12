@@ -28,6 +28,7 @@ import TermsOfUsePage from './pages/TermsOfUsePage';
 import UserProfilePage from './pages/UserProfilePage';
 
 // Import styles
+import './styles/responsive-system.css';
 import './styles/App.css';
 
 function App() {
@@ -38,6 +39,17 @@ function App() {
     handleLogin,
     handleLogout
   } = useAuth();
+
+  // Mobile menu state
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(prev => !prev);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
 
   // Temporarily disable biometric tracking to debug auto-refresh issue
   // eslint-disable-next-line no-unused-vars
@@ -67,12 +79,17 @@ function App() {
     <div className="app-container">
       <ScrollToTop />
       <div className="main-app-wrapper">
-        <Sidebar />
+        <Sidebar 
+          isOpen={isMobileMenuOpen} 
+          onClose={closeMobileMenu}
+        />
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
           <Header 
             currentUser={currentUser}
             userRole={userRole}
             handleLogout={handleLogout}
+            onToggleMobileMenu={toggleMobileMenu}
+            isMobileMenuOpen={isMobileMenuOpen}
           />
           <div className="main-content">
             <div style={{ flex: 1, overflow: 'auto' }}>
@@ -81,6 +98,13 @@ function App() {
           </div>
         </div>
       </div>
+      {/* Mobile menu backdrop */}
+      {isMobileMenuOpen && (
+        <div 
+          className="mobile-menu-backdrop" 
+          onClick={closeMobileMenu}
+        />
+      )}
       <Footer />
       <CBBAMonitor 
         status="Active" 

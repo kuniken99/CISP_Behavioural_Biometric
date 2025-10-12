@@ -9,19 +9,31 @@ import SeverityIcon from '../assets/severity-icon.svg';
 
 // Memoize table row component for better rendering performance
 const LogRow = React.memo(({ log, index }) => (
-  <tr key={index}>
-    <td>{log.timestamp}</td>
-    <td>{log.user}</td>
-    <td>
+  <tr key={index} className="responsive-table-row">
+    <td data-label="Timestamp" className="timestamp-cell">
+      <div className="mobile-timestamp">{log.timestamp.split(',')[0]}</div>
+      <div className="mobile-time tablet-up">{log.timestamp.split(',')[1]}</div>
+      <div className="tablet-up full-timestamp">{log.timestamp}</div>
+    </td>
+    <td data-label="User" className="tablet-up">{log.user}</td>
+    <td data-label="Action">
       <span className={`action-badge ${log.action.toLowerCase().replace('_', '-')}`}>
         {log.action}
       </span>
+      <div className="mobile-only mobile-meta">
+        <small className="mobile-user">👤 {log.user}</small>
+      </div>
     </td>
-    <td>{log.details}</td>
-    <td>
+    <td data-label="Details" className="tablet-up details-cell">
+      <div className="details-text">{log.details}</div>
+    </td>
+    <td data-label="Severity">
       <span className={`severity-badge ${log.severity.toLowerCase()}`}>
         {log.severity}
       </span>
+      <div className="mobile-only mobile-details">
+        <small>{log.details}</small>
+      </div>
     </td>
   </tr>
 ));
@@ -360,123 +372,70 @@ const ActivityLogPage = () => {
       <div className="card">
         <h2>Filters</h2>
         
-        {/* Search and Filter Section - One Line */}
-        <div style={{ display: 'flex', gap: '15px', alignItems: 'center', width: '100%' }}>
-          {/* Search Section */}
-          <div className="search-input-wrapper" style={{ flex: '2', minWidth: '400px' }}>
-            <img src={SearchIcon} alt="Search" className="search-icon" />
-            <input
-              type="text"
-              placeholder="Search by user, action, or details..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="activity-search-input"
-            />
-          </div>
-          
-          {/* Small gap before filters */}
-          <div style={{ width: '100px' }}></div>
-        
-          {/* Filter Section */}
-          <div className="filter-wrapper" style={{ flex: '1', minWidth: '150px' }}>
-            <img src={PersonIcon} alt="User" className="filter-icon" />
-            <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
-              <select 
-                value={selectedUser} 
-                onChange={(e) => setSelectedUser(e.target.value)} 
-                className="activity-filter"
-                style={{ 
-                  paddingRight: '40px', 
-                  width: '100%',
-                  appearance: 'none',
-                  backgroundImage: 'none'
-                }}
-              >
-                {uniqueUsers.map(user => (
-                  <option key={user} value={user}>{user}</option>
-                ))}
-              </select>
-              <img 
-                src={DropdownIcon} 
-                alt="Dropdown" 
-                style={{ 
-                  position: 'absolute', 
-                  right: '12px', 
-                  top: '50%', 
-                  transform: 'translateY(-50%)', 
-                  width: '16px', 
-                  height: '16px',
-                  pointerEvents: 'none'
-                }} 
+        {/* Responsive Search and Filter Section */}
+        <div className="responsive-filters-container">
+          {/* Search Section - Full width on mobile, 50% on tablet+ */}
+          <div className="search-section">
+            <div className="search-input-wrapper">
+              <img src={SearchIcon} alt="Search" className="search-icon" />
+              <input
+                type="text"
+                placeholder="Search by user, action, or details..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="activity-search-input"
               />
             </div>
           </div>
           
-          <div className="filter-wrapper" style={{ flex: '1', minWidth: '150px' }}>
-            <img src={FilterIcon} alt="Filter" className="filter-icon" />
-            <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
-              <select 
-                value={selectedAction} 
-                onChange={(e) => setSelectedAction(e.target.value)} 
-                className="activity-filter"
-                style={{ 
-                  paddingRight: '40px', 
-                  width: '100%',
-                  appearance: 'none',
-                  backgroundImage: 'none'
-                }}
-              >
-                {uniqueActions.map(action => (
-                  <option key={action} value={action}>{action}</option>
-                ))}
-              </select>
-              <img 
-                src={DropdownIcon} 
-                alt="Dropdown" 
-                style={{ 
-                  position: 'absolute', 
-                  right: '12px', 
-                  top: '50%', 
-                  transform: 'translateY(-50%)', 
-                  width: '16px', 
-                  height: '16px',
-                  pointerEvents: 'none'
-                }} 
-              />
+          {/* Filter Section - Stack on mobile, inline on tablet+ */}
+          <div className="filters-section">
+            <div className="filter-wrapper">
+              <img src={PersonIcon} alt="User" className="filter-icon" />
+              <div className="select-wrapper">
+                <select 
+                  value={selectedUser} 
+                  onChange={(e) => setSelectedUser(e.target.value)} 
+                  className="activity-filter"
+                >
+                  {uniqueUsers.map(user => (
+                    <option key={user} value={user}>{user}</option>
+                  ))}
+                </select>
+                <img src={DropdownIcon} alt="Dropdown" className="dropdown-icon" />
+              </div>
             </div>
-          </div>
-          
-          <div className="filter-wrapper" style={{ flex: '1', minWidth: '150px' }}>
-            <img src={SeverityIcon} alt="Severity" className="filter-icon" />
-            <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
-              <select 
-                value={selectedSeverity} 
-                onChange={(e) => setSelectedSeverity(e.target.value)} 
-                className="activity-filter"
-                style={{ 
-                  paddingRight: '40px',
-                  width: '100%',
-                  appearance: 'none',
-                  backgroundImage: 'none'
-                }}
-              >
-                {uniqueSeverities.map(severity => (
-                  <option key={severity} value={severity}>{severity}</option>
-                ))}
-              </select>
-              <img 
-                src={DropdownIcon} 
-                alt="Dropdown" 
-                style={{ 
-                  position: 'absolute', 
-                  right: '12px', 
-                  top: '50%', 
-                  transform: 'translateY(-50%)', 
-                  width: '16px', 
-                  height: '16px',
-                  pointerEvents: 'none'
-                }} 
-              />
+            
+            <div className="filter-wrapper">
+              <img src={FilterIcon} alt="Filter" className="filter-icon" />
+              <div className="select-wrapper">
+                <select 
+                  value={selectedAction} 
+                  onChange={(e) => setSelectedAction(e.target.value)} 
+                  className="activity-filter"
+                >
+                  {uniqueActions.map(action => (
+                    <option key={action} value={action}>{action}</option>
+                  ))}
+                </select>
+                <img src={DropdownIcon} alt="Dropdown" className="dropdown-icon" />
+              </div>
+            </div>
+            
+            <div className="filter-wrapper">
+              <img src={SeverityIcon} alt="Severity" className="filter-icon" />
+              <div className="select-wrapper">
+                <select 
+                  value={selectedSeverity} 
+                  onChange={(e) => setSelectedSeverity(e.target.value)} 
+                  className="activity-filter"
+                >
+                  {uniqueSeverities.map(severity => (
+                    <option key={severity} value={severity}>{severity}</option>
+                  ))}
+                </select>
+                <img src={DropdownIcon} alt="Dropdown" className="dropdown-icon" />
+              </div>
             </div>
           </div>
         </div>
@@ -498,32 +457,21 @@ const ActivityLogPage = () => {
 
       {/* Card 2: Activity Logs Table */}
       <div className="card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <div className="activity-header">
           <h2>Activity Logs</h2>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div className="activity-controls">
             {/* Logs per page selector */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <label style={{ fontSize: '14px', color: '#6b7280', fontWeight: '500' }}>
-                Show:
-              </label>
-              <div style={{ position: 'relative', display: 'inline-block' }}>
+            <div className="logs-per-page-control">
+              <label className="tablet-up">Show:</label>
+              <div className="select-wrapper">
                 <select 
                   value={logsPerPage} 
                   onChange={(e) => {
                     setLogsPerPage(Number(e.target.value));
-                    setCurrentPage(1); // Reset to first page when changing page size
-                    cacheRef.current.clear(); // Clear cache when page size changes
+                    setCurrentPage(1);
+                    cacheRef.current.clear();
                   }}
-                  style={{ 
-                    padding: '6px 32px 6px 12px',
-                    fontSize: '14px',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '4px',
-                    backgroundColor: '#ffffff',
-                    appearance: 'none',
-                    backgroundImage: 'none',
-                    cursor: 'pointer'
-                  }}
+                  className="logs-per-page-select"
                 >
                   <option value={10}>10</option>
                   <option value={15}>15</option>
@@ -531,57 +479,29 @@ const ActivityLogPage = () => {
                   <option value={50}>50</option>
                   <option value={100}>100</option>
                 </select>
-                <img 
-                  src={DropdownIcon} 
-                  alt="Dropdown" 
-                  style={{ 
-                    position: 'absolute', 
-                    right: '8px', 
-                    top: '50%', 
-                    transform: 'translateY(-50%)', 
-                    width: '12px', 
-                    height: '12px',
-                    pointerEvents: 'none'
-                  }} 
-                />
+                <img src={DropdownIcon} alt="Dropdown" className="dropdown-icon" />
               </div>
             </div>
             
-            <button
-            onClick={handleDownloadLogs}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '8px 16px',
-              backgroundColor: '#000000',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '500'
-            }}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#374151'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#000000'}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <polyline points="7,10 12,15 17,10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-            Download Logs
-          </button>
+            <button onClick={handleDownloadLogs} className="download-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <polyline points="7,10 12,15 17,10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+              <span className="tablet-up">Download Logs</span>
+              <span className="mobile-only">Download</span>
+            </button>
           </div>
         </div>
-        <div className="activity-table-container">
-          <table className="activity-table">
+        <div className="activity-table-container table-container">
+          <table className="activity-table responsive-table">
             <thead>
               <tr>
                 <th>Timestamp</th>
-                <th>User</th>
+                <th className="tablet-up">User</th>
                 <th>Action</th>
-                <th>Details</th>
+                <th className="tablet-up">Details</th>
                 <th>Severity</th>
               </tr>
             </thead>
@@ -646,48 +566,34 @@ const ActivityLogPage = () => {
           </table>
         </div>
         
-        {/* Pagination Controls */}
+        {/* Responsive Pagination Controls */}
         {totalPages > 1 && (
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center', 
-            gap: '10px',
-            marginTop: '20px',
-            padding: '10px'
-          }}>
+          <div className="pagination-controls">
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              style={{
-                padding: '8px 12px',
-                backgroundColor: currentPage === 1 ? '#f3f4f6' : '#000000',
-                color: currentPage === 1 ? '#9ca3af' : '#ffffff',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: currentPage === 1 ? 'not-allowed' : 'pointer'
-              }}
+              className={`pagination-btn ${currentPage === 1 ? 'disabled' : ''}`}
             >
-              Previous
+              <span className="mobile-only">‹</span>
+              <span className="tablet-up">Previous</span>
             </button>
             
-            <span style={{ color: '#6b7280', fontSize: '14px' }}>
-              Page {currentPage} of {totalPages} (showing {paginatedLogs.length} of {filteredLogs.length})
-            </span>
+            <div className="pagination-info">
+              <span className="tablet-up">
+                Page {currentPage} of {totalPages} (showing {paginatedLogs.length} of {filteredLogs.length})
+              </span>
+              <span className="mobile-only">
+                {currentPage}/{totalPages}
+              </span>
+            </div>
             
             <button
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              style={{
-                padding: '8px 12px',
-                backgroundColor: currentPage === totalPages ? '#f3f4f6' : '#000000',
-                color: currentPage === totalPages ? '#9ca3af' : '#ffffff',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: currentPage === totalPages ? 'not-allowed' : 'pointer'
-              }}
+              className={`pagination-btn ${currentPage === totalPages ? 'disabled' : ''}`}
             >
-              Next
+              <span className="mobile-only">›</span>
+              <span className="tablet-up">Next</span>
             </button>
           </div>
         )}

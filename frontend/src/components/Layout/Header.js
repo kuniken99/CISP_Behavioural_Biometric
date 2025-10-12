@@ -16,7 +16,7 @@ import HelpIcon from '../../assets/help-icon.svg';
 import WebsiteAdminIcon from '../../assets/website-admin-icon.svg';
 import ShieldIcon from '../../assets/shield-icon.svg';
 
-const Header = ({ currentUser, userRole, handleLogout }) => {
+const Header = ({ currentUser, userRole, handleLogout, onToggleMobileMenu, isMobileMenuOpen }) => {
   const location = useLocation();
   const navigate = useNavigate();
   // Map URL paths to display names
@@ -64,9 +64,22 @@ const Header = ({ currentUser, userRole, handleLogout }) => {
 
   return (
     <div className="header">
-      <div className="header-title">
-        <img src={getPageIcon(currentPageInfo.key)} alt={currentPageInfo.name} className="page-icon" />
-        <h2>{currentPageInfo.name}</h2>
+      <div className="header-left">
+        <button 
+          className="mobile-menu-toggle"
+          onClick={onToggleMobileMenu}
+          aria-label="Toggle menu"
+        >
+          <span className={`hamburger ${isMobileMenuOpen ? 'open' : ''}`}>
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </button>
+        <div className="header-title">
+          <img src={getPageIcon(currentPageInfo.key)} alt={currentPageInfo.name} className="page-icon" />
+          <h2>{currentPageInfo.name}</h2>
+        </div>
       </div>
       <div className="user-info">
         <button 
@@ -76,13 +89,13 @@ const Header = ({ currentUser, userRole, handleLogout }) => {
         >
           <img src={ProfileIcon} alt="Profile" className="profile-icon" />
         </button>
-        <span>Logged in as: <strong>{currentUser}</strong> ({userRole})</span>
+        <span className="user-text">Logged in as: <strong>{currentUser}</strong> ({userRole})</span>
         <button 
           className="logout-button" 
           onClick={handleLogout}
         >
           <img src={LogoutIcon} alt="Logout" className="logout-icon" />
-          Logout
+          <span className="logout-text">Logout</span>
         </button>
       </div>
     </div>
