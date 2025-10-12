@@ -90,6 +90,7 @@ body {
 .main-content { 
   flex-grow: 1; 
   margin-left: 290px; 
+  padding: 20px;
   background-color: #ffffff; 
   display: flex; 
   flex-direction: column; 
@@ -108,11 +109,12 @@ body {
   display: flex; 
   justify-content: space-between; 
   align-items: center; 
-  margin-bottom: 25px; 
+  margin-left: 290px;
+  margin-bottom: 0px; 
   background-color: #ffffff; 
   padding: 20px 25px; 
-  border-radius: 8px; 
   box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .header-title {
@@ -129,7 +131,7 @@ body {
 .header h2 { 
   margin: 0; 
   color: #000000; 
-  font-size: 1.8rem; 
+  font-size: 1.6rem; 
   font-weight: 600; 
 }
 

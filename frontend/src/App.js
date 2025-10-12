@@ -56,14 +56,16 @@ function App() {
     <div className="app-container">
       <div className="main-app-wrapper">
         <Sidebar />
-        <div className="main-content">
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
           <Header 
             currentUser={currentUser}
             userRole={userRole}
             handleLogout={handleLogout}
           />
-          <div style={{ flex: 1, overflow: 'auto' }}>
-            {children}
+          <div className="main-content">
+            <div style={{ flex: 1, overflow: 'auto' }}>
+              {children}
+            </div>
           </div>
         </div>
       </div>
