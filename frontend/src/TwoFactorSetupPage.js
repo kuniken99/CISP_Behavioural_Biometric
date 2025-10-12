@@ -189,27 +189,31 @@ function TwoFactorSetupPage({ setCurrentAuthPage, email, onSetupComplete }) {
             <strong>Step 1:</strong> Please use your Google Authenticator on your mobile device to scan this QR Code
           </p>
           
-          {qrCodeImage && (
-            <div className="qr-code-container">
-              <img 
-                src={`data:image/png;base64,${qrCodeImage}`} 
-                alt="2FA QR Code" 
-                className="qr-code-image"
-              />
-            </div>
-          )}
-          
-          <p className="alternative-text">
-            Alternatively, enter this code into your Google Authenticator app
-          </p>
-          
-          {manualEntryCode && (
-            <div className="manual-code-container">
-              <div className="manual-code">
-                {manualEntryCode}
+          <div className="qr-section">
+            {qrCodeImage && (
+              <div className="qr-code-container">
+                <img 
+                  src={`data:image/png;base64,${qrCodeImage}`} 
+                  alt="2FA QR Code" 
+                  className="qr-code-image"
+                />
               </div>
+            )}
+            
+            <div className="alternative-section">
+              <p className="alternative-text">
+                Alternatively, enter this code into your Google Authenticator app
+              </p>
+              
+              {manualEntryCode && (
+                <div className="manual-code-container">
+                  <div className="manual-code">
+                    {manualEntryCode}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
 
         <div className="twofa-step">
@@ -263,7 +267,7 @@ function TwoFactorSetupPage({ setCurrentAuthPage, email, onSetupComplete }) {
 
             <button 
               type="submit" 
-              className="btn-primary btn-full"
+              className="btn btn-primary btn-full"
               disabled={isLoading || verificationCode.length !== 6 || !recaptchaVerified}
             >
               {isLoading ? 'Verifying...' : 'Continue'}
@@ -271,16 +275,7 @@ function TwoFactorSetupPage({ setCurrentAuthPage, email, onSetupComplete }) {
           </form>
         </div>
 
-        <div className="back-to-login">
-          <button 
-            type="button"
-            className="link-button"
-            onClick={() => setCurrentAuthPage('login')}
-            disabled={isLoading}
-          >
-            Back to Login
-          </button>
-        </div>
+        
       </div>
     </div>
   );

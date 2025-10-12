@@ -130,7 +130,7 @@ const RegistrationPage = ({ setCurrentAuthPage }) => {
         {/* Back to Login Button */}
         <button 
           type="button"
-          className="back-buttonn"
+          className="back-button"
           onClick={() => setCurrentAuthPage('login')}
         >
           <img src={arrowBackIcon} alt="Back" className="back-icon" />
@@ -250,11 +250,16 @@ const RegistrationPage = ({ setCurrentAuthPage }) => {
           </div>
 
           <div className="register-checkbox">
-            <input type="checkbox" required />
+            <input 
+              type="checkbox" 
+              required 
+              checked={agreedToTerms}
+              onChange={(e) => setAgreedToTerms(e.target.checked)}
+            />
             <span>
                 By creating an account, I agree to the{" "}
                 <a href="#" onClick={() => setCurrentAuthPage('terms')} className="link-button">Terms of Use</a> and{" "}
-                <a href="#" onClick={() => setCurrentAuthPage('privacy')} className="link-button">{" "}Privacy Policy</a>.
+                <a href="#" onClick={() => setCurrentAuthPage('privacy')} className="link-button">Privacy Policy</a>.
             </span>
           </div>
 
