@@ -753,7 +753,7 @@
 
 @media (min-width: 768px) {
   .auth-card {
-    min-width: 400px;
+    min-width: 500px;
   }
 }
 
@@ -761,7 +761,7 @@
 .auth-subtitle {
   text-align: center;
   color: #666;
-  font-size: 14px;
+  font-size: 16px;
   margin: 0 0 20px 0;
   line-height: 1.5;
 }
@@ -901,4 +901,8 @@
 .register-checkbox input[type="checkbox"] {
   width: 25px;
   height: 25px;
+}
+
+.main-content {
+  padding: 0 !important;
 }

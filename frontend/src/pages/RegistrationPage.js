@@ -130,7 +130,7 @@ const RegistrationPage = ({ setCurrentAuthPage }) => {
         {/* Back to Login Button */}
         <button 
           type="button"
-          className="back-button"
+          className="back-buttonn"
           onClick={() => setCurrentAuthPage('login')}
         >
           <img src={arrowBackIcon} alt="Back" className="back-icon" />
