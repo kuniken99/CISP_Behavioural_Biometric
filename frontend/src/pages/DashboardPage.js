@@ -260,19 +260,27 @@ const DashboardPage = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: '16px', color: '#6b7280' }}>Database Connections</span>
-              <span style={{ fontSize: '16px', fontWeight: '600', color: '#111827' }}>45/100</span>
+              <span style={{ fontSize: '16px', fontWeight: '600', color: '#111827' }}>
+                {metrics.systemHealth?.databaseConnections || '45/100'}
+              </span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: '16px', color: '#6b7280' }}>Disk Space</span>
-              <span style={{ fontSize: '16px', fontWeight: '600', color: '#111827' }}>2.1TB free</span>
+              <span style={{ fontSize: '16px', fontWeight: '600', color: '#111827' }}>
+                {metrics.systemHealth?.diskSpace || '2.1TB free'}
+              </span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: '16px', color: '#6b7280' }}>Network Latency</span>
-              <span style={{ fontSize: '16px', fontWeight: '600', color: '#111827' }}>12ms</span>
+              <span style={{ fontSize: '16px', fontWeight: '600', color: '#111827' }}>
+                {metrics.systemHealth?.networkLatency || '12ms'}
+              </span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: '16px', color: '#6b7280' }}>Error Rate</span>
-              <span style={{ fontSize: '16px', fontWeight: '600', color: '#111827' }}>0.01%</span>
+              <span style={{ fontSize: '16px', fontWeight: '600', color: '#111827' }}>
+                {metrics.systemHealth?.errorRate || '0.01%'}
+              </span>
             </div>
           </div>
         </div>

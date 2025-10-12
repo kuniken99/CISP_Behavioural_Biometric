@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { API_BASE_URL } from '../utils/config';
 import ActivityLogsIcon from '../assets/activity-logs-icon.svg';
 import SearchIcon from '../assets/search-icon.svg';
@@ -8,74 +8,101 @@ import DropdownIcon from '../assets/dropdown-icon.svg';
 import SeverityIcon from '../assets/severity-icon.svg';
 
 const ActivityLogPage = () => {
-  const [logs, setLogs] = useState([
-    {
-      timestamp: '9/8/2025, 1:50:55 PM',
-      user: 'darrell',
-      action: 'VIEW_USERS',
-      details: 'Viewed all system users.',
-      severity: 'Medium'
-    },
-    {
-      timestamp: '9/8/2025, 1:45:22 PM',
-      user: 'darrell',
-      action: 'LOGIN',
-      details: 'Successfully logged into admin console.',
-      severity: 'Medium'
-    },
-    {
-      timestamp: '9/8/2025, 1:35:12 PM',
-      user: 'darrell',
-      action: 'VIEW_LOGS',
-      details: 'Accessed activity logs dashboard.',
-      severity: 'Medium'
-    },
-    {
-      timestamp: '9/8/2025, 1:15:29 PM',
-      user: 'darrell',
-      action: 'VIEW_ALERTS',
-      details: 'Reviewed system alert notifications.',
-      severity: 'Medium'
-    }
-  ]);
-  const [loading, setLoading] = useState(false);
+  const [logs, setLogs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedUser, setSelectedUser] = useState('darrell');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+
+  // Debounce search term to improve performance
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+  const [selectedUser, setSelectedUser] = useState('All Users');
   const [selectedAction, setSelectedAction] = useState('All Actions');
   const [selectedSeverity, setSelectedSeverity] = useState('All Severities');
-  const [filteredLogs, setFilteredLogs] = useState(logs);
+  const [currentPage, setCurrentPage] = useState(1);
+  const logsPerPage = 15;
 
   useEffect(() => {
     const fetchLogs = async () => {
       try {
         const token = localStorage.getItem('jwt_token');
-        const response = await fetch(`${API_BASE_URL}/Audit/activity-logs`, {
-          headers: { 'Authorization': `Bearer ${token}` },
+        // Fetch only 30 most recent logs for faster loading
+        const response = await fetch(`${API_BASE_URL}/Audit/activity-logs?limit=30`, {
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Cache-Control': 'no-cache' // Ensure fresh data
+          },
         });
         const data = await response.json();
         if (response.ok) {
-          // setLogs(data);
+          // Pre-calculate severity to avoid repeated calculations
+          const severityCache = new Map();
+          
+          // Transform the data to match expected format
+          const transformedLogs = data.map(log => {
+            let severity = severityCache.get(log.action);
+            if (!severity) {
+              severity = determineSeverity(log.action);
+              severityCache.set(log.action, severity);
+            }
+            
+            return {
+              timestamp: new Date(log.timestamp).toLocaleString('en-US', {
+                timeZone: 'Asia/Singapore', // GMT+8
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+              }),
+              user: log.username || 'System',
+              action: log.action,
+              details: log.details,
+              severity,
+              ipAddress: log.ipAddress || 'N/A'
+            };
+          });
+          setLogs(transformedLogs);
         } else {
-          // setError(data.message || 'Failed to fetch activity logs.');
+          setError(data.message || 'Failed to fetch activity logs.');
         }
       } catch (err) {
-        // setError('Network error fetching activity logs.');
+        setError('Network error fetching activity logs.');
       } finally {
         setLoading(false);
       }
     };
-    // fetchLogs();
+    fetchLogs();
   }, []);
 
-  useEffect(() => {
+  // Helper function to determine severity based on action
+  const determineSeverity = useCallback((action) => {
+    const highSeverityActions = ['DELETE_USER', 'DEACTIVATE_USER', 'FAILED_LOGIN', 'SECURITY_BREACH'];
+    const mediumSeverityActions = ['CREATE_USER', 'UPDATE_USER', 'LOGIN', 'LOGOUT'];
+    
+    if (highSeverityActions.some(act => action.includes(act))) return 'High';
+    if (mediumSeverityActions.some(act => action.includes(act))) return 'Medium';
+    return 'Low';
+  }, []);
+
+  // Memoize filtered logs for better performance
+  const filteredLogs = useMemo(() => {
     let filtered = logs;
     
-    if (searchTerm) {
+    if (debouncedSearchTerm) {
+      const lowerSearchTerm = debouncedSearchTerm.toLowerCase();
       filtered = filtered.filter(log =>
-        log.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        log.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        log.details.toLowerCase().includes(searchTerm.toLowerCase())
+        log.user.toLowerCase().includes(lowerSearchTerm) ||
+        log.action.toLowerCase().includes(lowerSearchTerm) ||
+        log.details.toLowerCase().includes(lowerSearchTerm)
       );
     }
     
@@ -91,18 +118,65 @@ const ActivityLogPage = () => {
       filtered = filtered.filter(log => log.severity === selectedSeverity);
     }
     
-    setFilteredLogs(filtered);
-  }, [logs, searchTerm, selectedUser, selectedAction, selectedSeverity]);
+    return filtered;
+  }, [logs, debouncedSearchTerm, selectedUser, selectedAction, selectedSeverity]);
 
-  const clearFilters = () => {
+  // Extract unique users and actions for dynamic filters
+  const uniqueUsers = useMemo(() => {
+    const users = [...new Set(logs.map(log => log.user))].sort();
+    return ['All Users', ...users];
+  }, [logs]);
+
+  const uniqueActions = useMemo(() => {
+    const actions = [...new Set(logs.map(log => log.action))].sort();
+    return ['All Actions', ...actions];
+  }, [logs]);
+
+  // Paginate filtered logs
+  const paginatedLogs = useMemo(() => {
+    const startIndex = (currentPage - 1) * logsPerPage;
+    return filteredLogs.slice(startIndex, startIndex + logsPerPage);
+  }, [filteredLogs, currentPage, logsPerPage]);
+
+  const totalPages = Math.ceil(filteredLogs.length / logsPerPage);
+
+  const clearFilters = useCallback(() => {
     setSearchTerm('');
-    setSelectedUser('');
+    setSelectedUser('All Users');
     setSelectedAction('All Actions');
     setSelectedSeverity('All Severities');
-  };
+    setCurrentPage(1);
+  }, []);
 
-  if (loading) return <p>Loading activity logs...</p>;
-  if (error) return <p className="error">{error}</p>;
+  if (loading) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '300px',
+        fontSize: '18px',
+        color: '#6b7280'
+      }}>
+        Loading activity logs...
+      </div>
+    );
+  }
+  
+  if (error) {
+    return (
+      <div style={{ 
+        backgroundColor: '#fee2e2', 
+        border: '1px solid #fecaca', 
+        color: '#dc2626', 
+        padding: '12px', 
+        borderRadius: '8px', 
+        marginTop: '16px' 
+      }}>
+        {error}
+      </div>
+    );
+  }
 
   return (
     <>
@@ -260,7 +334,7 @@ const ActivityLogPage = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredLogs.map((log, index) => (
+              {paginatedLogs.map((log, index) => (
                 <tr key={index}>
                   <td>{log.timestamp}</td>
                   <td>{log.user}</td>
@@ -280,6 +354,52 @@ const ActivityLogPage = () => {
             </tbody>
           </table>
         </div>
+        
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            gap: '10px',
+            marginTop: '20px',
+            padding: '10px'
+          }}>
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              style={{
+                padding: '8px 12px',
+                backgroundColor: currentPage === 1 ? '#f3f4f6' : '#3b82f6',
+                color: currentPage === 1 ? '#9ca3af' : 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: currentPage === 1 ? 'not-allowed' : 'pointer'
+              }}
+            >
+              Previous
+            </button>
+            
+            <span style={{ color: '#6b7280', fontSize: '14px' }}>
+              Page {currentPage} of {totalPages} ({filteredLogs.length} logs)
+            </span>
+            
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              style={{
+                padding: '8px 12px',
+                backgroundColor: currentPage === totalPages ? '#f3f4f6' : '#3b82f6',
+                color: currentPage === totalPages ? '#9ca3af' : 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: currentPage === totalPages ? 'not-allowed' : 'pointer'
+              }}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </>
   );

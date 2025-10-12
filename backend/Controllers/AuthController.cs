@@ -457,5 +457,53 @@ namespace db_biometrics_mvp.Backend.Controllers
         {
             return Ok();
         }
+
+        [Authorize]
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            try
+            {
+                var username = User.Identity?.Name;
+                if (string.IsNullOrEmpty(username))
+                {
+                    return Unauthorized(new { message = "User not authenticated." });
+                }
+
+                var user = await _context.Users
+                    .Include(u => u.TwoFactorAuth)
+                    .SingleOrDefaultAsync(u => u.Username == username);
+
+                if (user == null)
+                {
+                    return NotFound(new { message = "User not found." });
+                }
+
+                var profileData = new
+                {
+                    username = user.Username,
+                    email = user.Email,
+                    role = user.Role,
+                    accountStatus = user.IsActive ? "Active" : "Inactive",
+                    twoFactorEnabled = user.IsTwoFactorEnabled,
+                    emailVerified = user.IsEmailVerified,
+                    lastLogin = user.LastLoginAt?.ToString("M/d/yyyy, h:mm:ss tt") ?? "Never",
+                    createdAt = user.CreatedAt.ToString("M/d/yyyy, h:mm:ss tt")
+                };
+
+                return Ok(profileData);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching user profile");
+                return StatusCode(500, new { message = "Internal server error." });
+            }
+        }
+
+        [HttpOptions("profile")]
+        public IActionResult OptionsProfile()
+        {
+            return Ok();
+        }
     }
 }

@@ -21,9 +21,23 @@ namespace db_biometrics_mvp.Backend.Controllers
         }
 
         [HttpGet("activity-logs")]
-        public async Task<IActionResult> GetActivityLogs()
+        public async Task<IActionResult> GetActivityLogs([FromQuery] int limit = 50)
         {
-            var logs = await _context.AuditLogs.OrderByDescending(l => l.Timestamp).Take(100).ToListAsync(); // Get last 100 logs
+            // Optimize query by only selecting needed fields and limiting results
+            var logs = await _context.AuditLogs
+                .AsNoTracking() // Don't track changes for read-only data
+                .OrderByDescending(l => l.Timestamp)
+                .Take(Math.Min(limit, 100)) // Allow dynamic limit but cap at 100
+                .Select(l => new {
+                    l.Id,
+                    l.Timestamp,
+                    l.Username,
+                    l.Action,
+                    l.Details,
+                    l.IpAddress
+                })
+                .ToListAsync();
+
             return Ok(logs);
         }
     }

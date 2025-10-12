@@ -13,25 +13,8 @@ import SeverityIcon from '../assets/severity-icon.svg';
 import ToggleIcon from '../assets/toggle-icon.svg';
 
 const AlertSystemPage = () => {
-  const [alerts, setAlerts] = useState([
-    {
-      id: 'ALT-001',
-      timestamp: '8/23/2025, 4:55:00 PM',
-      type: 'Security',
-      message: 'Failed login attempt for "baduser"',
-      severity: 'Medium',
-      status: 'Active'
-    },
-    {
-      id: 'ALT-002', 
-      timestamp: '8/23/2025, 4:40:00 PM',
-      type: 'Performance',
-      message: 'High CPU usage detected on primary DB server',
-      severity: 'Low',
-      status: 'Active'
-    }
-  ]);
-  const [loading, setLoading] = useState(false);
+  const [alerts, setAlerts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedAlert, setSelectedAlert] = useState(null);
   const [showResolveModal, setShowResolveModal] = useState(false);
@@ -41,9 +24,9 @@ const AlertSystemPage = () => {
   const [filterSeverity, setFilterSeverity] = useState('All Severities');
   const [filterStatus, setFilterStatus] = useState('All Statuses');
 
-  const getTotalAlerts = () => alerts.length + 8; // Adding to existing alerts for demo
-  const getActiveAlerts = () => alerts.filter(alert => alert.status === 'Active').length + 2;
-  const getResolvedAlerts = () => alerts.filter(alert => alert.status === 'Resolved').length + 3;
+  const getTotalAlerts = () => alerts.length;
+  const getActiveAlerts = () => alerts.filter(alert => alert.status === 'Active').length;
+  const getResolvedAlerts = () => alerts.filter(alert => alert.status === 'Resolved').length;
 
   useEffect(() => {
     const fetchAlerts = async () => {
@@ -54,17 +37,26 @@ const AlertSystemPage = () => {
         });
         const data = await response.json();
         if (response.ok) {
-          // setAlerts(data);
+          // Transform the data to match expected format
+          const transformedAlerts = data.map(alert => ({
+            id: `ALT-${alert.id.toString().padStart(3, '0')}`,
+            timestamp: new Date(alert.timestamp).toLocaleString(),
+            type: alert.type,
+            message: alert.message,
+            severity: alert.severity,
+            status: alert.status
+          }));
+          setAlerts(transformedAlerts);
         } else {
-          // setError(data.message || 'Failed to fetch alerts.');
+          setError(data.message || 'Failed to fetch alerts.');
         }
       } catch (err) {
-        // setError('Network error fetching alerts.');
+        setError('Network error fetching alerts.');
       } finally {
         setLoading(false);
       }
     };
-    // fetchAlerts();
+    fetchAlerts();
   }, []);
 
   const handleViewAlert = (alert) => {
@@ -99,8 +91,35 @@ const AlertSystemPage = () => {
     return matchesSearch && matchesType && matchesSeverity && matchesStatus;
   });
 
-  if (loading) return <p>Loading alerts...</p>;
-  if (error) return <p className="error">{error}</p>;
+  if (loading) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '300px',
+        fontSize: '18px',
+        color: '#6b7280'
+      }}>
+        Loading alerts...
+      </div>
+    );
+  }
+  
+  if (error) {
+    return (
+      <div style={{ 
+        backgroundColor: '#fee2e2', 
+        border: '1px solid #fecaca', 
+        color: '#dc2626', 
+        padding: '12px', 
+        borderRadius: '8px', 
+        marginTop: '16px' 
+      }}>
+        {error}
+      </div>
+    );
+  }
 
   return (
     <>

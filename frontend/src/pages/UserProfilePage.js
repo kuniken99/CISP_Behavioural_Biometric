@@ -1,18 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../utils/config';
 import { ReactComponent as TwoFactorIcon } from '../assets/two-factor-icon.svg';
 import { ReactComponent as ShieldIcon } from '../assets/shield-icon.svg';
 
 const UserProfilePage = ({ currentUser, userRole }) => {
   const [userProfile, setUserProfile] = useState({
-    username: currentUser || 'darrell',
-    email: 'j@gmail.com',
+    username: currentUser || 'Loading...',
+    email: 'Loading...',
     password: '**********',
-    role: userRole || 'admin',
-    accountStatus: 'Active',
-    twoFactorEnabled: true,
-    lastLogin: '9/8/2025, 1:50:55 PM'
+    role: userRole || 'Loading...',
+    accountStatus: 'Loading...',
+    twoFactorEnabled: false,
+    emailVerified: false,
+    lastLogin: 'Loading...',
+    createdAt: 'Loading...'
   });
+
+  const [loading, setLoading] = useState(true);
 
   const [showChangeEmail, setShowChangeEmail] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
@@ -21,6 +25,49 @@ const UserProfilePage = ({ currentUser, userRole }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  // Fetch user profile data
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem('jwt_token');
+        if (!token) {
+          setError('No authentication token found');
+          setLoading(false);
+          return;
+        }
+
+        const response = await fetch(`${API_BASE_URL}/Auth/profile`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUserProfile(data);
+        } else {
+          setError('Failed to fetch profile data');
+        }
+      } catch (err) {
+        setError('Network error fetching profile');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  // Auto-clear success/error messages
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => setSuccess(''), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
 
   const handleEmailChange = async () => {
     if (!newEmail) return;
@@ -78,6 +125,21 @@ const UserProfilePage = ({ currentUser, userRole }) => {
       setError('Network error updating password');
     }
   };
+
+  if (loading) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '300px',
+        fontSize: '18px',
+        color: '#6b7280'
+      }}>
+        Loading profile...
+      </div>
+    );
+  }
 
   return (
     <>
@@ -219,7 +281,7 @@ const UserProfilePage = ({ currentUser, userRole }) => {
                   color: '#6b7280', 
                   fontSize: '16px'
                 }}>
-                  {userProfile.password}
+                  **********
                 </span>
               </div>
               {!showChangePassword ? (
@@ -367,7 +429,7 @@ const UserProfilePage = ({ currentUser, userRole }) => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ color: '#6b7280', fontSize: '14px' }}>Account Status</span>
               <span style={{
-                backgroundColor: '#10b981',
+                backgroundColor: userProfile.accountStatus === 'Active' ? '#10b981' : '#ef4444',
                 color: 'white',
                 padding: '4px 12px',
                 borderRadius: '12px',
@@ -382,7 +444,24 @@ const UserProfilePage = ({ currentUser, userRole }) => {
           <div style={{ marginBottom: '16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ color: '#6b7280', fontSize: '14px' }}>2FA Enabled</span>
-              <span style={{ color: '#10b981', fontSize: '18px' }}>✓</span>
+              <span style={{ 
+                color: userProfile.twoFactorEnabled ? '#10b981' : '#ef4444', 
+                fontSize: '18px' 
+              }}>
+                {userProfile.twoFactorEnabled ? '✓' : '✗'}
+              </span>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ color: '#6b7280', fontSize: '14px' }}>Email Verified</span>
+              <span style={{ 
+                color: userProfile.emailVerified ? '#10b981' : '#ef4444', 
+                fontSize: '18px' 
+              }}>
+                {userProfile.emailVerified ? '✓' : '✗'}
+              </span>
             </div>
           </div>
 
@@ -423,19 +502,19 @@ const UserProfilePage = ({ currentUser, userRole }) => {
                 Two-Factor Authentication
               </h3>
               <p style={{ margin: 0, color: '#6b7280', fontSize: '14px' }}>
-                Currently enabled
+                Currently {userProfile.twoFactorEnabled ? 'enabled' : 'disabled'}
               </p>
             </div>
           </div>
           <span style={{
-            backgroundColor: '#10b981',
+            backgroundColor: userProfile.twoFactorEnabled ? '#10b981' : '#ef4444',
             color: 'white',
             padding: '6px 16px',
             borderRadius: '12px',
             fontSize: '14px',
             fontWeight: '500'
           }}>
-            Enabled
+            {userProfile.twoFactorEnabled ? 'Enabled' : 'Disabled'}
           </span>
         </div>
       </div>
