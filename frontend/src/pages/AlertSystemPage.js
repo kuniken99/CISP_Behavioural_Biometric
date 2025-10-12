@@ -105,23 +105,50 @@ const AlertSystemPage = () => {
   return (
     <>
       {/* Card 1: Alert Summary */}
-      <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
-        <div className="card" style={{ flex: '1', textAlign: 'center', padding: '30px' }}>
-          <h3 style={{ color: '#6b7280', marginBottom: '10px', fontSize: '14px' }}>Total Alerts</h3>
-          <div style={{ fontSize: '48px', fontWeight: 'bold', color: '#374151' }}>{getTotalAlerts()}</div>
-          <img src={AlertSystemIcon} alt="Total" style={{ width: '24px', height: '24px', marginTop: '10px' }} />
+      <div style={{ display: 'flex', gap: '20px'}}>
+        <div className="card" style={{ 
+          flex: '1', 
+          padding: '12px 24px', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          minHeight: '80px'
+        }}>
+          <div>
+            <div style={{ color: '#9ca3af', fontSize: '14px', marginBottom: '4px' }}>Total Alerts</div>
+            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#111827' }}>{getTotalAlerts()}</div>
+          </div>
+          <img src={AlertSystemIcon} alt="Total" style={{ width: '40px', height: '40px', opacity: 0.7 }} />
         </div>
         
-        <div className="card" style={{ flex: '1', textAlign: 'center', padding: '30px' }}>
-          <h3 style={{ color: '#6b7280', marginBottom: '10px', fontSize: '14px' }}>Active</h3>
-          <div style={{ fontSize: '48px', fontWeight: 'bold', color: '#ef4444' }}>{getActiveAlerts()}</div>
-          <img src={RedCrossIcon} alt="Active" style={{ width: '24px', height: '24px', marginTop: '10px' }} />
+        <div className="card" style={{ 
+          flex: '1', 
+          padding: '12px 24px', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          minHeight: '80px'
+        }}>
+          <div>
+            <div style={{ color: '#9ca3af', fontSize: '14px', marginBottom: '4px' }}>Active</div>
+            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ef4444' }}>{getActiveAlerts()}</div>
+          </div>
+          <img src={RedCrossIcon} alt="Active" style={{ width: '40px', height: '40px', opacity: 0.7 }} />
         </div>
         
-        <div className="card" style={{ flex: '1', textAlign: 'center', padding: '30px' }}>
-          <h3 style={{ color: '#6b7280', marginBottom: '10px', fontSize: '14px' }}>Resolved</h3>
-          <div style={{ fontSize: '48px', fontWeight: 'bold', color: '#10b981' }}>{getResolvedAlerts()}</div>
-          <img src={GreenCheckIcon} alt="Resolved" style={{ width: '24px', height: '24px', marginTop: '10px' }} />
+        <div className="card" style={{ 
+          flex: '1', 
+          padding: '12px 24px', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          minHeight: '80px'
+        }}>
+          <div>
+            <div style={{ color: '#9ca3af', fontSize: '14px', marginBottom: '4px' }}>Resolved</div>
+            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>{getResolvedAlerts()}</div>
+          </div>
+          <img src={GreenCheckIcon} alt="Resolved" style={{ width: '40px', height: '40px', opacity: 0.7 }} />
         </div>
       </div>
 
@@ -356,76 +383,109 @@ const AlertSystemPage = () => {
       {selectedAlert && !showResolveModal && (
         <div style={{
           position: 'fixed',
-          top: '20px',
-          right: '20px',
-          width: '400px',
-          backgroundColor: 'white',
-          border: '1px solid #d1d5db',
-          borderRadius: '8px',
-          padding: '20px',
-          boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
           zIndex: 1000
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h3 style={{ margin: 0 }}>Alert Details</h3>
-            <button 
-              type="button" 
-              onClick={() => setSelectedAlert(null)} 
-              style={{ 
-                background: 'none', 
-                border: 'none', 
-                fontSize: '20px', 
-                cursor: 'pointer',
-                padding: '0',
-                lineHeight: '1'
-              }}
-            >
-              ✕
-            </button>
-          </div>
-          
-          <div style={{ fontSize: '14px' }}>
-            <div style={{ marginBottom: '12px' }}>
-              <strong>Alert ID:</strong> {selectedAlert.id}
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '12px',
+            padding: '32px',
+            minWidth: '500px',
+            maxWidth: '600px',
+            maxHeight: '80vh',
+            overflow: 'auto',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+              <h2 style={{ margin: 0, fontSize: '24px', fontWeight: '600', color: '#111827' }}>Alert Details</h2>
+              <button 
+                type="button" 
+                onClick={() => setSelectedAlert(null)} 
+                style={{ 
+                  background: 'none', 
+                  border: 'none', 
+                  fontSize: '24px', 
+                  cursor: 'pointer',
+                  padding: '4px',
+                  color: '#6b7280',
+                  borderRadius: '4px'
+                }}
+              >
+                ✕
+              </button>
             </div>
-            <div style={{ marginBottom: '12px' }}>
-              <strong>Timestamp:</strong> {selectedAlert.timestamp}
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px 32px', marginBottom: '24px' }}>
+              <div>
+                <div style={{ color: '#6b7280', fontSize: '14px', marginBottom: '4px' }}>Alert ID</div>
+                <div style={{ fontSize: '16px', fontWeight: '500', color: '#111827' }}>{selectedAlert.id}</div>
+              </div>
+              <div>
+                <div style={{ color: '#6b7280', fontSize: '14px', marginBottom: '4px' }}>Timestamp</div>
+                <div style={{ fontSize: '16px', fontWeight: '500', color: '#111827' }}>{selectedAlert.timestamp}</div>
+              </div>
+              <div>
+                <div style={{ color: '#6b7280', fontSize: '14px', marginBottom: '4px' }}>Type</div>
+                <div style={{ fontSize: '16px', fontWeight: '500', color: '#111827' }}>{selectedAlert.type}</div>
+              </div>
+              <div>
+                <div style={{ color: '#6b7280', fontSize: '14px', marginBottom: '4px' }}>Severity</div>
+                <div style={{ fontSize: '16px', fontWeight: '500', color: '#111827' }}>{selectedAlert.severity}</div>
+              </div>
+              <div>
+                <div style={{ color: '#6b7280', fontSize: '14px', marginBottom: '4px' }}>Status</div>
+                <div style={{ fontSize: '16px', fontWeight: '500', color: '#111827' }}>{selectedAlert.status}</div>
+              </div>
+              <div>
+                <div style={{ color: '#6b7280', fontSize: '14px', marginBottom: '4px' }}>Assigned To</div>
+                <div style={{ fontSize: '16px', fontWeight: '500', color: '#111827' }}>security_team</div>
+              </div>
             </div>
-            <div style={{ marginBottom: '12px' }}>
-              <strong>Type:</strong> {selectedAlert.type}
-            </div>
-            <div style={{ marginBottom: '12px' }}>
-              <strong>Severity:</strong> {selectedAlert.severity}
-            </div>
-            <div style={{ marginBottom: '12px' }}>
-              <strong>Status:</strong> {selectedAlert.status}
-            </div>
-            <div style={{ marginBottom: '12px' }}>
-              <strong>Assigned To:</strong> security_team
-            </div>
-            <div style={{ marginBottom: '12px' }}>
-              <strong>Affected System:</strong> Authentication Service
-            </div>
-            <div style={{ marginBottom: '12px' }}>
-              <strong>Message:</strong>
+            
+            <div style={{ marginBottom: '24px' }}>
+              <div style={{ color: '#6b7280', fontSize: '14px', marginBottom: '8px' }}>Affected System</div>
               <div style={{ 
-                padding: '8px', 
+                padding: '12px', 
                 backgroundColor: '#f9fafb', 
                 border: '1px solid #e5e7eb', 
-                borderRadius: '4px', 
-                marginTop: '4px' 
+                borderRadius: '8px',
+                fontSize: '14px',
+                color: '#374151'
+              }}>
+                Authentication Service
+              </div>
+            </div>
+            
+            <div style={{ marginBottom: '24px' }}>
+              <div style={{ color: '#6b7280', fontSize: '14px', marginBottom: '8px' }}>Message</div>
+              <div style={{ 
+                padding: '12px', 
+                backgroundColor: '#f9fafb', 
+                border: '1px solid #e5e7eb', 
+                borderRadius: '8px',
+                fontSize: '14px',
+                color: '#374151'
               }}>
                 {selectedAlert.message}
               </div>
             </div>
-            <div style={{ marginBottom: '20px' }}>
-              <strong>Notes:</strong>
+            
+            <div style={{ marginBottom: '32px' }}>
+              <div style={{ color: '#6b7280', fontSize: '14px', marginBottom: '8px' }}>Notes</div>
               <div style={{ 
-                padding: '8px', 
+                padding: '12px', 
                 backgroundColor: '#f9fafb', 
                 border: '1px solid #e5e7eb', 
-                borderRadius: '4px', 
-                marginTop: '4px' 
+                borderRadius: '8px',
+                fontSize: '14px',
+                color: '#374151'
               }}>
                 Investigating potential brute force attack
               </div>
@@ -483,7 +543,11 @@ const AlertSystemPage = () => {
               <button
                 type="button"
                 class="close-btn"
-                onClick={() => setShowResolveModal(false)}
+                onClick={() => {
+                  setShowResolveModal(false);
+                  setSelectedAlert(null);
+                  setResolutionNotes('');
+                }}
                 style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer' }}
               >
                 ✕
@@ -516,7 +580,11 @@ const AlertSystemPage = () => {
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
               <button
                 type="button"
-                onClick={() => setShowResolveModal(false)}
+                onClick={() => {
+                  setShowResolveModal(false);
+                  setSelectedAlert(null);
+                  setResolutionNotes('');
+                }}
                 style={{
                   padding: '10px 20px',
                   border: '1px solid #d1d5db',

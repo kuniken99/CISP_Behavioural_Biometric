@@ -78,129 +78,391 @@ const UserProfilePage = ({ currentUser, userRole }) => {
   };
 
   return (
-    <div className="profile-container">
-      <div className="profile-content">
-        <div className="profile-main">
-          <div className="profile-section">
-            <div className="profile-field">
-              <label className="profile-label">Username</label>
-              <div className="profile-value">{userProfile.username}</div>
+    <>
+      <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
+        {/* Card 1: User Profile Information */}
+        <div className="card" style={{ flex: '2' }}>
+          <div style={{ marginBottom: '24px' }}>
+            {/* Username - Inline */}
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              paddingBottom: '16px', 
+              borderBottom: '1px solid #e5e7eb',
+              marginBottom: '16px'
+            }}>
+              <label style={{ 
+                fontWeight: 'bold', 
+                color: '#111827', 
+                minWidth: '120px',
+                fontSize: '16px'
+              }}>
+                Username
+              </label>
+              <span style={{ 
+                color: '#6b7280', 
+                fontSize: '16px'
+              }}>
+                {userProfile.username}
+              </span>
             </div>
 
-            <div className="profile-field">
-              <label className="profile-label">Email Address</label>
-              <div className="profile-field-with-action">
-                <div className="profile-value">{userProfile.email}</div>
-                {!showChangeEmail ? (
-                  <button 
-                    type="button"
-                    className="change-btn"
-                    onClick={() => setShowChangeEmail(true)}
-                  >
-                    Change
-                  </button>
-                ) : (
-                  <div className="change-form">
-                    <input
-                      type="email"
-                      value={newEmail}
-                      onChange={(e) => setNewEmail(e.target.value)}
-                      placeholder="Enter new email"
-                      className="change-input"
-                    />
-                    <button type="button" onClick={handleEmailChange} className="save-btn">Save</button>
-                    <button type="button" onClick={() => setShowChangeEmail(false)} className="cancel-btn">Cancel</button>
-                  </div>
-                )}
+            {/* Email Address - Inline */}
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'space-between',
+              paddingBottom: '16px', 
+              borderBottom: '1px solid #e5e7eb',
+              marginBottom: '16px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <label style={{ 
+                  fontWeight: 'bold', 
+                  color: '#111827', 
+                  minWidth: '120px',
+                  fontSize: '16px'
+                }}>
+                  Email Address
+                </label>
+                <span style={{ 
+                  color: '#6b7280', 
+                  fontSize: '16px'
+                }}>
+                  {userProfile.email}
+                </span>
               </div>
+              {!showChangeEmail ? (
+                <button 
+                  type="button"
+                  onClick={() => setShowChangeEmail(true)}
+                  style={{
+                    color: '#2563eb',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    textDecoration: 'underline'
+                  }}
+                >
+                  Change
+                </button>
+              ) : (
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <input
+                    type="email"
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                    placeholder="Enter new email"
+                    style={{
+                      padding: '6px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '4px',
+                      fontSize: '14px'
+                    }}
+                  />
+                  <button 
+                    type="button" 
+                    onClick={handleEmailChange}
+                    style={{
+                      padding: '6px 12px',
+                      backgroundColor: '#10b981',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      fontSize: '12px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Save
+                  </button>
+                  <button 
+                    type="button" 
+                    onClick={() => setShowChangeEmail(false)}
+                    style={{
+                      padding: '6px 12px',
+                      backgroundColor: '#6b7280',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      fontSize: '12px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
             </div>
 
-            <div className="profile-field">
-              <label className="profile-label">Password</label>
-              <div className="profile-field-with-action">
-                <div className="profile-value">{userProfile.password}</div>
-                {!showChangePassword ? (
-                  <button 
-                    className="change-btn"
-                    onClick={() => setShowChangePassword(true)}
-                  >
-                    Change
-                  </button>
-                ) : (
-                  <div className="change-form">
+            {/* Password - Inline */}
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'space-between',
+              paddingBottom: '16px', 
+              borderBottom: '1px solid #e5e7eb',
+              marginBottom: '16px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <label style={{ 
+                  fontWeight: 'bold', 
+                  color: '#111827', 
+                  minWidth: '120px',
+                  fontSize: '16px'
+                }}>
+                  Password
+                </label>
+                <span style={{ 
+                  color: '#6b7280', 
+                  fontSize: '16px'
+                }}>
+                  {userProfile.password}
+                </span>
+              </div>
+              {!showChangePassword ? (
+                <button 
+                  type="button"
+                  onClick={() => setShowChangePassword(true)}
+                  style={{
+                    color: '#2563eb',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    textDecoration: 'underline'
+                  }}
+                >
+                  Change
+                </button>
+              ) : (
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexDirection: 'column' }}>
+                  <div style={{ display: 'flex', gap: '8px' }}>
                     <input
                       type="password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       placeholder="Enter new password"
-                      className="change-input"
+                      style={{
+                        padding: '6px 12px',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '4px',
+                        fontSize: '14px',
+                        width: '150px'
+                      }}
                     />
                     <input
                       type="password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="Confirm new password"
-                      className="change-input"
+                      placeholder="Confirm password"
+                      style={{
+                        padding: '6px 12px',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '4px',
+                        fontSize: '14px',
+                        width: '150px'
+                      }}
                     />
-                    <button onClick={handlePasswordChange} className="save-btn">Save</button>
-                    <button onClick={() => setShowChangePassword(false)} className="cancel-btn">Cancel</button>
                   </div>
-                )}
-              </div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button 
+                      type="button"
+                      onClick={handlePasswordChange}
+                      style={{
+                        padding: '6px 12px',
+                        backgroundColor: '#10b981',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Save
+                    </button>
+                    <button 
+                      type="button"
+                      onClick={() => setShowChangePassword(false)}
+                      style={{
+                        padding: '6px 12px',
+                        backgroundColor: '#6b7280',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
-            <div className="profile-field">
-              <label className="profile-label">Role</label>
-              <div className="profile-value">{userProfile.role}</div>
+            {/* Role - Inline */}
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              marginBottom: '24px'
+            }}>
+              <label style={{ 
+                fontWeight: 'bold', 
+                color: '#111827', 
+                minWidth: '120px',
+                fontSize: '16px'
+              }}>
+                Role
+              </label>
+              <span style={{ 
+                color: '#6b7280', 
+                fontSize: '16px'
+              }}>
+                {userProfile.role}
+              </span>
             </div>
 
-            <div className="profile-note">
-              <p><strong>PS:</strong> To change username, please contact us at <a href="mailto:tank108@uni.coventry.ac.uk">tank108@uni.coventry.ac.uk</a></p>
-            </div>
-          </div>
-
-          <div className="two-factor-section">
-            <div className="two-factor-header">
-              <div className="two-factor-icon">☐</div>
-              <div className="two-factor-info">
-                <h3>Two-Factor Authentication</h3>
-                <p>Currently enabled</p>
-              </div>
-              <div className="two-factor-status">
-                <span className="status-badge enabled">Enabled</span>
-              </div>
+            {/* Note */}
+            <div style={{ 
+              padding: '16px', 
+              backgroundColor: '#f9fafb', 
+              border: '1px solid #e5e7eb', 
+              borderRadius: '8px',
+              fontSize: '14px',
+              color: '#374151'
+            }}>
+              <strong>PS:</strong> To change username, please contact us at{' '}
+              <a 
+                href="mailto:tank108@uni.coventry.ac.uk" 
+                style={{ color: '#2563eb', textDecoration: 'underline' }}
+              >
+                tank108@uni.coventry.ac.uk
+              </a>
             </div>
           </div>
         </div>
 
-        <div className="profile-sidebar">
-          <div className="security-status">
-            <div className="security-header">
-              <span className="security-icon">🛡</span>
-              <h3>Security Status</h3>
+        {/* Card 3: Security Status (Top Right) */}
+        <div className="card" style={{ flex: '1', height: 'fit-content' }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+            <div style={{ 
+              width: '24px', 
+              height: '24px', 
+              borderRadius: '50%', 
+              backgroundColor: '#f3f4f6', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              marginRight: '12px'
+            }}>
+              🛡️
             </div>
-            
-            <div className="security-item">
-              <span className="security-label">Account Status</span>
-              <span className="status-badge active">{userProfile.accountStatus}</span>
+            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600' }}>Security Status</h3>
+          </div>
+          
+          <div style={{ marginBottom: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ color: '#6b7280', fontSize: '14px' }}>Account Status</span>
+              <span style={{
+                backgroundColor: '#10b981',
+                color: 'white',
+                padding: '4px 12px',
+                borderRadius: '12px',
+                fontSize: '12px',
+                fontWeight: '500'
+              }}>
+                {userProfile.accountStatus}
+              </span>
             </div>
+          </div>
 
-            <div className="security-item">
-              <span className="security-label">2FA Enabled</span>
-              <span className="security-checkmark">✓</span>
+          <div style={{ marginBottom: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ color: '#6b7280', fontSize: '14px' }}>2FA Enabled</span>
+              <span style={{ color: '#10b981', fontSize: '18px' }}>✓</span>
             </div>
+          </div>
 
-            <div className="security-item">
-              <span className="security-label">Last Login</span>
-              <span className="security-time">{userProfile.lastLogin}</span>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ color: '#6b7280', fontSize: '14px' }}>Last Login</span>
+              <span style={{ color: '#374151', fontSize: '14px', fontWeight: '500' }}>
+                {userProfile.lastLogin}
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      {error && <div className="error-message">{error}</div>}
-      {success && <div className="success-message">{success}</div>}
-    </div>
+      {/* Card 2: Two-Factor Authentication */}
+      <div className="card">
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          padding: '20px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{ 
+              width: '24px', 
+              height: '24px', 
+              border: '2px solid #d1d5db',
+              borderRadius: '4px',
+              marginRight: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              {userProfile.twoFactorEnabled && <span style={{ color: '#10b981' }}>✓</span>}
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', marginBottom: '4px' }}>
+                Two-Factor Authentication
+              </h3>
+              <p style={{ margin: 0, color: '#6b7280', fontSize: '14px' }}>
+                Currently enabled
+              </p>
+            </div>
+          </div>
+          <span style={{
+            backgroundColor: '#10b981',
+            color: 'white',
+            padding: '6px 16px',
+            borderRadius: '12px',
+            fontSize: '14px',
+            fontWeight: '500'
+          }}>
+            Enabled
+          </span>
+        </div>
+      </div>
+
+      {error && (
+        <div style={{ 
+          backgroundColor: '#fee2e2', 
+          border: '1px solid #fecaca', 
+          color: '#dc2626', 
+          padding: '12px', 
+          borderRadius: '8px', 
+          marginTop: '16px' 
+        }}>
+          {error}
+        </div>
+      )}
+      {success && (
+        <div style={{ 
+          backgroundColor: '#d1fae5', 
+          border: '1px solid #a7f3d0', 
+          color: '#065f46', 
+          padding: '12px', 
+          borderRadius: '8px', 
+          marginTop: '16px' 
+        }}>
+          {success}
+        </div>
+      )}
+    </>
   );
 };
 
