@@ -68,75 +68,89 @@ const RoleBasedAccessControlPage = () => {
   if (error) return <p className="error">{error}</p>;
 
   return (
-    <div className="card">
-      <form onSubmit={(e) => { e.preventDefault(); e.stopPropagation(); return false; }} className="form-group-inline">
-        <div className="form-group">
-          <label>Select User:</label>
-          <select 
-            value={selectedUser} 
-            onChange={(e) => setSelectedUser(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                e.stopPropagation();
-                handleAssignRole();
-                return false;
-              }
-            }}
-          >
-            <option value="">-- Select User --</option>
-            {users.map(user => (
-              <option key={user.id} value={user.id}>{user.username} ({user.role})</option>
-            ))}
-          </select>
-        </div>
-        <div className="form-group">
-          <label>Assign Role:</label>
-          <select 
-            value={selectedRole} 
-            onChange={(e) => setSelectedRole(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                e.stopPropagation();
-                handleAssignRole();
-                return false;
-              }
-            }}
-          >
-            <option value="">-- Select Role --</option>
-            {roles.map(role => (
-              <option key={role.name} value={role.name}>{role.name}</option>
-            ))}
-          </select>
-        </div>
-      </form>
-      <button type="button" className="button primary" onClick={handleAssignRole} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-        <img src={RoleAccessControlIcon} alt="Assign" style={{ width: '16px', height: '16px' }} />
-        Assign Role
-      </button>
-      {error && <p className="error">{error}</p>}
+    <>
+      {/* Card 1: Assign Role */}
+      <div className="card">
+        <h2>Assign Role</h2>
+        <form onSubmit={(e) => { e.preventDefault(); e.stopPropagation(); return false; }} className="form-group-inline">
+          <div className="form-group">
+            <label>Select User:</label>
+            <select 
+              value={selectedUser} 
+              onChange={(e) => setSelectedUser(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleAssignRole();
+                  return false;
+                }
+              }}
+            >
+              <option value="">-- Select User --</option>
+              {users.map(user => (
+                <option key={user.id} value={user.id}>{user.username} ({user.role})</option>
+              ))}
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Assign Role:</label>
+            <select 
+              value={selectedRole} 
+              onChange={(e) => setSelectedRole(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleAssignRole();
+                  return false;
+                }
+              }}
+            >
+              <option value="">-- Select Role --</option>
+              {roles.map(role => (
+                <option key={role.name} value={role.name}>{role.name}</option>
+              ))}
+            </select>
+          </div>
+        </form>
+        <button 
+          type="button" 
+          className="button primary" 
+          onClick={handleAssignRole} 
+          style={{ 
+            backgroundColor: '#000000', 
+            color: '#ffffff' 
+          }}
+        >
+          Assign Role
+        </button>
+        {error && <p className="error">{error}</p>}
+      </div>
 
-      <h3>Current User Roles</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Username</th>
-            <th>Role</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map(user => (
-            <tr key={user.id}>
-              <td>{user.username}</td>
-              <td>{user.role}</td>
-              <td>{user.isActive ? 'Active' : 'Inactive'}</td>
+      {/* Card 2: Current User Roles */}
+      <div className="card">
+        <h2>Current User Roles</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Role</th>
+              <th>Status</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {users.map(user => (
+              <tr key={user.id}>
+                <td>{user.username}</td>
+                <td>{user.role}</td>
+                <td>{user.isActive ? 'Active' : 'Inactive'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 };
 

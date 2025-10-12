@@ -305,7 +305,8 @@ const DbEntryManagementPage = () => {
                       </div>
                     ) : (
                       <div style={{ display: 'flex', gap: '5px' }}>
-                        <button type="button" className="button secondary small" onClick={() => handleEditEntry(entry)}>
+                        <button type="button" className="button secondary small" onClick={() => handleEditEntry(entry)} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <img src={EditIcon} alt="Edit" style={{ width: '14px', height: '14px' }} />
                           Edit
                         </button>
                         <button type="button" className="button danger small" onClick={() => handleDeleteEntry(entry.id)}>

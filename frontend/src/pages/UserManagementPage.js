@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../utils/config';
 import userManagementIcon from '../assets/user-management-icon.svg';
+import EditIcon from '../assets/edit-icon.svg';
 
 // Inline styles for status badges
 const statusBadgeStyle = {
@@ -532,7 +533,8 @@ const UserManagementPage = () => {
                   </div>
                 ) : (
                   <div style={{ display: 'flex', gap: '5px' }}>
-                    <button type="button" className="button secondary small" onClick={() => handleEditUser(user)}>
+                    <button type="button" className="button secondary small" onClick={() => handleEditUser(user)} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <img src={EditIcon} alt="Edit" style={{ width: '14px', height: '14px' }} />
                       Edit
                     </button>
                     <button type="button" className={`button ${user.isActive ? 'danger' : 'success'} small`} onClick={() => handleToggleUserStatus(user)}>
