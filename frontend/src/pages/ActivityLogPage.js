@@ -73,10 +73,10 @@ const ActivityLogPage = () => {
 
   useEffect(() => {
     const fetchLogs = async (retryCount = 0) => {
-      const cacheKey = `logs-${currentPage}`;
+      const cacheKey = `logs-${logsPerPage}`;
       
       // Check cache first for instant loading
-      if (cacheRef.current.has(cacheKey) && currentPage !== 1) {
+      if (cacheRef.current.has(cacheKey)) {
         const cachedData = cacheRef.current.get(cacheKey);
         setLogs(cachedData.logs);
         setTotalLogs(cachedData.totalLogs);
@@ -93,7 +93,9 @@ const ActivityLogPage = () => {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
         
-        const response = await fetch(`${API_BASE_URL}/Audit/activity-logs?limit=${logsPerPage}&page=${currentPage}`, {
+        // Fetch enough data to support frontend pagination - get more records
+        const fetchLimit = Math.max(logsPerPage * 5, 500); // Fetch 5x the page size or 500, whichever is larger
+        const response = await fetch(`${API_BASE_URL}/Audit/activity-logs?limit=${fetchLimit}&page=1`, {
           headers: { 
             'Authorization': `Bearer ${token}`,
             'Accept': 'application/json'
@@ -191,7 +193,7 @@ const ActivityLogPage = () => {
       }
     };
     fetchLogs();
-  }, [determineSeverity, currentPage, logsPerPage]);
+  }, [determineSeverity, logsPerPage]);
 
   // Memoize filtered logs for better performance
   const filteredLogs = useMemo(() => {
@@ -253,54 +255,7 @@ const ActivityLogPage = () => {
 
   const totalPages = Math.ceil(filteredLogs.length / logsPerPage);
 
-  // Preload next page in background for faster navigation
-  useEffect(() => {
-    if (!loading && currentPage < totalPages) {
-      const preloadNextPage = async () => {
-        const nextPageKey = `logs-${currentPage + 1}`;
-        if (!cacheRef.current.has(nextPageKey)) {
-          try {
-            const token = localStorage.getItem('jwt_token');
-            const response = await fetch(`${API_BASE_URL}/Audit/activity-logs?limit=${logsPerPage}&page=${currentPage + 1}`, {
-              headers: { 
-                'Authorization': `Bearer ${token}`,
-                'Accept': 'application/json'
-              },
-            });
-            
-            if (response.ok) {
-              const data = await response.json();
-              // Process and cache in background
-              const logsData = data.logs || data;
-              const transformedLogs = logsData.map(log => ({
-                timestamp: new Date(new Date(log.timestamp).getTime() + (8 * 60 * 60 * 1000)).toLocaleString('en-US', {
-                  year: 'numeric', month: '2-digit', day: '2-digit',
-                  hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
-                }),
-                user: log.username || 'System',
-                action: log.action,
-                details: log.details,
-                severity: determineSeverity(log.action),
-                ipAddress: log.ipAddress || 'N/A'
-              }));
-
-              cacheRef.current.set(nextPageKey, { 
-                logs: transformedLogs, 
-                totalLogs: data.totalCount || 0,
-                timestamp: Date.now()
-              });
-            }
-          } catch (err) {
-            // Silently fail preloading
-          }
-        }
-      };
-
-      // Preload after a short delay
-      const preloadTimer = setTimeout(preloadNextPage, 1000);
-      return () => clearTimeout(preloadTimer);
-    }
-  }, [loading, currentPage, totalPages, determineSeverity, logsPerPage]);
+  // Note: Preloading removed since we now fetch more data upfront and do frontend-only pagination
 
   const clearFilters = useCallback(() => {
     setSearchTerm('');
@@ -528,7 +483,10 @@ const ActivityLogPage = () => {
 
         {/* Results Summary and Clear Button */}
         <div className="results-summary">
-          <span>Showing {filteredLogs.length} of {logs.length} logs</span>
+          <span>
+            Showing {Math.min(paginatedLogs.length, logsPerPage)} of {filteredLogs.length} logs
+            {filteredLogs.length !== logs.length && ` (filtered from ${logs.length} total)`}
+          </span>
           <button type="button" onClick={clearFilters} className="clear-filters-btn">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M3 6h18M9 12h6M11 18h2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -714,7 +672,7 @@ const ActivityLogPage = () => {
             </button>
             
             <span style={{ color: '#6b7280', fontSize: '14px' }}>
-              Page {currentPage} of {totalPages} ({filteredLogs.length} logs)
+              Page {currentPage} of {totalPages} (showing {paginatedLogs.length} of {filteredLogs.length})
             </span>
             
             <button
