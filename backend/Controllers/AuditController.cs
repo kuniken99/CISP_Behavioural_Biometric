@@ -21,24 +21,45 @@ namespace db_biometrics_mvp.Backend.Controllers
         }
 
         [HttpGet("activity-logs")]
-        public async Task<IActionResult> GetActivityLogs([FromQuery] int limit = 50)
+        public async Task<IActionResult> GetActivityLogs([FromQuery] int limit = 50, [FromQuery] int page = 1)
         {
-            // Optimize query by only selecting needed fields and limiting results
-            var logs = await _context.AuditLogs
-                .AsNoTracking() // Don't track changes for read-only data
-                .OrderByDescending(l => l.Timestamp)
-                .Take(Math.Min(limit, 100)) // Allow dynamic limit but cap at 100
-                .Select(l => new {
-                    l.Id,
-                    l.Timestamp,
-                    l.Username,
-                    l.Action,
-                    l.Details,
-                    l.IpAddress
-                })
-                .ToListAsync();
+            // Calculate pagination
+            var pageSize = Math.Min(limit, 50); // Cap at 50 for performance
+            var skip = (page - 1) * pageSize;
 
-            return Ok(logs);
+            try
+            {
+                // Optimize query with pagination and caching
+                var logs = await _context.AuditLogs
+                    .AsNoTracking() // Don't track changes for read-only data
+                    .OrderByDescending(l => l.Timestamp)
+                    .Skip(skip)
+                    .Take(pageSize)
+                    .Select(l => new {
+                        l.Id,
+                        l.Timestamp,
+                        l.Username,
+                        l.Action,
+                        l.Details,
+                        l.IpAddress
+                    })
+                    .ToListAsync();
+
+                // Get total count for pagination info (only when needed)
+                var totalCount = page == 1 ? await _context.AuditLogs.CountAsync() : 0;
+
+                return Ok(new { 
+                    logs = logs,
+                    totalCount = totalCount,
+                    currentPage = page,
+                    pageSize = pageSize,
+                    hasMore = logs.Count == pageSize
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error fetching activity logs", error = ex.Message });
+            }
         }
     }
 }

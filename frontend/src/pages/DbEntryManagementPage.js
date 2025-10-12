@@ -254,6 +254,19 @@ const DbEntryManagementPage = () => {
       {selectedTable && (
         <div className="card">
           <h2>Entries for {selectedTable}</h2>
+          {selectedTable.toLowerCase() === 'users' && (
+            <div style={{ 
+              background: '#e3f2fd', 
+              border: '1px solid #2196f3', 
+              borderRadius: '4px', 
+              padding: '12px', 
+              marginBottom: '16px',
+              fontSize: '14px',
+              color: '#1976d2'
+            }}>
+              <strong>Note:</strong> Users cannot be deleted for security reasons. Use <strong>User Management</strong> to activate/deactivate users instead.
+            </div>
+          )}
           <table>
             <thead>
               <tr>
@@ -309,9 +322,11 @@ const DbEntryManagementPage = () => {
                           <img src={EditIcon} alt="Edit" style={{ width: '14px', height: '14px' }} />
                           Edit
                         </button>
-                        <button type="button" className="button danger small" onClick={() => handleDeleteEntry(entry.id)}>
-                          Delete
-                        </button>
+                        {selectedTable.toLowerCase() !== 'users' && (
+                          <button type="button" className="button danger small" onClick={() => handleDeleteEntry(entry.id)}>
+                            Delete
+                          </button>
+                        )}
                       </div>
                     )}
                   </td>

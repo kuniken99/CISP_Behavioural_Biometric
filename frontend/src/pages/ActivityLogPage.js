@@ -26,6 +26,7 @@ const ActivityLogPage = () => {
   const [selectedAction, setSelectedAction] = useState('All Actions');
   const [selectedSeverity, setSelectedSeverity] = useState('All Severities');
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalLogs, setTotalLogs] = useState(0);
   const logsPerPage = 15;
 
   // Helper function to determine severity based on action
@@ -53,9 +54,10 @@ const ActivityLogPage = () => {
   useEffect(() => {
     const fetchLogs = async () => {
       try {
+        setLoading(true);
         const token = localStorage.getItem('jwt_token');
-        // Fetch only 30 most recent logs for faster loading
-        const response = await fetch(`${API_BASE_URL}/Audit/activity-logs?limit=30`, {
+        // Fetch with faster loading - reduced to 25 items per page
+        const response = await fetch(`${API_BASE_URL}/Audit/activity-logs?limit=25&page=${currentPage}`, {
           headers: { 
             'Authorization': `Bearer ${token}`,
             'Cache-Control': 'no-cache' // Ensure fresh data
@@ -66,8 +68,9 @@ const ActivityLogPage = () => {
           // Pre-calculate severity to avoid repeated calculations
           const severityCache = new Map();
           
-          // Transform the data to match expected format
-          const transformedLogs = data.map(log => {
+          // Handle new paginated response format
+          const logsData = data.logs || data; // Support both old and new response formats
+          const transformedLogs = logsData.map(log => {
             let severity = severityCache.get(log.action);
             if (!severity) {
               severity = determineSeverity(log.action);
@@ -96,6 +99,11 @@ const ActivityLogPage = () => {
             };
           });
           setLogs(transformedLogs);
+          
+          // Set pagination metadata if available
+          if (data.totalCount !== undefined) {
+            setTotalLogs(data.totalCount);
+          }
         } else {
           setError(data.message || 'Failed to fetch activity logs.');
         }
@@ -106,7 +114,7 @@ const ActivityLogPage = () => {
       }
     };
     fetchLogs();
-  }, [determineSeverity]);
+  }, [determineSeverity, currentPage]);
 
   // Memoize filtered logs for better performance
   const filteredLogs = useMemo(() => {

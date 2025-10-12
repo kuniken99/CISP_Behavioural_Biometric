@@ -341,10 +341,13 @@ namespace db_biometrics_mvp.Backend.Controllers
         [HttpDelete("delete-entry")]
         public async Task<IActionResult> DeleteEntry([FromBody] DeleteEntryDto dto)
         {
-            // Users table is read-only for security
+            // Users cannot be deleted - only deactivated through User Management
             if (dto.TableName.ToLower() == "users")
             {
-                return BadRequest("Deleting users is not allowed for security reasons.");
+                return BadRequest(new { 
+                    message = "Users cannot be deleted for security and audit reasons. Use User Management to activate/deactivate users instead.",
+                    suggestion = "Go to User Management → Toggle User Status"
+                });
             }
 
             // Handle simulated tables (Products, Orders)

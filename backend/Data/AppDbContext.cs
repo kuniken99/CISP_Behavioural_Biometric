@@ -99,6 +99,19 @@ namespace db_biometrics_mvp.Backend.Data
                 .Property(e => e.RiskScore)
                 .HasPrecision(18, 6);
 
+            // Add indexes for performance optimization
+            modelBuilder.Entity<AuditLog>()
+                .HasIndex(e => e.Timestamp)
+                .HasDatabaseName("IX_AuditLogs_Timestamp");
+            
+            modelBuilder.Entity<AuditLog>()
+                .HasIndex(e => new { e.Timestamp, e.Username })
+                .HasDatabaseName("IX_AuditLogs_Timestamp_Username");
+            
+            modelBuilder.Entity<AuditLog>()
+                .HasIndex(e => e.Action)
+                .HasDatabaseName("IX_AuditLogs_Action");
+
             // Seed initial data for MVP
             var adminPasswordHash = HashPassword("adminpass");
             var dbaPasswordHash = HashPassword("dbapass");
