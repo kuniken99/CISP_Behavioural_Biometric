@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { API_BASE_URL } from '../utils/config';
+import { ReactComponent as TwoFactorIcon } from '../assets/two-factor-icon.svg';
+import { ReactComponent as ShieldIcon } from '../assets/shield-icon.svg';
 
 const UserProfilePage = ({ currentUser, userRole }) => {
   const [userProfile, setUserProfile] = useState({
@@ -81,7 +83,7 @@ const UserProfilePage = ({ currentUser, userRole }) => {
     <>
       <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
         {/* Card 1: User Profile Information */}
-        <div className="card" style={{ flex: '2' }}>
+        <div className="card" style={{ flex: '1', padding: '30px 32px 20px' }}>
           <div style={{ marginBottom: '24px' }}>
             {/* Username - Inline */}
             <div style={{ 
@@ -94,7 +96,7 @@ const UserProfilePage = ({ currentUser, userRole }) => {
               <label style={{ 
                 fontWeight: 'bold', 
                 color: '#111827', 
-                minWidth: '120px',
+                minWidth: '130px',
                 fontSize: '16px'
               }}>
                 Username
@@ -120,7 +122,7 @@ const UserProfilePage = ({ currentUser, userRole }) => {
                 <label style={{ 
                   fontWeight: 'bold', 
                   color: '#111827', 
-                  minWidth: '120px',
+                  minWidth: '130px',
                   fontSize: '16px'
                 }}>
                   Email Address
@@ -208,7 +210,7 @@ const UserProfilePage = ({ currentUser, userRole }) => {
                 <label style={{ 
                   fontWeight: 'bold', 
                   color: '#111827', 
-                  minWidth: '120px',
+                  minWidth: '130px',
                   fontSize: '16px'
                 }}>
                   Password
@@ -310,7 +312,7 @@ const UserProfilePage = ({ currentUser, userRole }) => {
               <label style={{ 
                 fontWeight: 'bold', 
                 color: '#111827', 
-                minWidth: '120px',
+                minWidth: '130px',
                 fontSize: '16px'
               }}>
                 Role
@@ -343,8 +345,8 @@ const UserProfilePage = ({ currentUser, userRole }) => {
           </div>
         </div>
 
-        {/* Card 3: Security Status (Top Right) */}
-        <div className="card" style={{ flex: '1', height: 'fit-content' }}>
+        {/* Card 2: Security Status (Top Right) */}
+        <div className="card" style={{ flex: '1', padding: '30px 32px 20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
             <div style={{ 
               width: '24px', 
@@ -356,7 +358,7 @@ const UserProfilePage = ({ currentUser, userRole }) => {
               justifyContent: 'center',
               marginRight: '12px'
             }}>
-              🛡️
+              <ShieldIcon style={{ width: '16px', height: '16px', color: '#6b7280' }} />
             </div>
             <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600' }}>Security Status</h3>
           </div>
@@ -395,8 +397,8 @@ const UserProfilePage = ({ currentUser, userRole }) => {
         </div>
       </div>
 
-      {/* Card 2: Two-Factor Authentication */}
-      <div className="card">
+      {/* Card 3: Two-Factor Authentication - Full Width */}
+      <div className="card" style={{ padding: '10px' }}>
         <div style={{ 
           display: 'flex', 
           alignItems: 'center', 
@@ -407,14 +409,14 @@ const UserProfilePage = ({ currentUser, userRole }) => {
             <div style={{ 
               width: '24px', 
               height: '24px', 
-              border: '2px solid #d1d5db',
-              borderRadius: '4px',
-              marginRight: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
+              borderRadius: '50%', 
+              backgroundColor: '#f3f4f6', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              marginRight: '16px'
             }}>
-              {userProfile.twoFactorEnabled && <span style={{ color: '#10b981' }}>✓</span>}
+              <TwoFactorIcon style={{ width: '28px', height: '28px', color: '#6b7280' }} />
             </div>
             <div>
               <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', marginBottom: '4px' }}>
