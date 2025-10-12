@@ -123,6 +123,9 @@ const ActivityLogPage = () => {
               className="activity-search-input"
             />
           </div>
+          
+          {/* Small gap before filters */}
+          <div style={{ width: '100px' }}></div>
         
           {/* Filter Section */}
           <div className="filter-wrapper" style={{ flex: '1', minWidth: '150px' }}>
