@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { API_BASE_URL } from '../utils/config';
+import arrowBackIcon from '../assets/arrow-back-icon.svg';
 import '../styles/LoginPage.css';
 
 const ResetPasswordPage = ({ setCurrentAuthPage }) => {
@@ -88,10 +89,11 @@ const ResetPasswordPage = ({ setCurrentAuthPage }) => {
         {/* Back to Login Button */}
         <button 
           type="button"
-          className="back-to-login-btn"
+          className="back-buttonn"
           onClick={() => setCurrentAuthPage('login')}
         >
-          ← Back to Login
+          <img src={arrowBackIcon} alt="Back" className="back-icon" />
+          Back to Login
         </button>
 
         <h2 className="auth-title">Reset Password</h2>
@@ -133,7 +135,7 @@ const ResetPasswordPage = ({ setCurrentAuthPage }) => {
             {isSubmitting ? 'Sending...' : 'Send Reset Link'}
           </button>
 
-          <div className="signup-link">
+          <div className="signup">
             <span>Don't have an account? </span>
             <button 
               type="button" 

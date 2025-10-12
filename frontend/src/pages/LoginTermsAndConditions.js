@@ -1,4 +1,5 @@
 import React from 'react';
+import arrowBackIcon from '../assets/arrow-back-icon.svg';
 import '../styles/PolicyPage.css';
 
 const LoginTermsAndConditions = ({ setCurrentAuthPage }) => {
@@ -10,7 +11,8 @@ const LoginTermsAndConditions = ({ setCurrentAuthPage }) => {
           className="back-button"
           onClick={() => setCurrentAuthPage('login')}
         >
-          ← Back to Login
+          <img src={arrowBackIcon} alt="Back" className="back-icon" />
+          Back to Login
         </button>
 
         <div className="policy-content">

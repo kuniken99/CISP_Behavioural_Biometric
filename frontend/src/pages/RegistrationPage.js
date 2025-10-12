@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { API_BASE_URL } from '../utils/config';
 import eyeIcon from '../assets/eye-icon.svg';
+import arrowBackIcon from '../assets/arrow-back-icon.svg';
+import dropdownIcon from '../assets/dropdown-icon.svg';
 import '../styles/LoginPage.css';
 
 const RegistrationPage = ({ setCurrentAuthPage }) => {
@@ -128,10 +130,11 @@ const RegistrationPage = ({ setCurrentAuthPage }) => {
         {/* Back to Login Button */}
         <button 
           type="button"
-          className="back-to-login-btn"
+          className="back-buttonn"
           onClick={() => setCurrentAuthPage('login')}
         >
-          ← Back to Login
+          <img src={arrowBackIcon} alt="Back" className="back-icon" />
+          Back to Login
         </button>
 
         <h2 className="auth-title">Create an Account</h2>
@@ -169,17 +172,20 @@ const RegistrationPage = ({ setCurrentAuthPage }) => {
 
           <div className="form-group">
             <label>Role*</label>
-            <select 
-              name="role"
-              value={formData.role} 
-              onChange={handleInputChange}
-              disabled={isSubmitting}
-              className="form-select"
-            >
-              <option value="User">User</option>
-              <option value="DBA">DBA</option>
-              <option value="Admin">Admin</option>
-            </select>
+            <div className="select-wrapper">
+              <select 
+                name="role"
+                value={formData.role} 
+                onChange={handleInputChange}
+                disabled={isSubmitting}
+                className="form-select"
+              >
+                <option value="User">User</option>
+                <option value="DBA">DBA</option>
+                <option value="Admin">Admin</option>
+              </select>
+              <img src={dropdownIcon} alt="Dropdown" className="dropdown-icon" />
+            </div>
           </div>
 
           <div className="form-group">
@@ -243,33 +249,13 @@ const RegistrationPage = ({ setCurrentAuthPage }) => {
             </div>
           </div>
 
-          <div className="checkbox-container">
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                checked={agreedToTerms}
-                onChange={(e) => setAgreedToTerms(e.target.checked)}
-                disabled={isSubmitting}
-              />
-              <span className="checkmark"></span>
-              By creating an account, I agree to the{' '}
-              <button 
-                type="button" 
-                className="link-button"
-                onClick={() => setCurrentAuthPage('terms')}
-              >
-                Terms of Use
-              </button>
-              {' '}and{' '}
-              <button 
-                type="button" 
-                className="link-button"
-                onClick={() => setCurrentAuthPage('privacy')}
-              >
-                Privacy Policy
-              </button>
-              .
-            </label>
+          <div className="register-checkbox">
+            <input type="checkbox" required />
+            <span>
+                By creating an account, I agree to the{" "}
+                <a href="#" onClick={() => setCurrentAuthPage('terms')} className="link-button">Terms of Use</a> and{" "}
+                <a href="#" onClick={() => setCurrentAuthPage('privacy')} className="link-button">{" "}Privacy Policy</a>.
+            </span>
           </div>
 
           {/* Google reCAPTCHA v2 */}
@@ -294,7 +280,7 @@ const RegistrationPage = ({ setCurrentAuthPage }) => {
             {isSubmitting ? 'Creating Account...' : 'Create an Account'}
           </button>
 
-          <div className="signup-link">
+          <div className="signup">
             <span>Have an account? </span>
             <button 
               type="button" 
