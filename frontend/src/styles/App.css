@@ -1656,6 +1656,10 @@ table tr:hover {
   h2 {
     margin-bottom: 20px;
   }
+
+  h3 {
+    margin-top: 20px;
+  }
 }
 
 /* Medium tablets (768px+) */
@@ -1668,7 +1672,6 @@ table tr:hover {
   
   .main-content {
     margin-left: 262px !important;
-    padding: var(--space-xl);
     width: calc(100vw - 262px) !important;
     max-width: calc(100vw - 262px) !important;
   }
@@ -1739,6 +1742,7 @@ table tr:hover {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  margin-bottom: 10px;
 }
 
 @media (min-width: 640px) {
@@ -1747,11 +1751,6 @@ table tr:hover {
   }
 }
 
-@media (min-width: 1024px) {
-  .card {
-    padding: var(--space-xl);
-  }
-}
 
 /* =================================== */
 /* TABLES RESPONSIVE IMPROVEMENTS */
@@ -1852,7 +1851,7 @@ th, td {
   transition: all var(--transition-fast);
   margin-right: var(--space-sm);
   margin-bottom: var(--space-xs);
-  min-height: 44px; /* Touch-friendly tap target */
+  min-height: 36px; /* Touch-friendly tap target */
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1863,6 +1862,7 @@ th, td {
   .button {
     font-size: var(--font-size-base);
     padding: var(--space-md) var(--space-lg);
+
   }
 }
 
@@ -1933,6 +1933,7 @@ th, td {
   flex-direction: column;
   text-align: center;
   gap: var(--space-md);
+  margin-top: var(--space-lg);
 }
 
 @media (min-width: 768px) {
@@ -2453,7 +2454,6 @@ th, td {
 @media (min-width: 640px) {
   .dashboard-metrics-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-lg);
   }
 }
 
@@ -2676,7 +2676,7 @@ th, td {
 .activity-item {
   display: flex;
   align-items: center;
-  padding: var(--space-md);
+  padding: 10px;
   background-color: var(--color-gray-50);
   border-radius: var(--border-radius-lg);
   gap: var(--space-md);

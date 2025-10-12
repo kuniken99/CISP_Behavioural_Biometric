@@ -443,7 +443,6 @@ const AlertSystemPage = () => {
             padding: '32px',
             minWidth: '500px',
             maxWidth: '600px',
-            maxHeight: '80vh',
             overflow: 'auto',
             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
           }}>
@@ -612,7 +611,7 @@ const AlertSystemPage = () => {
                 placeholder="Enter details about how this alert was resolved..."
                 rows="4"
                 style={{ 
-                  width: '95%', 
+                  width: '100%', 
                   padding: '10px', 
                   border: '1px solid #d1d5db', 
                   borderRadius: '4px',

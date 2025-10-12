@@ -339,7 +339,7 @@ const UserManagementPage = () => {
       </button>
 
       {/* Active Unique Codes Table */}
-      <h4 style={{ marginTop: '30px' }}>Active Registration Codes</h4>
+      <h3 style={{ marginTop: '30px' }}>Active Registration Codes</h3>
       <table style={{ marginTop: '15px' }}>
         <thead>
           <tr>
