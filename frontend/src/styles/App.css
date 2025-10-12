@@ -128,7 +128,7 @@ body {
 
 .main-content { 
   flex-grow: 1; 
-  margin-left: 290px; 
+  margin-left: 340px; 
   padding: 20px;
   background-color: #ffffff; 
   display: flex; 
@@ -1586,7 +1586,7 @@ table tr:hover {
 
 /* Base mobile-first layout - OVERRIDE OLD STYLES */
 .sidebar {
-  width: 280px !important;
+  width: 285px !important;
   position: fixed !important;
   top: 0;
   left: 0;
@@ -1597,7 +1597,7 @@ table tr:hover {
   background-color: #f8f9fa;
   box-shadow: 2px 0 10px rgba(0,0,0,0.1);
   overflow-x: hidden;
-  max-width: 280px;
+  max-width: 285px;
 }
 
 .sidebar.open {
