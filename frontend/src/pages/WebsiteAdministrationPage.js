@@ -58,16 +58,26 @@ const WebsiteAdministrationPage = () => {
     <div className="card">
       {success && <p className="success">{success}</p>}
       <div className="form-group">
-        <label>Website Content/Metadata (Markdown supported):</label>
+        <h2>Website Content/Metadata (Markdown supported):</h2>
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
           rows="10"
-          style={{ width: '100%' }}
+          style={{ width: '100%', fontFamily: 'inherit' }}
         ></textarea>
       </div>
-      <button type="button" className="button primary" onClick={handleUpdateContent} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-        <img src={WebsiteAdminIcon} alt="Update" style={{ width: '16px', height: '16px' }} />
+      <button 
+        type="button" 
+        className="button primary" 
+        onClick={handleUpdateContent}
+        style={{ 
+          backgroundColor: '#000000', 
+          color: '#ffffff',
+          border: '1px solid #000000',
+          padding: '12px 24px',
+          fontSize: '1rem',
+        }}
+      >
         Update Content
       </button>
     </div>
