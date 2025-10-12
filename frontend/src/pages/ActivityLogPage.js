@@ -5,6 +5,7 @@ import SearchIcon from '../assets/search-icon.svg';
 import PersonIcon from '../assets/person-icon.svg';
 import FilterIcon from '../assets/filter-icon.svg';
 import DropdownIcon from '../assets/dropdown-icon.svg';
+import SeverityIcon from '../assets/severity-icon.svg';
 
 const ActivityLogPage = () => {
   const [logs, setLogs] = useState([
@@ -190,35 +191,39 @@ const ActivityLogPage = () => {
             </div>
           </div>
           
-          <div style={{ position: 'relative', display: 'inline-block' }}>
-            <select 
-              value={selectedSeverity} 
-              onChange={(e) => setSelectedSeverity(e.target.value)} 
-              className="activity-filter"
-              style={{ 
-                paddingRight: '40px',
-                appearance: 'none',
-                backgroundImage: 'none'
-              }}
-            >
-              <option>All Severities</option>
-              <option>High</option>
-              <option>Medium</option>
-              <option>Low</option>
-            </select>
-            <img 
-              src={DropdownIcon} 
-              alt="Dropdown" 
-              style={{ 
-                position: 'absolute', 
-                right: '12px', 
-                top: '50%', 
-                transform: 'translateY(-50%)', 
-                width: '16px', 
-                height: '16px',
-                pointerEvents: 'none'
-              }} 
-            />
+          <div className="filter-wrapper">
+            <img src={SeverityIcon} alt="Severity" className="filter-icon" />
+            <div style={{ position: 'relative', display: 'inline-block', flex: '1' }}>
+              <select 
+                value={selectedSeverity} 
+                onChange={(e) => setSelectedSeverity(e.target.value)} 
+                className="activity-filter"
+                style={{ 
+                  paddingRight: '40px',
+                  width: '100%',
+                  appearance: 'none',
+                  backgroundImage: 'none'
+                }}
+              >
+                <option>All Severities</option>
+                <option>High</option>
+                <option>Medium</option>
+                <option>Low</option>
+              </select>
+              <img 
+                src={DropdownIcon} 
+                alt="Dropdown" 
+                style={{ 
+                  position: 'absolute', 
+                  right: '12px', 
+                  top: '50%', 
+                  transform: 'translateY(-50%)', 
+                  width: '16px', 
+                  height: '16px',
+                  pointerEvents: 'none'
+                }} 
+              />
+            </div>
           </div>
         </div>
       </div>
