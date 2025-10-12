@@ -81,10 +81,10 @@ const UserProfilePage = ({ currentUser, userRole }) => {
 
   return (
     <>
-      <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
+      <div style={{ display: 'flex', gap: '20px' }}>
         {/* Card 1: User Profile Information */}
         <div className="card" style={{ flex: '1', padding: '30px 32px 20px' }}>
-          <div style={{ marginBottom: '24px' }}>
+          <div style={{ marginBottom: '20px' }}>
             {/* Username - Inline */}
             <div style={{ 
               display: 'flex', 
@@ -307,7 +307,7 @@ const UserProfilePage = ({ currentUser, userRole }) => {
             <div style={{ 
               display: 'flex', 
               alignItems: 'center', 
-              marginBottom: '24px'
+              marginBottom: '50px'
             }}>
               <label style={{ 
                 fontWeight: 'bold', 
@@ -331,8 +331,8 @@ const UserProfilePage = ({ currentUser, userRole }) => {
               backgroundColor: '#f9fafb', 
               border: '1px solid #e5e7eb', 
               borderRadius: '8px',
-              fontSize: '14px',
-              color: '#374151'
+              color: '#374151',
+              lineHeight: '1.5',
             }}>
               <strong>PS:</strong> To change username, please contact us at{' '}
               <a 
