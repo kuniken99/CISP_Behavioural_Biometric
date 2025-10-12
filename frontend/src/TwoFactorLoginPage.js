@@ -51,10 +51,25 @@ function TwoFactorLoginPage({ setCurrentAuthPage, email, onLogin }) {
         const errorData = await response.json();
         setError(errorData.message || 'Invalid verification code');
         setVerificationCode(''); // Clear the code input
+        
+        // Auto-focus the input after failed verification
+        setTimeout(() => {
+          if (codeInputRef.current) {
+            codeInputRef.current.focus();
+          }
+        }, 100);
       }
     } catch (err) {
       setError('Network error during verification');
       console.error('2FA login error:', err);
+      setVerificationCode(''); // Clear the code input
+      
+      // Auto-focus the input after network error
+      setTimeout(() => {
+        if (codeInputRef.current) {
+          codeInputRef.current.focus();
+        }
+      }, 100);
     } finally {
       setIsLoading(false);
     }
@@ -88,6 +103,7 @@ function TwoFactorLoginPage({ setCurrentAuthPage, email, onLogin }) {
               onChange={(e) => {
                 const newCode = e.target.value.replace(/\D/g, '').substring(0, 6);
                 setVerificationCode(newCode);
+                setError(''); // Clear any existing error when user types
                 
                 // Auto-submit when 6 digits are entered
                 if (newCode.length === 6 && !isLoading) {
@@ -101,21 +117,53 @@ function TwoFactorLoginPage({ setCurrentAuthPage, email, onLogin }) {
               autoComplete="one-time-code"
               required
               autoFocus
+              style={{
+                fontSize: '24px',
+                textAlign: 'center',
+                letterSpacing: '8px',
+                fontFamily: 'monospace',
+                padding: '16px',
+                border: error ? '2px solid #f44336' : (verificationCode.length === 6 ? '2px solid #4CAF50' : '2px solid #ddd'),
+                borderRadius: '8px',
+                transition: 'border-color 0.3s ease',
+                backgroundColor: error ? '#ffebee' : 'white'
+              }}
             />
           </div>
 
           {error && (
-            <div className="message error">
-              {error}
+            <div className="message error" style={{
+              backgroundColor: '#ffebee',
+              border: '1px solid #f44336',
+              borderRadius: '4px',
+              padding: '12px',
+              marginBottom: '16px',
+              color: '#c62828',
+              fontWeight: '500',
+              textAlign: 'center'
+            }}>
+              ⚠️ {error}
             </div>
           )}
 
           <button 
             type="submit" 
-            className="btn-primary btn-full"
+            className="btn btn-primary btn-full"
             disabled={isLoading || verificationCode.length !== 6}
           >
-            {isLoading ? 'Verifying...' : 'Verify'}
+            {isLoading ? (
+              <>
+                <span>🔐 Verifying...</span>
+              </>
+            ) : verificationCode.length === 6 ? (
+              <>
+                <span>✓ Verify Code</span>
+              </>
+            ) : (
+              <>
+                <span>Enter 6-digit code</span>
+              </>
+            )}
           </button>
         </form>
 
