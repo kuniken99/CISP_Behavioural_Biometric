@@ -4,6 +4,7 @@ import DbEntryManagementIcon from '../assets/db-entry-management-icon.svg';
 import AddTaskIcon from '../assets/add-task-icon.svg';
 import EditIcon from '../assets/edit-icon.svg';
 import ArrowBackIcon from '../assets/arrow-back-icon.svg';
+import DropdownIcon from '../assets/dropdown-icon.svg';
 
 const DbEntryManagementPage = () => {
   const [tables, setTables] = useState([]);
@@ -203,22 +204,43 @@ const DbEntryManagementPage = () => {
       <form onSubmit={(e) => { e.preventDefault(); return false; }}>
         <div className="form-group">
           <label>Select Table:</label>
-          <select 
-            value={selectedTable} 
-            onChange={(e) => handleTableSelect(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                e.stopPropagation();
-                return false;
-              }
-            }}
-          >
-            <option value="">-- Select a Table --</option>
-            {tables.map(table => (
-              <option key={table.name} value={table.name}>{table.name}</option>
-            ))}
-          </select>
+          <div style={{ position: 'relative', display: 'inline-block', width: '300px' }}>
+            <select 
+              value={selectedTable} 
+              onChange={(e) => handleTableSelect(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  return false;
+                }
+              }}
+              style={{ 
+                width: '100%', 
+                paddingRight: '40px',
+                appearance: 'none',
+                backgroundImage: 'none'
+              }}
+            >
+              <option value="">-- Select a Table --</option>
+              {tables.map(table => (
+                <option key={table.name} value={table.name}>{table.name}</option>
+              ))}
+            </select>
+            <img 
+              src={DropdownIcon} 
+              alt="Dropdown" 
+              style={{ 
+                position: 'absolute', 
+                right: '12px', 
+                top: '50%', 
+                transform: 'translateY(-50%)', 
+                width: '16px', 
+                height: '16px',
+                pointerEvents: 'none'
+              }} 
+            />
+          </div>
         </div>
       </form>
 
@@ -319,21 +341,20 @@ const DbEntryManagementPage = () => {
               </div>
             ))}
           </form>
-          {editingEntryId ? (
-            <button type="button" className="button success" onClick={handleUpdateEntry} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <img src={EditIcon} alt="Update" style={{ width: '16px', height: '16px' }} />
-              Update Entry
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            {editingEntryId ? (
+              <button type="button" className="button success" onClick={handleUpdateEntry} style={{ backgroundColor: '#000000', color: '#ffffff' }}>
+                Update Entry
+              </button>
+            ) : (
+              <button type="button" className="button primary" onClick={handleAddEntry} style={{ backgroundColor: '#000000', color: '#ffffff' }}>
+                Add Entry
+              </button>
+            )}
+            <button type="button" className="button secondary" onClick={() => { setNewEntryData({}); setEditingEntryId(null); }} style={{ backgroundColor: '#ffffff', color: '#000000', border: '1px solid #ccc' }}>
+              Clear Form
             </button>
-          ) : (
-            <button type="button" className="button primary" onClick={handleAddEntry} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <img src={AddTaskIcon} alt="Add" style={{ width: '16px', height: '16px' }} />
-              Add Entry
-            </button>
-          )}
-           <button type="button" className="button secondary" onClick={() => { setNewEntryData({}); setEditingEntryId(null); }} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-             <img src={ArrowBackIcon} alt="Clear" style={{ width: '16px', height: '16px' }} />
-             Clear Form
-           </button>
+          </div>
         </>
       )}
     </div>
