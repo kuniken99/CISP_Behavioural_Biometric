@@ -108,7 +108,7 @@ const ActivityLogPage = () => {
     <>
       {/* Card 1: Filters */}
       <div className="card">
-        <h2>Activity Log Filters</h2>
+        <h2>Filters</h2>
         
         {/* Search and Filter Section - One Line */}
         <div style={{ display: 'flex', gap: '15px', alignItems: 'center', width: '100%' }}>
