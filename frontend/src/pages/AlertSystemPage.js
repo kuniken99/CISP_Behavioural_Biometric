@@ -91,35 +91,7 @@ const AlertSystemPage = () => {
     return matchesSearch && matchesType && matchesSeverity && matchesStatus;
   });
 
-  if (loading) {
-    return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '300px',
-        fontSize: '18px',
-        color: '#6b7280'
-      }}>
-        Loading alerts...
-      </div>
-    );
-  }
-  
-  if (error) {
-    return (
-      <div style={{ 
-        backgroundColor: '#fee2e2', 
-        border: '1px solid #fecaca', 
-        color: '#dc2626', 
-        padding: '12px', 
-        borderRadius: '8px', 
-        marginTop: '16px' 
-      }}>
-        {error}
-      </div>
-    );
-  }
+
 
   return (
     <>
@@ -333,66 +305,119 @@ const AlertSystemPage = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredAlerts.map((alert) => (
-                <tr key={alert.id}>
-                  <td>{alert.timestamp}</td>
-                  <td>
-                    <span className={`type-badge ${alert.type.toLowerCase()}`}>
-                      {alert.type}
-                    </span>
+              {loading ? (
+                <tr>
+                  <td colSpan="6" style={{ 
+                    textAlign: 'center', 
+                    padding: '40px', 
+                    fontSize: '16px', 
+                    color: '#6b7280',
+                    fontStyle: 'italic'
+                  }}>
+                    Loading alerts...
                   </td>
-                  <td>{alert.message}</td>
-                  <td>
-                    <span className={`severity-badge ${alert.severity.toLowerCase()}`}>
-                      {alert.severity}
-                    </span>
+                </tr>
+              ) : error ? (
+                <tr>
+                  <td colSpan="6" style={{ 
+                    textAlign: 'center', 
+                    padding: '40px', 
+                    backgroundColor: '#fee2e2', 
+                    color: '#dc2626',
+                    fontSize: '16px'
+                  }}>
+                    <div>{error}</div>
+                    <button 
+                      onClick={() => window.location.reload()} 
+                      style={{
+                        marginTop: '10px',
+                        padding: '8px 16px',
+                        backgroundColor: '#dc2626',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '14px'
+                      }}
+                    >
+                      Retry
+                    </button>
                   </td>
-                  <td>
-                    <span className={`status-badge ${alert.status.toLowerCase()}`}>
-                      {alert.status}
-                    </span>
+                </tr>
+              ) : filteredAlerts.length === 0 ? (
+                <tr>
+                  <td colSpan="6" style={{ 
+                    textAlign: 'center', 
+                    padding: '40px', 
+                    fontSize: '16px', 
+                    color: '#6b7280',
+                    fontStyle: 'italic'
+                  }}>
+                    No alerts match your current filters.
                   </td>
-                  <td>
-                    <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-                      <button 
-                        type="button"
-                        onClick={() => handleViewAlert(alert)}
-                        style={{
-                          backgroundColor: '#f3f4f6',
-                          border: '1px solid #d1d5db',
-                          padding: '6px',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center'
-                        }}
-                        title="View Details"
-                      >
-                        <img src={EyeIcon} alt="View" style={{ width: '20px', height: '20px' }} />
-                      </button>
-                      {alert.status === 'Active' && (
-                        <button
+                </tr>
+              ) : (
+                filteredAlerts.map((alert) => (
+                  <tr key={alert.id}>
+                    <td>{alert.timestamp}</td>
+                    <td>
+                      <span className={`type-badge ${alert.type.toLowerCase()}`}>
+                        {alert.type}
+                      </span>
+                    </td>
+                    <td>{alert.message}</td>
+                    <td>
+                      <span className={`severity-badge ${alert.severity.toLowerCase()}`}>
+                        {alert.severity}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={`status-badge ${alert.status.toLowerCase()}`}>
+                        {alert.status}
+                      </span>
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+                        <button 
                           type="button"
-                          onClick={() => handleResolveAlert(alert)}
+                          onClick={() => handleViewAlert(alert)}
                           style={{
-                            backgroundColor: '#000000',
-                            color: '#ffffff',
-                            border: 'none',
+                            backgroundColor: '#f3f4f6',
+                            border: '1px solid #d1d5db',
                             padding: '6px',
                             borderRadius: '4px',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center'
                           }}
-                          title="Resolve Alert"
+                          title="View Details"
                         >
-                          <img src={ResolveIcon} alt="Resolve" style={{ width: '20px', height: '20px' }} />
+                          <img src={EyeIcon} alt="View" style={{ width: '20px', height: '20px' }} />
                         </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                        {alert.status === 'Active' && (
+                          <button
+                            type="button"
+                            onClick={() => handleResolveAlert(alert)}
+                            style={{
+                              backgroundColor: '#000000',
+                              color: '#ffffff',
+                              border: 'none',
+                              padding: '6px',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center'
+                            }}
+                            title="Resolve Alert"
+                          >
+                            <img src={ResolveIcon} alt="Resolve" style={{ width: '20px', height: '20px' }} />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

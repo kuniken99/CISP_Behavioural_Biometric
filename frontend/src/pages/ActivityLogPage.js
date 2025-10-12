@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { API_BASE_URL } from '../utils/config';
 import ActivityLogsIcon from '../assets/activity-logs-icon.svg';
 import SearchIcon from '../assets/search-icon.svg';
@@ -7,12 +7,32 @@ import FilterIcon from '../assets/filter-icon.svg';
 import DropdownIcon from '../assets/dropdown-icon.svg';
 import SeverityIcon from '../assets/severity-icon.svg';
 
+// Memoize table row component for better rendering performance
+const LogRow = React.memo(({ log, index }) => (
+  <tr key={index}>
+    <td>{log.timestamp}</td>
+    <td>{log.user}</td>
+    <td>
+      <span className={`action-badge ${log.action.toLowerCase().replace('_', '-')}`}>
+        {log.action}
+      </span>
+    </td>
+    <td>{log.details}</td>
+    <td>
+      <span className={`severity-badge ${log.severity.toLowerCase()}`}>
+        {log.severity}
+      </span>
+    </td>
+  </tr>
+));
+
 const ActivityLogPage = () => {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const cacheRef = useRef(new Map()); // Add caching with useRef to avoid dependency loops
 
   // Debounce search term to improve performance
   useEffect(() => {
@@ -27,7 +47,7 @@ const ActivityLogPage = () => {
   const [selectedSeverity, setSelectedSeverity] = useState('All Severities');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalLogs, setTotalLogs] = useState(0);
-  const logsPerPage = 15;
+  const [logsPerPage, setLogsPerPage] = useState(15);
 
   // Helper function to determine severity based on action
   const determineSeverity = useCallback((action) => {
@@ -52,17 +72,41 @@ const ActivityLogPage = () => {
   }, []);
 
   useEffect(() => {
-    const fetchLogs = async () => {
+    const fetchLogs = async (retryCount = 0) => {
+      const cacheKey = `logs-${currentPage}`;
+      
+      // Check cache first for instant loading
+      if (cacheRef.current.has(cacheKey) && currentPage !== 1) {
+        const cachedData = cacheRef.current.get(cacheKey);
+        setLogs(cachedData.logs);
+        setTotalLogs(cachedData.totalLogs);
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
+        setError(''); // Clear previous errors
         const token = localStorage.getItem('jwt_token');
-        // Fetch with faster loading - reduced to 25 items per page
-        const response = await fetch(`${API_BASE_URL}/Audit/activity-logs?limit=25&page=${currentPage}`, {
+        
+        // Use fetch with reasonable timeout and optimized headers
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+        
+        const response = await fetch(`${API_BASE_URL}/Audit/activity-logs?limit=${logsPerPage}&page=${currentPage}`, {
           headers: { 
             'Authorization': `Bearer ${token}`,
-            'Cache-Control': 'no-cache' // Ensure fresh data
+            'Accept': 'application/json'
           },
+          signal: controller.signal
         });
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
         const data = await response.json();
         if (response.ok) {
           // Pre-calculate severity to avoid repeated calculations
@@ -104,17 +148,50 @@ const ActivityLogPage = () => {
           if (data.totalCount !== undefined) {
             setTotalLogs(data.totalCount);
           }
+
+          // Cache the processed data for faster subsequent loads
+          cacheRef.current.set(cacheKey, { 
+            logs: transformedLogs, 
+            totalLogs: data.totalCount || 0,
+            timestamp: Date.now()
+          });
+          
+          // Limit cache size to prevent memory issues (keep last 5 pages)
+          if (cacheRef.current.size > 5) {
+            const firstKey = cacheRef.current.keys().next().value;
+            cacheRef.current.delete(firstKey);
+          }
         } else {
           setError(data.message || 'Failed to fetch activity logs.');
         }
       } catch (err) {
-        setError('Network error fetching activity logs.');
+        console.error('Fetch error:', err);
+        
+        // Retry logic for network errors (up to 2 retries)
+        if (retryCount < 2 && (err.name === 'AbortError' || err.message.includes('NetworkError') || err.message.includes('Failed to fetch'))) {
+          console.log(`Retrying request... Attempt ${retryCount + 1}`);
+          setTimeout(() => fetchLogs(retryCount + 1), 2000 * (retryCount + 1)); // Exponential backoff
+          return;
+        }
+        
+        // Set appropriate error message
+        if (err.name === 'AbortError') {
+          setError('Request timed out. The server may be slow. Please try again.');
+        } else if (err.message.includes('HTTP 401')) {
+          setError('Authentication failed. Please log in again.');
+        } else if (err.message.includes('HTTP 403')) {
+          setError('Access denied. You do not have permission to view activity logs.');
+        } else if (err.message.includes('HTTP 500')) {
+          setError('Server error. Please try again later.');
+        } else {
+          setError(`Network error: ${err.message}. Please check your connection and try again.`);
+        }
       } finally {
         setLoading(false);
       }
     };
     fetchLogs();
-  }, [determineSeverity, currentPage]);
+  }, [determineSeverity, currentPage, logsPerPage]);
 
   // Memoize filtered logs for better performance
   const filteredLogs = useMemo(() => {
@@ -161,8 +238,11 @@ const ActivityLogPage = () => {
   }, [logs]);
 
   const uniqueSeverities = useMemo(() => {
-    const severities = [...new Set(logs.map(log => log.severity))].sort();
-    return ['All Severities', ...severities];
+    const severities = [...new Set(logs.map(log => log.severity))];
+    // Custom sort order: Low, Medium, High
+    const severityOrder = { 'Low': 1, 'Medium': 2, 'High': 3 };
+    const sortedSeverities = severities.sort((a, b) => (severityOrder[a] || 99) - (severityOrder[b] || 99));
+    return ['All Severities', ...sortedSeverities];
   }, [logs]);
 
   // Paginate filtered logs
@@ -173,43 +253,151 @@ const ActivityLogPage = () => {
 
   const totalPages = Math.ceil(filteredLogs.length / logsPerPage);
 
+  // Preload next page in background for faster navigation
+  useEffect(() => {
+    if (!loading && currentPage < totalPages) {
+      const preloadNextPage = async () => {
+        const nextPageKey = `logs-${currentPage + 1}`;
+        if (!cacheRef.current.has(nextPageKey)) {
+          try {
+            const token = localStorage.getItem('jwt_token');
+            const response = await fetch(`${API_BASE_URL}/Audit/activity-logs?limit=${logsPerPage}&page=${currentPage + 1}`, {
+              headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+              },
+            });
+            
+            if (response.ok) {
+              const data = await response.json();
+              // Process and cache in background
+              const logsData = data.logs || data;
+              const transformedLogs = logsData.map(log => ({
+                timestamp: new Date(new Date(log.timestamp).getTime() + (8 * 60 * 60 * 1000)).toLocaleString('en-US', {
+                  year: 'numeric', month: '2-digit', day: '2-digit',
+                  hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+                }),
+                user: log.username || 'System',
+                action: log.action,
+                details: log.details,
+                severity: determineSeverity(log.action),
+                ipAddress: log.ipAddress || 'N/A'
+              }));
+
+              cacheRef.current.set(nextPageKey, { 
+                logs: transformedLogs, 
+                totalLogs: data.totalCount || 0,
+                timestamp: Date.now()
+              });
+            }
+          } catch (err) {
+            // Silently fail preloading
+          }
+        }
+      };
+
+      // Preload after a short delay
+      const preloadTimer = setTimeout(preloadNextPage, 1000);
+      return () => clearTimeout(preloadTimer);
+    }
+  }, [loading, currentPage, totalPages, determineSeverity, logsPerPage]);
+
   const clearFilters = useCallback(() => {
     setSearchTerm('');
     setSelectedUser('All Users');
     setSelectedAction('All Actions');
     setSelectedSeverity('All Severities');
     setCurrentPage(1);
+    cacheRef.current.clear(); // Clear cache when filters change
   }, []);
 
-  if (loading) {
-    return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '300px',
-        fontSize: '18px',
-        color: '#6b7280'
-      }}>
-        Loading activity logs...
-      </div>
-    );
-  }
-  
-  if (error) {
-    return (
-      <div style={{ 
-        backgroundColor: '#fee2e2', 
-        border: '1px solid #fecaca', 
-        color: '#dc2626', 
-        padding: '12px', 
-        borderRadius: '8px', 
-        marginTop: '16px' 
-      }}>
-        {error}
-      </div>
-    );
-  }
+  // Function to download all activity logs as CSV
+  const handleDownloadLogs = useCallback(async (event) => {
+    try {
+      const token = localStorage.getItem('jwt_token');
+      
+      // Show loading state on button
+      const button = event.target.closest('button');
+      const originalText = button.textContent;
+      button.textContent = 'Downloading...';
+      button.disabled = true;
+
+      // Fetch all logs (use a high limit)
+      const response = await fetch(`${API_BASE_URL}/Audit/activity-logs?limit=10000&page=1`, {
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const logsData = data.logs || data;
+
+      // Transform logs with GMT+8 timezone
+      const transformedLogs = logsData.map(log => {
+        const utcDate = new Date(log.timestamp);
+        const gmt8Date = new Date(utcDate.getTime() + (8 * 60 * 60 * 1000));
+        
+        return {
+          timestamp: gmt8Date.toLocaleString('en-US', {
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+          }),
+          user: log.username || 'System',
+          action: log.action,
+          details: log.details,
+          severity: determineSeverity(log.action),
+          ipAddress: log.ipAddress || 'N/A'
+        };
+      });
+
+      // Create CSV content
+      const csvHeaders = ['Timestamp', 'User', 'Action', 'Details', 'Severity', 'IP Address'];
+      const csvRows = transformedLogs.map(log => [
+        `"${log.timestamp}"`,
+        `"${log.user}"`,
+        `"${log.action}"`,
+        `"${log.details.replace(/"/g, '""')}"`, // Escape quotes in details
+        `"${log.severity}"`,
+        `"${log.ipAddress}"`
+      ]);
+
+      const csvContent = [
+        csvHeaders.join(','),
+        ...csvRows.map(row => row.join(','))
+      ].join('\n');
+
+      // Create and download file
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      
+      link.setAttribute('href', url);
+      link.setAttribute('download', `activity-logs-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Reset button state
+      button.textContent = originalText;
+      button.disabled = false;
+
+    } catch (err) {
+      console.error('Download error:', err);
+      alert(`Failed to download logs: ${err.message}`);
+      
+      // Reset button state on error
+      const button = event.target.closest('button');
+      button.textContent = 'Download Logs';
+      button.disabled = false;
+    }
+  }, [determineSeverity]);
 
   return (
     <>
@@ -352,7 +540,82 @@ const ActivityLogPage = () => {
 
       {/* Card 2: Activity Logs Table */}
       <div className="card">
-        <h2>Activity Logs</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h2>Activity Logs</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            {/* Logs per page selector */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <label style={{ fontSize: '14px', color: '#6b7280', fontWeight: '500' }}>
+                Show:
+              </label>
+              <div style={{ position: 'relative', display: 'inline-block' }}>
+                <select 
+                  value={logsPerPage} 
+                  onChange={(e) => {
+                    setLogsPerPage(Number(e.target.value));
+                    setCurrentPage(1); // Reset to first page when changing page size
+                    cacheRef.current.clear(); // Clear cache when page size changes
+                  }}
+                  style={{ 
+                    padding: '6px 32px 6px 12px',
+                    fontSize: '14px',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '4px',
+                    backgroundColor: '#ffffff',
+                    appearance: 'none',
+                    backgroundImage: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value={10}>10</option>
+                  <option value={15}>15</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+                <img 
+                  src={DropdownIcon} 
+                  alt="Dropdown" 
+                  style={{ 
+                    position: 'absolute', 
+                    right: '8px', 
+                    top: '50%', 
+                    transform: 'translateY(-50%)', 
+                    width: '12px', 
+                    height: '12px',
+                    pointerEvents: 'none'
+                  }} 
+                />
+              </div>
+            </div>
+            
+            <button
+            onClick={handleDownloadLogs}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '8px 16px',
+              backgroundColor: '#000000',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: '500'
+            }}
+            onMouseOver={(e) => e.target.style.backgroundColor = '#374151'}
+            onMouseOut={(e) => e.target.style.backgroundColor = '#000000'}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <polyline points="7,10 12,15 17,10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+            Download Logs
+          </button>
+          </div>
+        </div>
         <div className="activity-table-container">
           <table className="activity-table">
             <thead>
@@ -365,23 +628,62 @@ const ActivityLogPage = () => {
               </tr>
             </thead>
             <tbody>
-              {paginatedLogs.map((log, index) => (
-                <tr key={index}>
-                  <td>{log.timestamp}</td>
-                  <td>{log.user}</td>
-                  <td>
-                    <span className={`action-badge ${log.action.toLowerCase().replace('_', '-')}`}>
-                      {log.action}
-                    </span>
-                  </td>
-                  <td>{log.details}</td>
-                  <td>
-                    <span className={`severity-badge ${log.severity.toLowerCase()}`}>
-                      {log.severity}
-                    </span>
+              {loading ? (
+                <tr>
+                  <td colSpan="5" style={{ 
+                    textAlign: 'center', 
+                    padding: '40px', 
+                    fontSize: '16px', 
+                    color: '#6b7280',
+                    fontStyle: 'italic'
+                  }}>
+                    Loading activity logs...
                   </td>
                 </tr>
-              ))}
+              ) : error ? (
+                <tr>
+                  <td colSpan="5" style={{ 
+                    textAlign: 'center', 
+                    padding: '40px', 
+                    backgroundColor: '#fee2e2', 
+                    color: '#dc2626',
+                    fontSize: '16px'
+                  }}>
+                    <div>{error}</div>
+                    <button 
+                      onClick={() => window.location.reload()} 
+                      style={{
+                        marginTop: '10px',
+                        padding: '8px 16px',
+                        backgroundColor: '#dc2626',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '14px'
+                      }}
+                    >
+                      Retry
+                    </button>
+                  </td>
+                </tr>
+              ) : paginatedLogs.length === 0 ? (
+                <tr>
+                  <td colSpan="5" style={{ 
+                    textAlign: 'center', 
+                    padding: '40px', 
+                    fontSize: '16px', 
+                    color: '#6b7280',
+                    fontStyle: 'italic'
+                  }}>
+                    No activity logs match your current filters.
+                  </td>
+                </tr>
+              ) : (
+                paginatedLogs.map((log, index) => (
+                  <LogRow key={`${log.timestamp}-${index}`} log={log} index={index} />
+                ))
+              )}
             </tbody>
           </table>
         </div>
