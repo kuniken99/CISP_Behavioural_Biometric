@@ -40,7 +40,6 @@ namespace db_biometrics_mvp.Backend.Controllers
         public async Task<IActionResult> CollectBiometrics([FromBody] List<BiometricEvent> biometricEvents, [FromQuery] string sessionId)
         {
             var username = User.Identity?.Name ?? "Unknown"; // Get username from JWT
-            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A";
 
             if (string.IsNullOrEmpty(sessionId))
             {
@@ -95,7 +94,6 @@ namespace db_biometrics_mvp.Backend.Controllers
                     Username = username,
                     Action = "CBBA_ANOMALY_DETECTED",
                     Details = $"Anomaly Score: {predictionResult.AnomalyScore:F4}, Features: {JsonConvert.SerializeObject(predictionResult.Features)}",
-                    IpAddress = ipAddress,
                     SessionId = sessionId
                 });
                  await _context.Alerts.AddAsync(new Alert {

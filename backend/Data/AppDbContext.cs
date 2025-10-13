@@ -117,10 +117,9 @@ namespace db_biometrics_mvp.Backend.Data
             var dbaPasswordHash = HashPassword("dbapass");
 
             modelBuilder.Entity<User>().HasData(
-                new User { Id = 1, Username = "admin", Email = "admin@system.com", PasswordHash = adminPasswordHash, Role = "admin", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = true },
-                new User { Id = 2, Username = "dbauser", Email = "dba@system.com", PasswordHash = dbaPasswordHash, Role = "dba", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = true },
-                new User { Id = 3, Username = "testuser", Email = "test@system.com", PasswordHash = dbaPasswordHash, Role = "user", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = false },
-                new User { Id = 4, Username = "tank108", Email = "tank108@uni.coventry.ac.uk", PasswordHash = adminPasswordHash, Role = "admin", IsActive = true, IsEmailVerified = false, IsTwoFactorEnabled = false }
+                new User { Id = 1, Username = "admin", Email = "admin@system.com", PasswordHash = adminPasswordHash, Role = "admin", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = false },
+                new User { Id = 2, Username = "dbauser", Email = "37256v4t@psba.edu.sg", PasswordHash = dbaPasswordHash, Role = "dba", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = false },
+                new User { Id = 3, Username = "testuser", Email = "ktan8563@gmail.com", PasswordHash = dbaPasswordHash, Role = "user", IsActive = true, IsEmailVerified = true, IsTwoFactorEnabled = false }
             );
 
             modelBuilder.Entity<DbConfiguration>().HasData(
@@ -133,7 +132,7 @@ namespace db_biometrics_mvp.Backend.Data
 
             // Fix: Use static DateTime values for HasData to avoid the "PendingModelChangesWarning"
             modelBuilder.Entity<AuditLog>().HasData(
-                new AuditLog { Id = 1, Timestamp = new DateTime(2025, 8, 23, 17, 0, 0, DateTimeKind.Utc), Username = "system", Action = "DB_INIT", Details = "Initial database migration completed.", IpAddress = "127.0.0.1" }
+                new AuditLog { Id = 1, Timestamp = new DateTime(2025, 8, 23, 17, 0, 0, DateTimeKind.Utc), Username = "system", Action = "DB_INIT", Details = "Initial database migration completed." }
             );
 
             modelBuilder.Entity<Alert>().HasData(

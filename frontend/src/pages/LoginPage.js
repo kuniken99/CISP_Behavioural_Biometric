@@ -128,7 +128,7 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
         
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label>Email</label>
+            <label>Email or Username</label>
             <input 
               type="text" 
               placeholder="Enter your email"

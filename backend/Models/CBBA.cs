@@ -41,8 +41,6 @@ namespace db_biometrics_mvp.Backend.Models
         
         public string DeviceFingerprint { get; set; } = string.Empty;
         
-        public string IpAddress { get; set; } = string.Empty;
-        
         public int EventCount { get; set; } = 0; // Number of biometric events in this session
     }
 }

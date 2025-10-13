@@ -57,8 +57,7 @@ namespace db_biometrics_mvp.Backend.Controllers
                 { 
                     Username = loginDto.Username, 
                     Action = "FAILED_LOGIN", 
-                    Details = $"Failed login attempt for username: {loginDto.Username}", 
-                    IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" 
+                    Details = $"Failed login attempt for username: {loginDto.Username}"
                 });
                 await _context.SaveChangesAsync();
                 
@@ -338,8 +337,7 @@ namespace db_biometrics_mvp.Backend.Controllers
                 { 
                     Username = registerDto.Username, 
                     Action = "USER_REGISTRATION", 
-                    Details = $"New user registered with email: {registerDto.Email}", 
-                    IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" 
+                    Details = $"New user registered with email: {registerDto.Email}"
                 });
                 await _context.SaveChangesAsync();
 
@@ -434,8 +432,7 @@ namespace db_biometrics_mvp.Backend.Controllers
             { 
                 Username = verificationToken.User.Username, 
                 Action = "EMAIL_VERIFIED", 
-                Details = $"Email verification completed for: {verificationToken.User.Email}", 
-                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" 
+                Details = $"Email verification completed for: {verificationToken.User.Email}"
             });
             
             await _context.SaveChangesAsync();
@@ -489,6 +486,9 @@ namespace db_biometrics_mvp.Backend.Controllers
                     return NotFound(new { message = "User not found." });
                 }
 
+                // Convert to Singapore time (GMT+8)
+                var singaporeTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Singapore Standard Time");
+                
                 var profileData = new
                 {
                     username = user.Username,
@@ -497,8 +497,10 @@ namespace db_biometrics_mvp.Backend.Controllers
                     accountStatus = user.IsActive ? "Active" : "Inactive",
                     twoFactorEnabled = user.IsTwoFactorEnabled,
                     emailVerified = user.IsEmailVerified,
-                    lastLogin = user.LastLoginAt?.ToString("M/d/yyyy, h:mm:ss tt") ?? "Never",
-                    createdAt = user.CreatedAt.ToString("M/d/yyyy, h:mm:ss tt")
+                    lastLogin = user.LastLoginAt.HasValue 
+                        ? TimeZoneInfo.ConvertTimeFromUtc(user.LastLoginAt.Value, singaporeTimeZone).ToString("M/d/yyyy, h:mm:ss tt") + " (SGT)"
+                        : "Never",
+                    createdAt = TimeZoneInfo.ConvertTimeFromUtc(user.CreatedAt, singaporeTimeZone).ToString("M/d/yyyy, h:mm:ss tt") + " (SGT)"
                 };
 
                 return Ok(profileData);

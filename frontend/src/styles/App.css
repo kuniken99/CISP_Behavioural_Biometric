@@ -1406,9 +1406,6 @@ tr:nth-child(even) {
 
 
 /* Improved form spacing */
-.form-group { 
-}
-
 .form-group label { 
   display: block; 
   margin-bottom: 8px; 
@@ -1590,9 +1587,6 @@ table tr:hover {
 
 /* Small tablets (640px+) */
 @media (min-width: 640px) {
-  .main-content {
-  }
-  
   .header {
     padding: var(--space-lg) var(--space-lg);
   }

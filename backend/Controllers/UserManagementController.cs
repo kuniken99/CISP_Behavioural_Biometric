@@ -42,7 +42,7 @@ namespace db_biometrics_mvp.Backend.Controllers
                                     .ToListAsync();
 
             // Log activity
-            await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "VIEW_USERS", Details = "Viewed all system users.", IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" });
+            await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "VIEW_USERS", Details = "Viewed all system users." });
             await _context.SaveChangesAsync();
 
             return Ok(users);
@@ -68,7 +68,7 @@ namespace db_biometrics_mvp.Backend.Controllers
             await _context.SaveChangesAsync();
 
             // Log activity
-            await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "CREATE_USER", Details = $"Created user: {newUser.Username} with role: {newUser.Role}", IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" });
+            await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "CREATE_USER", Details = $"Created user: {newUser.Username} with role: {newUser.Role}" });
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "User created successfully." });
@@ -101,7 +101,7 @@ namespace db_biometrics_mvp.Backend.Controllers
             await _context.SaveChangesAsync();
 
             // Log activity
-            await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "UPDATE_USER", Details = $"Updated user: {user.Username} (ID: {user.Id})", IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" });
+            await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "UPDATE_USER", Details = $"Updated user: {user.Username} (ID: {user.Id})" });
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "User updated successfully." });
@@ -121,7 +121,7 @@ namespace db_biometrics_mvp.Backend.Controllers
             await _context.SaveChangesAsync();
 
             // Log activity
-            await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "TOGGLE_USER_STATUS", Details = $"User {user.Username} set to IsActive: {user.IsActive}", IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" });
+            await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "TOGGLE_USER_STATUS", Details = $"User {user.Username} set to IsActive: {user.IsActive}" });
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "User status updated successfully." });
@@ -149,8 +149,7 @@ namespace db_biometrics_mvp.Backend.Controllers
             await _context.AuditLogs.AddAsync(new AuditLog { 
                 Username = User.Identity?.Name ?? "Unknown", 
                 Action = "VIEW_UNIQUE_CODES", 
-                Details = "Viewed unique registration codes.", 
-                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" 
+                Details = "Viewed unique registration codes."
             });
             await _context.SaveChangesAsync();
 
@@ -183,8 +182,7 @@ namespace db_biometrics_mvp.Backend.Controllers
             await _context.AuditLogs.AddAsync(new AuditLog { 
                 Username = User.Identity?.Name ?? "Unknown", 
                 Action = "GENERATE_UNIQUE_CODE", 
-                Details = $"Generated unique code: {code} for role: {dto.Role}", 
-                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" 
+                Details = $"Generated unique code: {code} for role: {dto.Role}"
             });
             await _context.SaveChangesAsync();
 
@@ -217,8 +215,7 @@ namespace db_biometrics_mvp.Backend.Controllers
             await _context.AuditLogs.AddAsync(new AuditLog { 
                 Username = User.Identity?.Name ?? "Unknown", 
                 Action = "DEACTIVATE_UNIQUE_CODE", 
-                Details = $"Deactivated unique code: {code.Code}", 
-                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" 
+                Details = $"Deactivated unique code: {code.Code}"
             });
             await _context.SaveChangesAsync();
 
@@ -244,8 +241,7 @@ namespace db_biometrics_mvp.Backend.Controllers
             await _context.AuditLogs.AddAsync(new AuditLog { 
                 Username = User.Identity?.Name ?? "Unknown", 
                 Action = "DELETE_UNIQUE_CODE", 
-                Details = $"Permanently deleted unique code: {codeValue}", 
-                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" 
+                Details = $"Permanently deleted unique code: {codeValue}"
             });
             await _context.SaveChangesAsync();
 

@@ -122,7 +122,7 @@ namespace db_biometrics_mvp.Backend.Controllers
             var tables = _simulatedTables.Values.Select(t => new { name = t.Name, columns = t.Columns }).ToList();
 
             // Log activity
-            await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "VIEW_DB_TABLES", Details = "Viewed database tables", IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" });
+            await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "VIEW_DB_TABLES", Details = "Viewed database tables" });
             await _context.SaveChangesAsync();
 
             return Ok(tables);
@@ -180,7 +180,7 @@ namespace db_biometrics_mvp.Backend.Controllers
                 }
 
                 // Log activity
-                await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "VIEW_TABLE_ENTRIES", Details = $"Viewed entries for table: {tableName}", IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" });
+                await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "VIEW_TABLE_ENTRIES", Details = $"Viewed entries for table: {tableName}" });
                 await _context.SaveChangesAsync();
 
                 return Ok(entries);
@@ -229,7 +229,7 @@ namespace db_biometrics_mvp.Backend.Controllers
                     SaveSimulatedData();
 
                     // Log activity
-                    await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "ADD_DB_ENTRY", Details = $"Added new product: {productEntry.Data["name"]}, ID: {productEntry.Id}", IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" });
+                    await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "ADD_DB_ENTRY", Details = $"Added new product: {productEntry.Data["name"]}, ID: {productEntry.Id}" });
                     await _context.SaveChangesAsync();
 
                     return Ok(new { message = $"Product '{productEntry.Data["name"]}' added successfully with ID: {productEntry.Id}" });
@@ -256,7 +256,7 @@ namespace db_biometrics_mvp.Backend.Controllers
                     SaveSimulatedData();
 
                     // Log activity
-                    await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "ADD_DB_ENTRY", Details = $"Added new order for User {orderEntry.Data["user_id"]}, Product {orderEntry.Data["product_id"]}, ID: {orderEntry.Id}", IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" });
+                    await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "ADD_DB_ENTRY", Details = $"Added new order for User {orderEntry.Data["user_id"]}, Product {orderEntry.Data["product_id"]}, ID: {orderEntry.Id}" });
                     await _context.SaveChangesAsync();
 
                     return Ok(new { message = $"Order added successfully with ID: {orderEntry.Id}" });
@@ -294,7 +294,7 @@ namespace db_biometrics_mvp.Backend.Controllers
                     await _context.SaveChangesAsync();
 
                     // Log activity
-                    await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "UPDATE_DB_ENTRY", Details = $"Updated user ID: {dto.EntryId} (safe fields only)", IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" });
+                    await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "UPDATE_DB_ENTRY", Details = $"Updated user ID: {dto.EntryId} (safe fields only)" });
                     await _context.SaveChangesAsync();
 
                     return Ok(new { message = $"User entry {dto.EntryId} updated successfully." });
@@ -332,7 +332,7 @@ namespace db_biometrics_mvp.Backend.Controllers
             SaveSimulatedData();
 
             // Log activity
-            await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "UPDATE_DB_ENTRY", Details = $"Updated entry ID: {dto.EntryId} in table: {actualTableName}", IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" });
+            await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "UPDATE_DB_ENTRY", Details = $"Updated entry ID: {dto.EntryId} in table: {actualTableName}" });
             await _context.SaveChangesAsync();
 
             return Ok(new { message = $"Entry {dto.EntryId} updated in {actualTableName}." });
@@ -373,7 +373,7 @@ namespace db_biometrics_mvp.Backend.Controllers
             SaveSimulatedData();
 
             // Log activity
-            await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "DELETE_DB_ENTRY", Details = $"Deleted entry ID: {dto.EntryId} from table: {actualTableName}", IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" });
+            await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "DELETE_DB_ENTRY", Details = $"Deleted entry ID: {dto.EntryId} from table: {actualTableName}" });
             await _context.SaveChangesAsync();
 
             return Ok(new { message = $"Entry {dto.EntryId} deleted from {actualTableName}." });

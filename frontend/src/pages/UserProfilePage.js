@@ -37,22 +37,33 @@ const UserProfilePage = ({ currentUser, userRole }) => {
           return;
         }
 
+        // Add timeout to fetch request
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
         const response = await fetch(`${API_BASE_URL}/Auth/profile`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
-          }
+          },
+          signal: controller.signal
         });
+
+        clearTimeout(timeoutId);
 
         if (response.ok) {
           const data = await response.json();
           setUserProfile(data);
         } else {
-          setError('Failed to fetch profile data');
+          setError('Failed to fetch profile data. Please check if the backend server is running.');
         }
       } catch (err) {
-        setError('Network error fetching profile');
+        if (err.name === 'AbortError') {
+          setError('Request timeout. Please check if the backend server is running at http://localhost:5000');
+        } else {
+          setError('Network error: Unable to connect to the server. Please ensure the backend is running.');
+        }
       } finally {
         setLoading(false);
       }
@@ -74,14 +85,22 @@ const UserProfilePage = ({ currentUser, userRole }) => {
     
     try {
       const token = localStorage.getItem('jwt_token');
+      
+      // Add timeout to fetch request
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      
       const response = await fetch(`${API_BASE_URL}/User/update-email`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ newEmail })
+        body: JSON.stringify({ newEmail }),
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
       
       if (response.ok) {
         setUserProfile(prev => ({ ...prev, email: newEmail }));
@@ -92,7 +111,11 @@ const UserProfilePage = ({ currentUser, userRole }) => {
         setError('Failed to update email');
       }
     } catch (err) {
-      setError('Network error updating email');
+      if (err.name === 'AbortError') {
+        setError('Request timeout. Please check if the backend server is running.');
+      } else {
+        setError('Network error updating email. Please ensure the backend is running.');
+      }
     }
   };
 
@@ -104,14 +127,22 @@ const UserProfilePage = ({ currentUser, userRole }) => {
     
     try {
       const token = localStorage.getItem('jwt_token');
+      
+      // Add timeout to fetch request
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      
       const response = await fetch(`${API_BASE_URL}/User/update-password`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ newPassword })
+        body: JSON.stringify({ newPassword }),
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
       
       if (response.ok) {
         setSuccess('Password updated successfully!');
@@ -122,7 +153,11 @@ const UserProfilePage = ({ currentUser, userRole }) => {
         setError('Failed to update password');
       }
     } catch (err) {
-      setError('Network error updating password');
+      if (err.name === 'AbortError') {
+        setError('Request timeout. Please check if the backend server is running.');
+      } else {
+        setError('Network error updating password. Please ensure the backend is running.');
+      }
     }
   };
 

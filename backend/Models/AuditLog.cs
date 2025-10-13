@@ -13,7 +13,6 @@ namespace db_biometrics_mvp.Backend.Models
         [Required]
         public string Action { get; set; } = string.Empty; // e.g., "LOGIN", "CREATE_USER", "UPDATE_TABLE", "ANOMALY_DETECTED"
         public string Details { get; set; } = string.Empty;
-        public string IpAddress { get; set; } = string.Empty;
         public string? SessionId { get; set; } // Link to CBBA session
     }
 

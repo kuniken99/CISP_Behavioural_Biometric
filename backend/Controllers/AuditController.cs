@@ -40,8 +40,7 @@ namespace db_biometrics_mvp.Backend.Controllers
                         l.Timestamp,
                         l.Username,
                         l.Action,
-                        l.Details,
-                        l.IpAddress
+                        l.Details
                     })
                     .ToListAsync();
 

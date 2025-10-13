@@ -124,8 +124,7 @@ namespace db_biometrics_mvp.Backend.Controllers
             { 
                 Username = user.Username, 
                 Action = "TWO_FACTOR_SETUP_COMPLETED", 
-                Details = $"User {user.Email} successfully set up 2FA", 
-                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" 
+                Details = $"User {user.Email} successfully set up 2FA" 
             });
 
             await _context.SaveChangesAsync();
@@ -170,8 +169,7 @@ namespace db_biometrics_mvp.Backend.Controllers
                 { 
                     Username = user.Username, 
                     Action = "FAILED_TWO_FACTOR_LOGIN", 
-                    Details = $"Failed 2FA login attempt for user {user.Email}", 
-                    IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" 
+                    Details = $"Failed 2FA login attempt for user {user.Email}" 
                 });
                 await _context.SaveChangesAsync();
                 
@@ -187,8 +185,7 @@ namespace db_biometrics_mvp.Backend.Controllers
             { 
                 Username = user.Username, 
                 Action = "TWO_FACTOR_LOGIN_SUCCESS", 
-                Details = $"User {user.Email} successfully logged in with 2FA", 
-                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" 
+                Details = $"User {user.Email} successfully logged in with 2FA" 
             });
 
             await _context.SaveChangesAsync();

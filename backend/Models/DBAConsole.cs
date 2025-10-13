@@ -25,8 +25,6 @@ namespace db_biometrics_mvp.Backend.Models
         
         public bool IsActive { get; set; } = true;
         
-        public string IpAddress { get; set; } = string.Empty;
-        
         public string UserAgent { get; set; } = string.Empty;
         
         public string DatabaseName { get; set; } = string.Empty;

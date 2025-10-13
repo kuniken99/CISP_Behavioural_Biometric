@@ -48,7 +48,7 @@ namespace db_biometrics_mvp.Backend.Controllers
             await _context.SaveChangesAsync();
 
             // Log activity
-            await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "ASSIGN_ROLE", Details = $"Assigned role '{dto.RoleName}' to user: {user.Username}", IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "N/A" });
+            await _context.AuditLogs.AddAsync(new AuditLog { Username = User.Identity?.Name ?? "Unknown", Action = "ASSIGN_ROLE", Details = $"Assigned role '{dto.RoleName}' to user: {user.Username}" });
             await _context.SaveChangesAsync();
 
             return Ok(new { message = $"Role '{dto.RoleName}' assigned to user {user.Username}." });

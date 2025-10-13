@@ -37,8 +37,6 @@ namespace db_biometrics_mvp.Backend.Models
         
         public DateTime ExpiryTime { get; set; } = DateTime.UtcNow.AddMinutes(5);
         
-        public string IpAddress { get; set; } = string.Empty;
-        
         public string UserAgent { get; set; } = string.Empty;
         
         public bool IsExpired => DateTime.UtcNow > ExpiryTime;
