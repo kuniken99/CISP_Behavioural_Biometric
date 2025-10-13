@@ -901,3 +901,119 @@
   width: 25px;
   height: 25px;
 }
+
+/* Password Strength Indicator */
+.password-strength-container {
+  margin-top: 12px;
+  padding: 16px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.password-strength-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.password-strength-label {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.password-strength-score {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.password-strength-bar {
+  width: 100%;
+  height: 6px;
+  background-color: #e5e7eb;
+  border-radius: 3px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.password-strength-progress {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.password-requirements {
+  margin-top: 12px;
+}
+
+.requirements-title {
+  color: #6b7280;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.requirements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.requirement {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.requirement-icon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.requirement.met {
+  color: #10b981;
+}
+
+.requirement.met .requirement-icon {
+  background-color: #d1fae5;
+  color: #10b981;
+}
+
+.requirement.unmet {
+  color: #dc2626;
+}
+
+.requirement.unmet .requirement-icon {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+/* Responsive adjustments for password strength */
+@media (max-width: 480px) {
+  .password-strength-container {
+    padding: 12px;
+    font-size: 13px;
+  }
+  
+  .password-strength-header {
+    margin-bottom: 6px;
+  }
+  
+  .requirement {
+    font-size: 12px;
+  }
+  
+  .requirement-icon {
+    width: 14px;
+    height: 14px;
+    font-size: 9px;
+  }
+}
