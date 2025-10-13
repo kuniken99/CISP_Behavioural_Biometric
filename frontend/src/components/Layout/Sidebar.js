@@ -27,7 +27,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   return (
     <div className={`sidebar ${isOpen ? 'open' : ''}`}>
-      <h1>DBA Console</h1>
+      <h1 style={{ marginTop: '10px' }}>DBA Console</h1>
       <nav className="sidebar-nav">
         <ul>
           {menuItems.map(item => (

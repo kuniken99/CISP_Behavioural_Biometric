@@ -33,24 +33,54 @@ const CBBAMonitor = ({ status = "Active", riskScore = 12, isAuthenticated = fals
         <div style={{
           display: 'flex',
           alignItems: 'center',
+          justifyContent: 'space-between',
           gap: '8px',
           fontSize: '0.9rem'
         }}>
-          <img 
-            src={ActivityLogsIcon} 
-            alt="Activity Logs" 
-            style={{ 
-              width: '16px', 
-              height: '16px', 
-              flexShrink: 0 
-            }} 
-          />
-          <span style={{
-            color: '#374151',
-            fontWeight: '500'
-          }}>
-            Status: {status}
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <img 
+              src={ActivityLogsIcon} 
+              alt="Activity Logs" 
+              style={{ 
+                width: '16px', 
+                height: '16px', 
+                flexShrink: 0 
+              }} 
+            />
+            <span style={{
+              color: '#374151',
+              fontWeight: '500'
+            }}>
+              Status: {status}
+            </span>
+          </div>
+            
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              backgroundColor: '#D1FAE5',
+              padding: '4px 8px',
+              borderRadius: '8px'
+            }}>
+              <img 
+                src={ShieldIcon} 
+                alt="Shield" 
+                style={{ 
+                  width: '20px', 
+                  height: '20px', 
+                  flexShrink: 0, 
+                  filter: 'brightness(0) saturate(100%) invert(20%) sepia(77%) saturate(2985%) hue-rotate(133deg) brightness(96%) contrast(96%)'
+                }} 
+              />
+              <span style={{
+                fontSize: '1rem',
+                fontWeight: '700',
+                color: '#016630'
+              }}>
+                {riskScore}%
+              </span>
+          </div>
         </div>
       </div>
       
@@ -60,40 +90,15 @@ const CBBAMonitor = ({ status = "Active", riskScore = 12, isAuthenticated = fals
           justifyContent: 'space-between',
           alignItems: 'center',
           marginBottom: '10px'
+
         }}>
           <span style={{
-            fontSize: '0.9rem',
-            color: '#374151',
-            fontWeight: '500'
+            fontSize: '0.85rem',
+            color: '#016630',
+            fontWeight: '600'
           }}>
-            Risk Score:
+            Risk Score: Low Risk
           </span>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            backgroundColor: riskScore <= 20 ? '#D1FAE5' : riskScore <= 50 ? '#FEF3C7' : '#FEE2E2',
-            padding: '6px 10px',
-            borderRadius: '8px',
-            border: `1px solid ${riskScore <= 20 ? '#10B981' : riskScore <= 50 ? '#F59E0B' : '#EF4444'}`
-          }}>
-            <img 
-              src={ShieldIcon} 
-              alt="Shield" 
-              style={{ 
-                width: '14px', 
-                height: '14px', 
-                flexShrink: 0 
-              }} 
-            />
-            <span style={{
-              fontSize: '0.9rem',
-              fontWeight: '600',
-              color: riskScore <= 20 ? '#065F46' : riskScore <= 50 ? '#92400E' : '#991B1B'
-            }}>
-              {riskScore}%
-            </span>
-          </div>
         </div>
         
         <div style={{
@@ -104,8 +109,8 @@ const CBBAMonitor = ({ status = "Active", riskScore = 12, isAuthenticated = fals
           overflow: 'hidden'
         }}>
           <div style={{
-            width: `${Math.min(riskScore, 100)}%`,
             height: '100%',
+            width: '12%',
             backgroundColor: riskScore <= 20 ? '#10B981' : riskScore <= 50 ? '#F59E0B' : '#EF4444',
             borderRadius: '4px',
             transition: 'width 0.3s ease'

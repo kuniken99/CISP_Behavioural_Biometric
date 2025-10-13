@@ -527,7 +527,7 @@ tr:nth-child(even) {
   z-index: 1000 !important;
   background-color: #ffffff !important;
   border: 1px solid #e5e7eb !important;
-  border-radius: 8px !important;
+  border-radius: 20px !important;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
   transition: all 0.3s ease !important;
 }
