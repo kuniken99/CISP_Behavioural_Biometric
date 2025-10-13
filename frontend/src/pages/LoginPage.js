@@ -139,7 +139,7 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
             />
           </div>
           
-          <div className="form-group">
+          <div className="form-group" style={{ marginBottom: '10px' }}>
             <label>Password</label>
             <div className="password-input-container">
               <input 

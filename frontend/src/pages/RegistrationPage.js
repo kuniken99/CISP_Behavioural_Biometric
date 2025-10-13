@@ -140,7 +140,7 @@ const RegistrationPage = ({ setCurrentAuthPage }) => {
         <h2 className="auth-title">Create an Account</h2>
         
         <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-group">
+          <div className="form-group" style={{ marginBottom: '10px' }}>
             <label>Username*</label>
             <input 
               type="text" 
@@ -155,7 +155,7 @@ const RegistrationPage = ({ setCurrentAuthPage }) => {
             />
           </div>
 
-          <div className="form-group">
+          <div className="form-group" style={{ marginBottom: '10px' }}>
             <label>Email*</label>
             <input 
               type="email" 
@@ -170,7 +170,7 @@ const RegistrationPage = ({ setCurrentAuthPage }) => {
             />
           </div>
 
-          <div className="form-group">
+          <div className="form-group" style={{ marginBottom: '10px' }}>
             <label>Role*</label>
             <div className="select-wrapper">
               <select 
@@ -188,7 +188,7 @@ const RegistrationPage = ({ setCurrentAuthPage }) => {
             </div>
           </div>
 
-          <div className="form-group">
+          <div className="form-group" style={{ marginBottom: '10px' }}>
             <label>Unique Code*</label>
             <input 
               type="text" 
@@ -201,7 +201,7 @@ const RegistrationPage = ({ setCurrentAuthPage }) => {
             />
           </div>
 
-          <div className="form-group">
+          <div className="form-group" style={{ marginBottom: '10px' }}>
             <label>Password*</label>
             <div className="password-input-container">
               <input 
@@ -225,7 +225,7 @@ const RegistrationPage = ({ setCurrentAuthPage }) => {
             </div>
           </div>
 
-          <div className="form-group">
+          <div className="form-group" style={{ marginBottom: '0px' }}>
             <label>Confirm Password*</label>
             <div className="password-input-container">
               <input 
