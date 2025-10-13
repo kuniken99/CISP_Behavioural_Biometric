@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { API_BASE_URL } from '../utils/config';
 import eyeIcon from '../assets/eye-icon.svg';
+import arrowBackIcon from '../assets/arrow-back-icon.svg';
 import '../styles/LoginPage.css';
 
 const SetNewPasswordPage = () => {
@@ -165,7 +166,8 @@ const SetNewPasswordPage = () => {
             className="back-to-login-btn"
             onClick={handleBackToLogin}
           >
-            ← Back to Login
+            <img src={arrowBackIcon} alt="Back" className="back-icon" />
+            Back to Login
           </button>
 
           <h2 className="auth-title">Invalid Reset Link</h2>
@@ -181,6 +183,7 @@ const SetNewPasswordPage = () => {
             className="btn btn-primary btn-full"
             onClick={handleBackToLogin}
           >
+            <img src={arrowBackIcon} alt="Back" className="back-icon" />
             Back to Login
           </button>
         </div>
@@ -197,7 +200,8 @@ const SetNewPasswordPage = () => {
           className="back-to-login-btn"
           onClick={handleBackToLogin}
         >
-          ← Back to Login
+          <img src={arrowBackIcon} alt="Back" className="back-icon" />
+          Back to Login
         </button>
 
         <h2 className="auth-title">Set New Password</h2>
