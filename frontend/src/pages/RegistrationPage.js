@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { API_BASE_URL } from '../utils/config';
 import eyeIcon from '../assets/eye-icon.svg';
@@ -6,8 +6,14 @@ import arrowBackIcon from '../assets/arrow-back-icon.svg';
 import dropdownIcon from '../assets/dropdown-icon.svg';
 import '../styles/LoginPage.css';
 
-const RegistrationPage = ({ setCurrentAuthPage }) => {
-  const [formData, setFormData] = useState({
+const RegistrationPage = ({ 
+  setCurrentAuthPage, 
+  initialFormData = null, 
+  onFormDataChange = null, 
+  initialAgreedToTerms = false, 
+  onAgreedToTermsChange = null 
+}) => {
+  const [formData, setFormData] = useState(initialFormData || {
     username: '',
     email: '',
     role: 'User',
@@ -21,7 +27,7 @@ const RegistrationPage = ({ setCurrentAuthPage }) => {
   const [recaptchaVerified, setRecaptchaVerified] = useState(false);
   const [recaptchaToken, setRecaptchaToken] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(initialAgreedToTerms || false);
   const [passwordStrength, setPasswordStrength] = useState({
     score: 0,
     label: '',
@@ -71,12 +77,27 @@ const RegistrationPage = ({ setCurrentAuthPage }) => {
     return { score, label, color, requirements };
   };
 
+  // Recalculate password strength when component mounts with existing form data
+  useEffect(() => {
+    if (formData.password) {
+      const strength = checkPasswordStrength(formData.password);
+      setPasswordStrength(strength);
+    }
+  }, []); // Only run on mount
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
+    const updatedFormData = {
+      ...formData,
       [name]: value
-    }));
+    };
+    
+    setFormData(updatedFormData);
+    
+    // Update parent component's form data if callback is provided
+    if (onFormDataChange) {
+      onFormDataChange(updatedFormData);
+    }
 
     // Check password strength when password field changes
     if (name === 'password') {
@@ -382,7 +403,12 @@ const RegistrationPage = ({ setCurrentAuthPage }) => {
               type="checkbox" 
               required 
               checked={agreedToTerms}
-              onChange={(e) => setAgreedToTerms(e.target.checked)}
+              onChange={(e) => {
+                setAgreedToTerms(e.target.checked);
+                if (onAgreedToTermsChange) {
+                  onAgreedToTermsChange(e.target.checked);
+                }
+              }}
             />
             <span>
                 By creating an account, I agree to the{" "}

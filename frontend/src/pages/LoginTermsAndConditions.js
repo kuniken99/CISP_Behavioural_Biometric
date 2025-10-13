@@ -2,17 +2,17 @@ import React from 'react';
 import arrowBackIcon from '../assets/arrow-back-icon.svg';
 import '../styles/PolicyPage.css';
 
-const LoginTermsAndConditions = ({ setCurrentAuthPage }) => {
+const LoginTermsAndConditions = ({ setCurrentAuthPage, previousPage = 'login' }) => {
   return (
     <div className="policy-container">
       <div className="policy-card">
         {/* Back to Login Button */}
         <button 
           className="back-button"
-          onClick={() => setCurrentAuthPage('login')}
+          onClick={() => setCurrentAuthPage(previousPage)}
         >
           <img src={arrowBackIcon} alt="Back" className="back-icon" />
-          Back to Login
+          Back to {previousPage === 'register' ? 'Registration' : 'Login'}
         </button>
 
         <div className="policy-content">
@@ -112,7 +112,7 @@ const LoginTermsAndConditions = ({ setCurrentAuthPage }) => {
 
           <button 
             className="btn btn-primary policy-accept-btn"
-            onClick={() => setCurrentAuthPage('login')}
+            onClick={() => setCurrentAuthPage(previousPage)}
           >
             Accept and Continue
           </button>
