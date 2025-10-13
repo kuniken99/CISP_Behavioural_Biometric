@@ -1,6 +1,7 @@
 // frontend/src/hooks/useAuth.js
 import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { API_BASE_URL } from '../utils/config';
 
 const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -28,15 +29,33 @@ const useAuth = () => {
     setUserRole(role);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('jwt_token');
-    localStorage.removeItem('current_user');
-    localStorage.removeItem('user_role');
-    setIsAuthenticated(false);
-    setCurrentUser(null);
-    setUserRole(null);
-    // Don't show alert as it might cause navigation issues
-    // React Router will automatically redirect to login when isAuthenticated becomes false
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem('jwt_token');
+      if (token) {
+        // Call backend logout endpoint to update LastLogoutAt
+        await fetch(`${API_BASE_URL}/Auth/logout`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+      }
+    } catch (error) {
+      // Continue with logout even if backend call fails
+      console.warn('Failed to call backend logout endpoint:', error);
+    } finally {
+      // Always clear local storage and state
+      localStorage.removeItem('jwt_token');
+      localStorage.removeItem('current_user');
+      localStorage.removeItem('user_role');
+      setIsAuthenticated(false);
+      setCurrentUser(null);
+      setUserRole(null);
+      // Don't show alert as it might cause navigation issues
+      // React Router will automatically redirect to login when isAuthenticated becomes false
+    }
   };
 
   return {

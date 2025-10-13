@@ -12,7 +12,7 @@ const UserProfilePage = ({ currentUser, userRole }) => {
     accountStatus: 'Loading...',
     twoFactorEnabled: false,
     emailVerified: false,
-    lastLogin: 'Loading...',
+    lastLogout: 'Loading...',
     createdAt: 'Loading...'
   });
 
@@ -502,9 +502,9 @@ const UserProfilePage = ({ currentUser, userRole }) => {
 
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: '#6b7280', fontSize: '14px' }}>Last Login</span>
+              <span style={{ color: '#6b7280', fontSize: '14px' }}>Last Logout</span>
               <span style={{ color: '#374151', fontSize: '14px', fontWeight: '500' }}>
-                {userProfile.lastLogin}
+                {userProfile.lastLogout}
               </span>
             </div>
           </div>

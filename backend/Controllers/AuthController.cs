@@ -497,8 +497,8 @@ namespace db_biometrics_mvp.Backend.Controllers
                     accountStatus = user.IsActive ? "Active" : "Inactive",
                     twoFactorEnabled = user.IsTwoFactorEnabled,
                     emailVerified = user.IsEmailVerified,
-                    lastLogin = user.LastLoginAt.HasValue 
-                        ? TimeZoneInfo.ConvertTimeFromUtc(user.LastLoginAt.Value, singaporeTimeZone).ToString("M/d/yyyy, h:mm:ss tt") + " (SGT)"
+                    lastLogout = user.LastLogoutAt.HasValue 
+                        ? TimeZoneInfo.ConvertTimeFromUtc(user.LastLogoutAt.Value, singaporeTimeZone).ToString("M/d/yyyy, h:mm:ss tt") + " (SGT)"
                         : "Never",
                     createdAt = TimeZoneInfo.ConvertTimeFromUtc(user.CreatedAt, singaporeTimeZone).ToString("M/d/yyyy, h:mm:ss tt") + " (SGT)"
                 };
@@ -514,6 +514,52 @@ namespace db_biometrics_mvp.Backend.Controllers
 
         [HttpOptions("profile")]
         public IActionResult OptionsProfile()
+        {
+            return Ok();
+        }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            try
+            {
+                var username = User.Identity?.Name;
+                if (string.IsNullOrEmpty(username))
+                {
+                    return Unauthorized(new { message = "User not authenticated." });
+                }
+
+                var user = await _context.Users.SingleOrDefaultAsync(u => u.Username == username);
+                if (user == null)
+                {
+                    return NotFound(new { message = "User not found." });
+                }
+
+                // Update last logout time
+                user.LastLogoutAt = DateTime.UtcNow;
+                _context.Users.Update(user);
+
+                // Log the logout activity
+                await _context.AuditLogs.AddAsync(new AuditLog 
+                { 
+                    Username = username, 
+                    Action = "USER_LOGOUT", 
+                    Details = $"User {user.Email} logged out" 
+                });
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Logout successful." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during logout");
+                return StatusCode(500, new { message = "Internal server error." });
+            }
+        }
+
+        [HttpOptions("logout")]
+        public IActionResult OptionsLogout()
         {
             return Ok();
         }
