@@ -13,6 +13,8 @@ using db_biometrics_mvp.Backend.Models;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization; // For password hashing
 using db_biometrics_mvp.Backend.Services;
+using db_biometrics_mvp.Backend.Middleware;
+using System.Security.Claims;
 
 namespace db_biometrics_mvp.Backend.Controllers
 {
@@ -600,6 +602,8 @@ namespace db_biometrics_mvp.Backend.Controllers
             try
             {
                 var username = User.Identity?.Name;
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                
                 if (string.IsNullOrEmpty(username))
                 {
                     return Unauthorized(new { message = "User not authenticated." });
@@ -624,6 +628,13 @@ namespace db_biometrics_mvp.Backend.Controllers
                 });
 
                 await _context.SaveChangesAsync();
+
+                // Remove session from tracking middleware
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    SessionTrackingMiddleware.RemoveSession(userId);
+                    _logger.LogInformation("Session removed for user {Username} (ID: {UserId})", username, userId);
+                }
 
                 return Ok(new { message = "Logout successful." });
             }

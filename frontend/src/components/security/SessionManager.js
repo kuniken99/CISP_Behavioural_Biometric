@@ -4,58 +4,129 @@ import { API_BASE_URL } from '../../utils/config';
 
 const SESSION_TIMEOUT = 15 * 60 * 1000; // 15 minutes in milliseconds
 const WARNING_TIME = 60 * 1000; // Show warning 1 minute before timeout
+const ACTIVITY_CHECK_INTERVAL = 5000; // Check every 5 seconds (reduced frequency)
+const ACTIVITY_THROTTLE = 2000; // Throttle activity updates to once per 2 seconds
 
 const SessionManager = () => {
     const [lastActivity, setLastActivity] = useState(Date.now());
     const [showWarning, setShowWarning] = useState(false);
     const [remainingTime, setRemainingTime] = useState(SESSION_TIMEOUT);
     const navigate = useNavigate();
-    const logoutTimerRef = useRef(null);
-    const warningTimerRef = useRef(null);
+    const checkIntervalRef = useRef(null);
+    const lastActivityUpdateRef = useRef(Date.now());
 
     const resetTimer = useCallback(() => {
-        setLastActivity(Date.now());
+        const now = Date.now();
+        setLastActivity(now);
+        lastActivityUpdateRef.current = now;
         setShowWarning(false);
         setRemainingTime(SESSION_TIMEOUT);
     }, []);
 
-    const handleLogout = useCallback(async () => {
+    const handleLogout = useCallback(async (reason = 'timeout') => {
         try {
             const token = localStorage.getItem('token');
             if (token) {
-                // Call logout API
-                await fetch(`${API_BASE_URL}/Auth/logout`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
+                // Call logout API with timeout handling
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+                try {
+                    await fetch(`${API_BASE_URL}/Auth/logout`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        signal: controller.signal
+                    });
+                } catch (fetchError) {
+                    console.warn('Logout API call failed:', fetchError);
+                    // Continue with cleanup even if API call fails
+                } finally {
+                    clearTimeout(timeoutId);
+                }
             }
         } catch (error) {
-            console.error('Logout API error:', error);
+            console.error('Logout error:', error);
         } finally {
             // Clear all local storage
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             localStorage.removeItem('sessionId');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('username');
             
-            // Clear timers
-            if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
-            if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
+            // Clear all session storage
+            sessionStorage.clear();
             
-            // Navigate to login
+            // Clear all timers
+            if (checkIntervalRef.current) clearInterval(checkIntervalRef.current);
+            
+            // Navigate to login with appropriate message
+            const message = reason === 'manual' 
+                ? 'You have been logged out successfully.' 
+                : 'Your session has expired due to inactivity. Please log in again.';
+            
             navigate('/login', { 
-                state: { message: 'Your session has expired due to inactivity. Please log in again.' }
+                state: { message },
+                replace: true // Use replace to avoid adding to history
             });
         }
     }, [navigate]);
 
+    // Check token expiration
+    const checkTokenExpiration = useCallback(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            handleLogout('no-token');
+            return false;
+        }
+
+        try {
+            // Decode JWT token (simple base64 decode)
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const expirationTime = payload.exp * 1000; // Convert to milliseconds
+            const now = Date.now();
+            const timeUntilExpiration = expirationTime - now;
+
+            if (timeUntilExpiration <= 0) {
+                // Token has expired
+                console.warn('Token has expired');
+                handleLogout('token-expired');
+                return false;
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Error decoding token:', error);
+            handleLogout('invalid-token');
+            return false;
+        }
+    }, [handleLogout]);
+
     useEffect(() => {
-        const events = ['mousedown', 'keydown', 'scroll', 'mousemove', 'touchstart', 'click'];
+        const token = localStorage.getItem('token');
+        if (!token) return; // Don't run if not logged in
+
+        // Use only essential events, removed mousemove to prevent excessive triggers
+        const events = ['mousedown', 'keydown', 'click', 'touchstart'];
         
         const handleActivity = () => {
-            resetTimer();
+            const now = Date.now();
+            // Throttle: only update if ACTIVITY_THROTTLE ms have passed since last update
+            if (now - lastActivityUpdateRef.current < ACTIVITY_THROTTLE) {
+                return;
+            }
+
+            // Verify token is still valid before resetting timer
+            if (checkTokenExpiration()) {
+                lastActivityUpdateRef.current = now;
+                setLastActivity(now);
+                if (showWarning) {
+                    setShowWarning(false);
+                }
+            }
         };
 
         // Add event listeners for user activity
@@ -63,33 +134,42 @@ const SessionManager = () => {
             window.addEventListener(event, handleActivity, { passive: true });
         });
 
-        // Set up interval to check session timeout
-        const interval = setInterval(() => {
+        // Set up interval to check session timeout and token expiration
+        checkIntervalRef.current = setInterval(() => {
+            // Check token expiration first
+            if (!checkTokenExpiration()) {
+                return;
+            }
+
             const now = Date.now();
             const timeSinceLastActivity = now - lastActivity;
             const timeRemaining = SESSION_TIMEOUT - timeSinceLastActivity;
 
-            setRemainingTime(timeRemaining);
+            // Only update remaining time when warning is shown (prevent unnecessary re-renders)
+            if (showWarning && timeRemaining > 0) {
+                setRemainingTime(timeRemaining);
+            }
 
             if (timeRemaining <= 0) {
-                handleLogout();
+                handleLogout('timeout');
             } else if (timeRemaining <= WARNING_TIME && !showWarning) {
                 setShowWarning(true);
+                setRemainingTime(timeRemaining);
             }
-        }, 1000);
+        }, ACTIVITY_CHECK_INTERVAL);
 
         return () => {
             events.forEach(event => {
                 window.removeEventListener(event, handleActivity);
             });
-            clearInterval(interval);
-            if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
-            if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
+            if (checkIntervalRef.current) clearInterval(checkIntervalRef.current);
         };
-    }, [lastActivity, handleLogout, resetTimer, showWarning]);
+    }, [lastActivity, handleLogout, showWarning, checkTokenExpiration]);
 
     const handleExtendSession = () => {
-        resetTimer();
+        if (checkTokenExpiration()) {
+            resetTimer();
+        }
     };
 
     const formatTime = (ms) => {
@@ -156,7 +236,8 @@ const SessionManager = () => {
                         height: '100%',
                         width: `${progress}%`,
                         backgroundColor: progress < 30 ? '#ef4444' : progress < 60 ? '#f59e0b' : '#10b981',
-                        transition: 'width 1s linear, background-color 0.5s ease'
+                        transition: 'width 0.3s ease-out, background-color 0.5s ease',
+                        willChange: 'width'
                     }}></div>
                 </div>
                 <div style={{
@@ -165,7 +246,7 @@ const SessionManager = () => {
                     justifyContent: 'flex-end'
                 }}>
                     <button
-                        onClick={handleLogout}
+                        onClick={() => handleLogout('manual')}
                         style={{
                             padding: '12px 24px',
                             backgroundColor: '#374151',
@@ -217,4 +298,5 @@ const SessionManager = () => {
     );
 };
 
-export default SessionManager;
+// Use React.memo to prevent unnecessary re-renders
+export default React.memo(SessionManager);

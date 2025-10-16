@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using db_biometrics_mvp.Backend.Services;
 using db_biometrics_mvp.Backend.Data;
+using db_biometrics_mvp.Backend.Middleware;
 
 namespace db_biometrics_mvp.Backend
 {
@@ -114,6 +115,9 @@ namespace db_biometrics_mvp.Backend
             // Enable Authentication and Authorization middleware
             app.UseAuthentication();
             app.UseAuthorization();
+
+            // Add Session Tracking Middleware (after authentication)
+            app.UseMiddleware<SessionTrackingMiddleware>();
 
             // Map incoming requests to controller actions
             app.UseEndpoints(endpoints =>
