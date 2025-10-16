@@ -21,6 +21,16 @@ const DashboardPage = () => {
         const response = await fetch(`${API_BASE_URL}/Dashboard/metrics`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
+        
+        // Handle session expiration
+        if (response.status === 401) {
+          const data = await response.json();
+          if (data.sessionExpired) {
+            // Session expired, let SessionManager handle logout
+            return;
+          }
+        }
+        
         const data = await response.json();
         if (response.ok) {
           setMetrics(data);
@@ -28,7 +38,12 @@ const DashboardPage = () => {
           setError(data.message || 'Failed to fetch dashboard metrics.');
         }
       } catch (err) {
-        setError('Network error fetching dashboard metrics.');
+        // Only show error if it's not a session timeout issue
+        const token = localStorage.getItem('jwt_token');
+        if (token) {
+          setError('Network error fetching dashboard metrics.');
+        }
+        // If no token, user is being logged out, don't show error
       } finally {
         setLoading(false);
       }

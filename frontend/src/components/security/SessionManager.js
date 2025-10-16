@@ -7,6 +7,11 @@ const WARNING_TIME = 60 * 1000; // Show warning 1 minute before timeout
 const ACTIVITY_CHECK_INTERVAL = 5000; // Check every 5 seconds
 const ACTIVITY_THROTTLE = 2000; // Throttle activity updates to once per 2 seconds
 
+// const SESSION_TIMEOUT = 1 * 60 * 1000; // 1 minute for testing (normally 15 minutes)
+// const WARNING_TIME = 15 * 1000; // Show warning 15 seconds before timeout (for testing)
+// const ACTIVITY_CHECK_INTERVAL = 1000; // Check every 1 second for testing (normally 5000)
+// const ACTIVITY_THROTTLE = 1000; // Throttle to 1 second for testing (normally 2000)
+
 const SessionManager = () => {
     const [lastActivity, setLastActivity] = useState(Date.now());
     const [showWarning, setShowWarning] = useState(false);
@@ -116,6 +121,12 @@ const SessionManager = () => {
         const events = ['mousedown', 'keydown', 'click', 'touchstart'];
         
         const handleActivity = () => {
+            // Don't process activity when warning is shown
+            // Only allow explicit button clicks to extend session
+            if (showWarning) {
+                return;
+            }
+
             const now = Date.now();
             // Throttle: only update if ACTIVITY_THROTTLE ms have passed since last update
             if (now - lastActivityUpdateRef.current < ACTIVITY_THROTTLE) {
@@ -126,9 +137,6 @@ const SessionManager = () => {
             if (checkTokenExpiration()) {
                 lastActivityUpdateRef.current = now;
                 setLastActivity(now);
-                if (showWarning) {
-                    setShowWarning(false);
-                }
             }
         };
 
@@ -188,28 +196,46 @@ const SessionManager = () => {
         return null;
     }
 
+    // Prevent clicks outside the dialog from propagating
+    const handleOverlayClick = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+    };
+
+    const handleDialogClick = (e) => {
+        e.stopPropagation();
+    };
+
     return (
-        <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 10000
-        }}>
-            <div style={{
-                backgroundColor: '#ffffff',
-                padding: '40px',
-                borderRadius: '8px',
-                maxWidth: '450px',
-                width: '90%',
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
-                border: '1px solid #e0e0e0'
-            }}>
+        <div 
+            style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 10000
+            }}
+            onClick={handleOverlayClick}
+            onMouseDown={handleOverlayClick}
+            onKeyDown={handleOverlayClick}
+        >
+            <div 
+                style={{
+                    backgroundColor: '#ffffff',
+                    padding: '40px',
+                    borderRadius: '8px',
+                    maxWidth: '450px',
+                    width: '90%',
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+                    border: '1px solid #e0e0e0'
+                }}
+                onClick={handleDialogClick}
+            >
                 <h2 style={{
                     color: '#000000',
                     marginBottom: '16px',
