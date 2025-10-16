@@ -11,10 +11,9 @@ using Microsoft.IdentityModel.Tokens;
 using db_biometrics_mvp.Backend.Data;
 using db_biometrics_mvp.Backend.Models;
 using System.Security.Cryptography;
-using Microsoft.AspNetCore.Authorization; // For password hashing
+using Microsoft.AspNetCore.Authorization;
 using db_biometrics_mvp.Backend.Services;
 using db_biometrics_mvp.Backend.Middleware;
-using System.Security.Claims;
 
 namespace db_biometrics_mvp.Backend.Controllers
 {

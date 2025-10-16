@@ -4,7 +4,7 @@ import { API_BASE_URL } from '../../utils/config';
 
 const SESSION_TIMEOUT = 15 * 60 * 1000; // 15 minutes in milliseconds
 const WARNING_TIME = 60 * 1000; // Show warning 1 minute before timeout
-const ACTIVITY_CHECK_INTERVAL = 5000; // Check every 5 seconds (reduced frequency)
+const ACTIVITY_CHECK_INTERVAL = 5000; // Check every 5 seconds
 const ACTIVITY_THROTTLE = 2000; // Throttle activity updates to once per 2 seconds
 
 const SessionManager = () => {
@@ -25,7 +25,7 @@ const SessionManager = () => {
 
     const handleLogout = useCallback(async (reason = 'timeout') => {
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('jwt_token') || localStorage.getItem('token');
             if (token) {
                 // Call logout API with timeout handling
                 const controller = new AbortController();
@@ -51,6 +51,9 @@ const SessionManager = () => {
             console.error('Logout error:', error);
         } finally {
             // Clear all local storage
+            localStorage.removeItem('jwt_token');
+            localStorage.removeItem('current_user');
+            localStorage.removeItem('user_role');
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             localStorage.removeItem('sessionId');
@@ -77,7 +80,7 @@ const SessionManager = () => {
 
     // Check token expiration
     const checkTokenExpiration = useCallback(() => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('jwt_token') || localStorage.getItem('token');
         if (!token) {
             handleLogout('no-token');
             return false;
@@ -106,7 +109,7 @@ const SessionManager = () => {
     }, [handleLogout]);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('jwt_token') || localStorage.getItem('token');
         if (!token) return; // Don't run if not logged in
 
         // Use only essential events, removed mousemove to prevent excessive triggers
@@ -192,105 +195,104 @@ const SessionManager = () => {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 10000
         }}>
             <div style={{
-                backgroundColor: '#1f2937',
-                padding: '30px',
-                borderRadius: '12px',
-                maxWidth: '500px',
+                backgroundColor: '#ffffff',
+                padding: '40px',
+                borderRadius: '8px',
+                maxWidth: '450px',
                 width: '90%',
-                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)',
-                border: '1px solid #374151'
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+                border: '1px solid #e0e0e0'
             }}>
                 <h2 style={{
-                    color: '#f59e0b',
-                    marginBottom: '20px',
-                    fontSize: '24px',
-                    fontWeight: 'bold'
+                    color: '#000000',
+                    marginBottom: '16px',
+                    marginTop: '0',
+                    fontSize: '20px',
+                    fontWeight: '600',
+                    textAlign: 'center'
                 }}>
-                    ⚠️ Session Timeout Warning
+                    Session Timeout Warning
                 </h2>
                 <p style={{
-                    color: '#e5e7eb',
-                    marginBottom: '20px',
-                    fontSize: '16px',
-                    lineHeight: '1.6'
+                    color: '#333333',
+                    marginBottom: '24px',
+                    fontSize: '15px',
+                    lineHeight: '1.5',
+                    textAlign: 'center'
                 }}>
-                    Your session will expire in <strong style={{ color: '#f59e0b' }}>{formatTime(remainingTime)}</strong> due to inactivity.
-                    <br />
-                    Would you like to extend your session?
+                    Your session will expire in <strong>{formatTime(remainingTime)}</strong> due to inactivity.
                 </p>
                 <div style={{
-                    backgroundColor: '#374151',
-                    borderRadius: '8px',
-                    height: '10px',
+                    backgroundColor: '#f0f0f0',
+                    borderRadius: '4px',
+                    height: '8px',
                     overflow: 'hidden',
-                    marginBottom: '25px'
+                    marginBottom: '28px'
                 }}>
                     <div style={{
                         height: '100%',
                         width: `${progress}%`,
-                        backgroundColor: progress < 30 ? '#ef4444' : progress < 60 ? '#f59e0b' : '#10b981',
-                        transition: 'width 0.3s ease-out, background-color 0.5s ease',
+                        backgroundColor: '#000000',
+                        transition: 'width 0.3s ease-out',
                         willChange: 'width'
                     }}></div>
                 </div>
                 <div style={{
                     display: 'flex',
-                    gap: '15px',
-                    justifyContent: 'flex-end'
+                    gap: '12px',
+                    justifyContent: 'center'
                 }}>
                     <button
                         onClick={() => handleLogout('manual')}
                         style={{
-                            padding: '12px 24px',
-                            backgroundColor: '#374151',
-                            color: '#ef4444',
-                            border: '1px solid #ef4444',
-                            borderRadius: '8px',
+                            padding: '10px 24px',
+                            backgroundColor: '#ffffff',
+                            color: '#000000',
+                            border: '1px solid #000000',
+                            borderRadius: '4px',
                             cursor: 'pointer',
                             fontSize: '14px',
-                            fontWeight: '600',
-                            transition: 'all 0.3s ease'
+                            fontWeight: '500',
+                            transition: 'all 0.2s ease'
                         }}
                         onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = '#ef4444';
-                            e.target.style.color = '#ffffff';
+                            e.target.style.backgroundColor = '#f5f5f5';
                         }}
                         onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = '#374151';
-                            e.target.style.color = '#ef4444';
+                            e.target.style.backgroundColor = '#ffffff';
                         }}
                     >
-                        Logout Now
+                        Logout
                     </button>
                     <button
                         onClick={handleExtendSession}
                         style={{
-                            padding: '12px 24px',
-                            backgroundColor: '#10b981',
+                            padding: '10px 24px',
+                            backgroundColor: '#000000',
                             color: '#ffffff',
-                            border: 'none',
-                            borderRadius: '8px',
+                            border: '1px solid #000000',
+                            borderRadius: '4px',
                             cursor: 'pointer',
                             fontSize: '14px',
-                            fontWeight: '600',
-                            transition: 'all 0.3s ease'
+                            fontWeight: '500',
+                            transition: 'all 0.2s ease'
                         }}
                         onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = '#059669';
+                            e.target.style.backgroundColor = '#333333';
                         }}
                         onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = '#10b981';
+                            e.target.style.backgroundColor = '#000000';
                         }}
                         autoFocus
                     >
-                        Extend Session
+                        Continue Session
                     </button>
                 </div>
             </div>

@@ -8,15 +8,46 @@ const useAuth = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
 
-  // Check for existing token on mount
+  // Helper function to check if token is expired
+  const isTokenExpired = (token) => {
+    try {
+      // Decode JWT token (simple base64 decode of payload)
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const expirationTime = payload.exp * 1000; // Convert to milliseconds
+      const now = Date.now();
+      
+      return expirationTime <= now;
+    } catch (error) {
+      return true; // Treat invalid tokens as expired
+    }
+  };
+
+  // Check for existing token on mount and validate it
   useEffect(() => {
     const token = localStorage.getItem('jwt_token');
     const user = localStorage.getItem('current_user');
     const role = localStorage.getItem('user_role');
+    
     if (token && user && role) {
-      setIsAuthenticated(true);
-      setCurrentUser(user);
-      setUserRole(role);
+      // Check if token is expired
+      if (isTokenExpired(token)) {
+        // Token is expired, clear everything
+        localStorage.removeItem('jwt_token');
+        localStorage.removeItem('current_user');
+        localStorage.removeItem('user_role');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('sessionId');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('username');
+        setIsAuthenticated(false);
+        setCurrentUser(null);
+        setUserRole(null);
+      } else {
+        setIsAuthenticated(true);
+        setCurrentUser(user);
+        setUserRole(role);
+      }
     }
   }, []);
 
