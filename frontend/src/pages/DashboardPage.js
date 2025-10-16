@@ -18,16 +18,28 @@ const DashboardPage = () => {
     const fetchMetrics = async () => {
       try {
         const token = localStorage.getItem('jwt_token');
+        
+        // If no token, user is being logged out
+        if (!token) {
+          setLoading(false);
+          return;
+        }
+        
         const response = await fetch(`${API_BASE_URL}/Dashboard/metrics`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         
         // Handle session expiration
         if (response.status === 401) {
-          const data = await response.json();
-          if (data.sessionExpired) {
-            // Session expired, let SessionManager handle logout
-            return;
+          try {
+            const data = await response.json();
+            if (data.sessionExpired) {
+              // Session expired, let SessionManager handle logout
+              setLoading(false);
+              return;
+            }
+          } catch (e) {
+            // JSON parse error, continue to normal error handling
           }
         }
         
@@ -53,6 +65,7 @@ const DashboardPage = () => {
 
   if (loading) return <p>Loading dashboard...</p>;
   if (error) return <p className="error">{error}</p>;
+  if (!metrics) return null; // Session expired or logging out
 
   return (
     <>
