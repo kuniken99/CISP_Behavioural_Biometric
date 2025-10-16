@@ -55,6 +55,15 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
         try {
           const errorData = JSON.parse(errorText);
           
+          // Check if account is locked
+          if (errorData.isLocked) {
+            const lockoutMessage = errorData.message || 
+              `Account is locked due to multiple failed login attempts. Please try again in ${errorData.remainingMinutes || 'a few'} minutes.`;
+            setError(lockoutMessage);
+            resetRecaptcha();
+            return;
+          }
+
           // Check if user needs email verification
           if (errorData.emailNotVerified) {
             // Redirect to email verification page with user's email and login context
@@ -86,7 +95,12 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
             return;
           }
           
-          setError(errorData.message || 'Login failed');
+          // Show remaining attempts if available
+          let errorMessage = errorData.message || 'Login failed';
+          if (errorData.remainingAttempts !== undefined && errorData.remainingAttempts > 0) {
+            errorMessage = errorData.message;
+          }
+          setError(errorMessage);
         } catch {
           setError(errorText || 'Login failed');
         }

@@ -8,6 +8,7 @@ import Footer from './components/Footer';
 import CBBAMonitor from './components/CBBAMonitor';
 import Header from './components/Layout/Header';
 import Sidebar from './components/Layout/Sidebar';
+import SessionManager from './components/security/SessionManager';
 
 // Import all page components
 import AuthWrapper from './pages/AuthWrapper';
@@ -26,6 +27,7 @@ import WebsiteAdministrationPage from './pages/WebsiteAdministrationPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfUsePage from './pages/TermsOfUsePage';
 import UserProfilePage from './pages/UserProfilePage';
+
 
 // Import styles
 import './styles/responsive-system.css';
@@ -111,6 +113,8 @@ function App() {
         riskScore={lastCbbaScore ? Math.round(Math.abs(lastCbbaScore * 100)) : 12}
         isAuthenticated={isAuthenticated}
       />
+      {/* Session timeout manager - only active when authenticated */}
+      {isAuthenticated && <SessionManager />}
     </div>
   );
 

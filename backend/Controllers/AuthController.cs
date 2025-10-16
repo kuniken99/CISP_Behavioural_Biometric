@@ -50,18 +50,94 @@ namespace db_biometrics_mvp.Backend.Controllers
             var user = await _context.Users.SingleOrDefaultAsync(u => 
                 (u.Username == loginDto.Username || u.Email == loginDto.Username) && u.IsActive);
 
+            // Check if account is locked
+            if (user != null && user.IsLocked && user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTime.UtcNow)
+            {
+                var remainingTime = user.LockoutEnd.Value - DateTime.UtcNow;
+                var remainingMinutes = (int)Math.Ceiling(remainingTime.TotalMinutes);
+                
+                await _context.AuditLogs.AddAsync(new AuditLog 
+                { 
+                    Username = loginDto.Username, 
+                    Action = "LOCKED_ACCOUNT_LOGIN_ATTEMPT", 
+                    Details = $"Login attempt on locked account. Remaining lockout time: {remainingMinutes} minutes"
+                });
+                await _context.SaveChangesAsync();
+                
+                return Unauthorized(new { 
+                    message = $"Account is locked due to multiple failed login attempts. Please try again in {remainingMinutes} minute{(remainingMinutes != 1 ? "s" : "")}.",
+                    isLocked = true,
+                    lockoutEnd = user.LockoutEnd.Value,
+                    remainingMinutes = remainingMinutes
+                });
+            }
+
+            // Reset lockout if expired
+            if (user != null && user.IsLocked && user.LockoutEnd.HasValue && user.LockoutEnd.Value <= DateTime.UtcNow)
+            {
+                user.IsLocked = false;
+                user.FailedLoginAttempts = 0;
+                user.LockoutEnd = null;
+                await _context.SaveChangesAsync();
+            }
+
             if (user == null || !VerifyPassword(loginDto.Password, user.PasswordHash))
             {
+                // Handle failed login attempt
+                if (user != null)
+                {
+                    user.FailedLoginAttempts++;
+                    
+                    if (user.FailedLoginAttempts >= 3)
+                    {
+                        user.IsLocked = true;
+                        // Exponential backoff: 5 minutes * 2^(attempts-3)
+                        int lockoutMinutes = 5 * (int)Math.Pow(2, user.FailedLoginAttempts - 3);
+                        user.LockoutEnd = DateTime.UtcNow.AddMinutes(lockoutMinutes);
+                        
+                        await _context.AuditLogs.AddAsync(new AuditLog 
+                        { 
+                            Username = user.Username, 
+                            Action = "ACCOUNT_LOCKED", 
+                            Details = $"Account locked after {user.FailedLoginAttempts} failed login attempts. Lockout duration: {lockoutMinutes} minutes"
+                        });
+                        await _context.SaveChangesAsync();
+                        
+                        return Unauthorized(new { 
+                            message = $"Account has been locked due to multiple failed login attempts. Please try again in {lockoutMinutes} minutes.",
+                            isLocked = true,
+                            lockoutEnd = user.LockoutEnd.Value,
+                            remainingMinutes = lockoutMinutes
+                        });
+                    }
+                    
+                    await _context.SaveChangesAsync();
+                }
+                
                 // Log failed login attempt
                 await _context.AuditLogs.AddAsync(new AuditLog 
                 { 
                     Username = loginDto.Username, 
                     Action = "FAILED_LOGIN", 
-                    Details = $"Failed login attempt for username: {loginDto.Username}"
+                    Details = $"Failed login attempt for username: {loginDto.Username}. Attempts: {(user?.FailedLoginAttempts ?? 0)}"
                 });
                 await _context.SaveChangesAsync();
                 
-                return Unauthorized(new { message = "Invalid credentials." });
+                int remainingAttempts = user != null ? Math.Max(0, 3 - user.FailedLoginAttempts) : 0;
+                string message = user != null && remainingAttempts > 0 
+                    ? $"Invalid credentials. You have {remainingAttempts} attempt{(remainingAttempts != 1 ? "s" : "")} remaining before your account is locked."
+                    : "Invalid credentials.";
+                
+                return Unauthorized(new { message, remainingAttempts });
+            }
+
+            // Reset failed login attempts on successful password verification
+            if (user.FailedLoginAttempts > 0)
+            {
+                user.FailedLoginAttempts = 0;
+                user.IsLocked = false;
+                user.LockoutEnd = null;
+                await _context.SaveChangesAsync();
             }
 
             // Check if email is verified
@@ -129,7 +205,7 @@ namespace db_biometrics_mvp.Backend.Controllers
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddHours(2), // Token valid for 2 hours
+                expires: DateTime.Now.AddMinutes(15), // Token valid for 15 minutes (matches session timeout)
                 signingCredentials: creds
             );
 

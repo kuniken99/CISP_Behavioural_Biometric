@@ -22,6 +22,11 @@ namespace db_biometrics_mvp.Backend.Models
         public DateTime? LastLoginAt { get; set; }
         public DateTime? LastLogoutAt { get; set; }
 
+        // Failed login attempts and account lockout
+        public int FailedLoginAttempts { get; set; } = 0;
+        public bool IsLocked { get; set; } = false;
+        public DateTime? LockoutEnd { get; set; }
+
         // Navigation property for Two-Factor Authentication
         public TwoFactorAuth? TwoFactorAuth { get; set; }
     }

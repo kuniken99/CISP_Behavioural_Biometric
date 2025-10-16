@@ -176,6 +176,14 @@ namespace db_biometrics_mvp.Backend.Controllers
                 return BadRequest(new { message = "Invalid verification code. Please try again." });
             }
 
+            // Reset failed login attempts on successful 2FA login
+            if (user.FailedLoginAttempts > 0 || user.IsLocked)
+            {
+                user.FailedLoginAttempts = 0;
+                user.IsLocked = false;
+                user.LockoutEnd = null;
+            }
+
             // Update last login time
             user.LastLoginAt = DateTime.UtcNow;
             _context.Users.Update(user);
@@ -216,7 +224,7 @@ namespace db_biometrics_mvp.Backend.Controllers
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddHours(2), // Token valid for 2 hours
+                expires: DateTime.Now.AddMinutes(15), // Token valid for 15 minutes (matches session timeout)
                 signingCredentials: creds
             );
 

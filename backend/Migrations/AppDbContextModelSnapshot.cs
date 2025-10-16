@@ -948,10 +948,16 @@ namespace db_biometrics_mvp.Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("FailedLoginAttempts")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsEmailVerified")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsLocked")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsTwoFactorEnabled")
@@ -961,6 +967,9 @@ namespace db_biometrics_mvp.Backend.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("LastLogoutAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LockoutEnd")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("PasswordHash")
@@ -983,10 +992,12 @@ namespace db_biometrics_mvp.Backend.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 10, 13, 8, 52, 5, 759, DateTimeKind.Utc).AddTicks(2783),
+                            CreatedAt = new DateTime(2025, 10, 16, 7, 6, 6, 93, DateTimeKind.Utc).AddTicks(5811),
                             Email = "admin@system.com",
+                            FailedLoginAttempts = 0,
                             IsActive = true,
                             IsEmailVerified = true,
+                            IsLocked = false,
                             IsTwoFactorEnabled = false,
                             PasswordHash = "713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca",
                             Role = "admin",
@@ -995,10 +1006,12 @@ namespace db_biometrics_mvp.Backend.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 10, 13, 8, 52, 5, 759, DateTimeKind.Utc).AddTicks(3882),
+                            CreatedAt = new DateTime(2025, 10, 16, 7, 6, 6, 93, DateTimeKind.Utc).AddTicks(6792),
                             Email = "37256v4t@psba.edu.sg",
+                            FailedLoginAttempts = 0,
                             IsActive = true,
                             IsEmailVerified = true,
+                            IsLocked = false,
                             IsTwoFactorEnabled = false,
                             PasswordHash = "9af50a3ade35be3c6d8ef3ecf3cbedf85c141d0e550c9f1a3fa3e67b6ab55804",
                             Role = "dba",
@@ -1007,10 +1020,12 @@ namespace db_biometrics_mvp.Backend.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 10, 13, 8, 52, 5, 759, DateTimeKind.Utc).AddTicks(3885),
+                            CreatedAt = new DateTime(2025, 10, 16, 7, 6, 6, 93, DateTimeKind.Utc).AddTicks(6795),
                             Email = "ktan8563@gmail.com",
+                            FailedLoginAttempts = 0,
                             IsActive = true,
                             IsEmailVerified = true,
+                            IsLocked = false,
                             IsTwoFactorEnabled = false,
                             PasswordHash = "9af50a3ade35be3c6d8ef3ecf3cbedf85c141d0e550c9f1a3fa3e67b6ab55804",
                             Role = "user",

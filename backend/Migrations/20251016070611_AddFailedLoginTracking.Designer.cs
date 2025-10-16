@@ -12,8 +12,8 @@ using db_biometrics_mvp.Backend.Data;
 namespace db_biometrics_mvp.Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251011093500_UpdateTank108EmailVerified")]
-    partial class UpdateTank108EmailVerified
+    [Migration("20251016070611_AddFailedLoginTracking")]
+    partial class AddFailedLoginTracking
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -87,13 +87,9 @@ namespace db_biometrics_mvp.Backend.Migrations
 
                     b.Property<string>("Action")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Details")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("IpAddress")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -105,9 +101,18 @@ namespace db_biometrics_mvp.Backend.Migrations
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Action")
+                        .HasDatabaseName("IX_AuditLogs_Action");
+
+                    b.HasIndex("Timestamp")
+                        .HasDatabaseName("IX_AuditLogs_Timestamp");
+
+                    b.HasIndex("Timestamp", "Username")
+                        .HasDatabaseName("IX_AuditLogs_Timestamp_Username");
 
                     b.ToTable("AuditLogs");
 
@@ -117,7 +122,6 @@ namespace db_biometrics_mvp.Backend.Migrations
                             Id = 1,
                             Action = "DB_INIT",
                             Details = "Initial database migration completed.",
-                            IpAddress = "127.0.0.1",
                             Timestamp = new DateTime(2025, 8, 23, 17, 0, 0, 0, DateTimeKind.Utc),
                             Username = "system"
                         });
@@ -236,10 +240,6 @@ namespace db_biometrics_mvp.Backend.Migrations
                     b.Property<int>("EventCount")
                         .HasColumnType("int");
 
-                    b.Property<string>("IpAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsAnomaly")
                         .HasColumnType("bit");
 
@@ -307,10 +307,6 @@ namespace db_biometrics_mvp.Backend.Migrations
                     b.Property<DateTime>("ExpiryTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("IpAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsCorrect")
                         .HasColumnType("bit");
 
@@ -352,10 +348,6 @@ namespace db_biometrics_mvp.Backend.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DatabaseName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("IpAddress")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -959,16 +951,28 @@ namespace db_biometrics_mvp.Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("FailedLoginAttempts")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsEmailVerified")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsLocked")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsTwoFactorEnabled")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastLoginAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastLogoutAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LockoutEnd")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("PasswordHash")
@@ -991,11 +995,13 @@ namespace db_biometrics_mvp.Backend.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 10, 11, 9, 34, 56, 996, DateTimeKind.Utc).AddTicks(3171),
+                            CreatedAt = new DateTime(2025, 10, 16, 7, 6, 6, 93, DateTimeKind.Utc).AddTicks(5811),
                             Email = "admin@system.com",
+                            FailedLoginAttempts = 0,
                             IsActive = true,
                             IsEmailVerified = true,
-                            IsTwoFactorEnabled = true,
+                            IsLocked = false,
+                            IsTwoFactorEnabled = false,
                             PasswordHash = "713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca",
                             Role = "admin",
                             Username = "admin"
@@ -1003,11 +1009,13 @@ namespace db_biometrics_mvp.Backend.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 10, 11, 9, 34, 56, 996, DateTimeKind.Utc).AddTicks(4070),
-                            Email = "dba@system.com",
+                            CreatedAt = new DateTime(2025, 10, 16, 7, 6, 6, 93, DateTimeKind.Utc).AddTicks(6792),
+                            Email = "37256v4t@psba.edu.sg",
+                            FailedLoginAttempts = 0,
                             IsActive = true,
                             IsEmailVerified = true,
-                            IsTwoFactorEnabled = true,
+                            IsLocked = false,
+                            IsTwoFactorEnabled = false,
                             PasswordHash = "9af50a3ade35be3c6d8ef3ecf3cbedf85c141d0e550c9f1a3fa3e67b6ab55804",
                             Role = "dba",
                             Username = "dbauser"
@@ -1015,26 +1023,16 @@ namespace db_biometrics_mvp.Backend.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 10, 11, 9, 34, 56, 996, DateTimeKind.Utc).AddTicks(4073),
-                            Email = "test@system.com",
+                            CreatedAt = new DateTime(2025, 10, 16, 7, 6, 6, 93, DateTimeKind.Utc).AddTicks(6795),
+                            Email = "ktan8563@gmail.com",
+                            FailedLoginAttempts = 0,
                             IsActive = true,
                             IsEmailVerified = true,
+                            IsLocked = false,
                             IsTwoFactorEnabled = false,
                             PasswordHash = "9af50a3ade35be3c6d8ef3ecf3cbedf85c141d0e550c9f1a3fa3e67b6ab55804",
                             Role = "user",
                             Username = "testuser"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedAt = new DateTime(2025, 10, 11, 9, 34, 56, 996, DateTimeKind.Utc).AddTicks(4074),
-                            Email = "tank108@uni.coventry.ac.uk",
-                            IsActive = true,
-                            IsEmailVerified = true,
-                            IsTwoFactorEnabled = false,
-                            PasswordHash = "713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca",
-                            Role = "admin",
-                            Username = "tank108"
                         });
                 });
 
