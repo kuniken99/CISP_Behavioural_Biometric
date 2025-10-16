@@ -91,6 +91,7 @@ const EmailVerificationPage = ({ setCurrentAuthPage, email, context = 'registrat
           className="btn btn-secondary btn-full"
           onClick={handleResendEmail}
           disabled={isResending}
+          style={{ marginBottom: '30px' }}
         >
           {isResending ? 'Sending...' : 'Resend Confirmation Email'}
         </button>

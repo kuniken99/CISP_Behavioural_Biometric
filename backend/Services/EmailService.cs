@@ -64,7 +64,8 @@ namespace db_biometrics_mvp.Backend.Services
         {
             try
             {
-                var verificationLink = $"{_configuration["AppSettings:FrontendUrl"]}/verify-email/{verificationToken}";
+                var baseUrl = _configuration["AppSettings:FrontendUrl"];
+                var verificationLink = $"{baseUrl}/verify-email/{verificationToken}";
                 
                 var smtpSettings = _configuration.GetSection("SMTP");
                 var fromEmail = smtpSettings["FromEmail"];
