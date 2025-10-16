@@ -264,7 +264,7 @@ const DbEntryManagementPage = () => {
               fontSize: '14px',
               color: '#1976d2'
             }}>
-              <strong>Note:</strong> Users cannot be deleted for security reasons. Use <strong>User Management</strong> to activate/deactivate users instead.
+              <strong>Note:</strong> Users cannot be deleted for security reasons. Navigate to <strong>User Management</strong> page to activate/deactivate users instead.
             </div>
           )}
           <table>

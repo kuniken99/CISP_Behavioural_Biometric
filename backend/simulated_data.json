@@ -1,5 +1,5 @@
 {
-  "nextEntryId": 2002,
+  "nextEntryId": 2003,
   "entries": {
     "Products": [
       {
@@ -41,6 +41,15 @@
           "name": "Speaker",
           "price": 5,
           "stock": 2
+        }
+      },
+      {
+        "Id": 2002,
+        "Data": {
+          "name": "Airpods",
+          "price": 2,
+          "stock": "3",
+          "id": 2002
         }
       }
     ],

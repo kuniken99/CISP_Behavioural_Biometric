@@ -19,12 +19,12 @@ const HelpDocumentationPage = () => (
     </div>
     
     <div style={{ paddingBottom: '20px', borderBottom: '1px solid #e5e7eb', marginBottom: '20px' }}>
-      <h3>Role-Based Access Control</h3>
+      <h3>Role Access Control</h3>
       <p>Assign specific roles (e.g., 'DBA', 'User', 'Admin') to users to manage their privileges across the system.</p>
     </div>
     
     <div style={{ paddingBottom: '20px', borderBottom: '1px solid #e5e7eb', marginBottom: '20px' }}>
-      <h3>Activity History / Audit Logs</h3>
+      <h3>Activity Logs</h3>
       <p>View a chronological record of all significant actions performed by users and the system.</p>
     </div>
     
