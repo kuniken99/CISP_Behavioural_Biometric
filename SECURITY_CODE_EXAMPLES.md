@@ -848,7 +848,7 @@ private string GenerateJwtToken(User user)
         issuer: _configuration["Jwt:Issuer"],
         audience: _configuration["Jwt:Audience"],
         claims: claims,
-        expires: DateTime.Now.AddMinutes(15), // ← 15 minutes (matches session timeout)
+        expires: DateTime.Now.AddMinutes(15), // ← 15 minutes
         signingCredentials: creds
     );
 
