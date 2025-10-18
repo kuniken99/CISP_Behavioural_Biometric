@@ -125,6 +125,13 @@ class FeatureExtractor:
         Returns:
             Feature vector as numpy array
         """
+        # DEBUG: Log all event types received
+        event_types = {}
+        for event in mouse_data:
+            event_type = event.get('event', 'unknown')
+            event_types[event_type] = event_types.get(event_type, 0) + 1
+        print(f"[MOUSE DEBUG] Received {len(mouse_data)} events: {event_types}")
+        
         if not mouse_data or len(mouse_data) < 3:
             return np.zeros(11)  # Increased from 10 to 11 features
         
@@ -202,6 +209,7 @@ class FeatureExtractor:
             elif event_type == 'click':
                 click_times.append(timestamp)
                 click_positions.append((x, y))  # Store click position
+                print(f"[CLICK DEBUG] Click event at ({x}, {y}) timestamp={timestamp}")
                 
                 # Detect double clicks
                 if last_click_time is not None:
