@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization; // Add for authorization
 using db_biometrics_mvp.Backend.Data; // For AuditLogging
 using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace db_biometrics_mvp.Backend.Controllers
 {
@@ -37,7 +38,7 @@ namespace db_biometrics_mvp.Backend.Controllers
 
         // Endpoint to receive continuous biometric data from the frontend
         [HttpPost("collect-biometrics")]
-        public async Task<IActionResult> CollectBiometrics([FromBody] List<BiometricEvent> biometricEvents, [FromQuery] string sessionId)
+        public IActionResult CollectBiometrics([FromBody] List<BiometricEvent> biometricEvents, [FromQuery] string sessionId)
         {
             var username = User.Identity?.Name ?? "Unknown"; // Get username from JWT
 
@@ -77,48 +78,287 @@ namespace db_biometrics_mvp.Backend.Controllers
 
             _sessionDbEventData[sessionId].Add(simulatedDbEvent);
 
-            var payload = new ContinuousBiometricPayload
+            // This old collect-biometrics endpoint is deprecated
+            // The new CBBA system uses /api/biometric/assess endpoint
+            // For backward compatibility, return OK with simulated score
+            _logger.LogInformation($"Session {sessionId} for {username}: Legacy endpoint called. Use /api/biometric/assess instead.");
+
+            // Clear processed data for the window, keep session alive
+            _sessionBiometricData[sessionId].Clear(); 
+            _sessionDbEventData[sessionId].Clear(); 
+            
+            return Ok(new { message = "Legacy endpoint. Use /api/biometric/assess for CBBA.", score = 0.0 });
+        }
+
+        /// <summary>
+        /// Train user's CBBA profile with baseline behavioral data
+        /// POST /api/biometric/train
+        /// </summary>
+        [HttpPost("train")]
+        public async Task<IActionResult> TrainProfile([FromBody] CBBATrainingRequest request)
+        {
+            try
             {
-                BiometricEvents = _sessionBiometricData[sessionId],
-                DbEvents = _sessionDbEventData[sessionId]
-            };
+                var username = User.Identity?.Name ?? "Unknown";
+                // Use username as user_id for Python service (matches trained model)
+                var userIdentifier = username;
 
-            var predictionResult = await _cbbaService.GetAnomalyPrediction(payload);
+                _logger.LogInformation($"Training CBBA profile for user {username}");
 
-            if (predictionResult.IsAnomaly)
-            {
-                _logger.LogCritical($"!!! ANOMALY DETECTED for Session {sessionId} (User: {username}) !!! Score: {predictionResult.AnomalyScore}. Features: {string.Join(", ", predictionResult.Features.Select(f => $"{f.Key}={f.Value:F2}"))}");
+                // Call Python service to train profile
+                var result = await _cbbaService.TrainUserProfile(userIdentifier, request.TrainingData);
 
-                // Log the anomaly to AuditLogs and Alerts
-                await _context.AuditLogs.AddAsync(new AuditLog {
-                    Username = username,
-                    Action = "CBBA_ANOMALY_DETECTED",
-                    Details = $"Anomaly Score: {predictionResult.AnomalyScore:F4}, Features: {JsonConvert.SerializeObject(predictionResult.Features)}",
-                    SessionId = sessionId
-                });
-                 await _context.Alerts.AddAsync(new Alert {
-                    Type = "Security",
-                    Message = $"CBBA Anomaly for user {username} (Session: {sessionId}). Score: {predictionResult.AnomalyScore:F4}",
-                    Severity = "Critical",
-                    Status = "Active"
-                });
-                await _context.SaveChangesAsync();
+                if (result.Success)
+                {
+                    // Get actual numeric user ID for database
+                    var userId = GetUserIdFromClaims();
+                    
+                    // Store encrypted profile in database
+                    var profile = await _context.BiometricProfiles.FirstOrDefaultAsync(p => p.UserId == userId);
+                    
+                    if (profile == null)
+                    {
+                        profile = new BiometricProfile
+                        {
+                            UserId = userId,
+                            EncryptedProfile = result.EncryptedProfile,
+                            IsTrained = true,
+                            TrainedAt = DateTime.UtcNow,
+                            LastUpdated = DateTime.UtcNow,
+                            SampleCount = result.SamplesTrained
+                        };
+                        await _context.BiometricProfiles.AddAsync(profile);
+                    }
+                    else
+                    {
+                        profile.EncryptedProfile = result.EncryptedProfile;
+                        profile.IsTrained = true;
+                        profile.TrainedAt = DateTime.UtcNow;
+                        profile.LastUpdated = DateTime.UtcNow;
+                        profile.SampleCount = result.SamplesTrained;
+                    }
 
-                // Clear session data to simulate termination
-                _sessionBiometricData.Remove(sessionId);
-                _sessionDbEventData.Remove(sessionId);
+                    await _context.SaveChangesAsync();
 
-                return StatusCode(403, new { message = "Anomaly detected. Session terminated.", score = predictionResult.AnomalyScore });
+                    // Log audit
+                    await _context.AuditLogs.AddAsync(new AuditLog
+                    {
+                        Username = username,
+                        Action = "CBBA_PROFILE_TRAINED",
+                        Details = $"Profile trained with {result.SamplesTrained} samples",
+                        SessionId = HttpContext.Connection?.Id ?? "training-session"
+                    });
+                    await _context.SaveChangesAsync();
+
+                    return Ok(new { 
+                        success = true,
+                        message = "Profile trained successfully",
+                        samplesTrained = result.SamplesTrained,
+                        featureDimension = result.FeatureDimension
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { success = false, error = result.Error });
+                }
             }
-            else
+            catch (Exception ex)
             {
-                _logger.LogInformation($"Session {sessionId} for {username}: Normal behavior. Score: {predictionResult.AnomalyScore:F4}");
-
-                // Clear processed data for the window, keep session alive
-                _sessionBiometricData[sessionId].Clear(); 
-                _sessionDbEventData[sessionId].Clear(); 
-                return Ok(new { message = "Behavior is normal.", score = predictionResult.AnomalyScore });
+                _logger.LogError($"Error training CBBA profile: {ex.Message}");
+                return StatusCode(500, new { success = false, error = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Assess real-time risk score for current behavioral data
+        /// POST /api/biometric/assess
+        /// </summary>
+        [HttpPost("assess")]
+        public async Task<IActionResult> AssessRisk([FromBody] CBBARiskRequest request)
+        {
+            try
+            {
+                var username = User.Identity?.Name ?? "Unknown";
+                // Use username as user_id for Python service (matches trained model)
+                var userIdentifier = username;
+
+                // Call Python service to assess risk
+                var result = await _cbbaService.AssessRisk(userIdentifier, request.KeystrokeData, request.MouseData);
+
+                if (result.Success)
+                {
+                    // Log high-risk assessments
+                    if (result.RiskScore >= 70)
+                    {
+                        _logger.LogWarning($"High risk detected for user {username}: {result.RiskScore}% - Action: {result.Action}");
+
+                        await _context.AuditLogs.AddAsync(new AuditLog
+                        {
+                            Username = username,
+                            Action = "CBBA_HIGH_RISK_DETECTED",
+                            Details = $"Risk Score: {result.RiskScore}%, Level: {result.RiskLevel}, Action: {result.Action}",
+                            SessionId = HttpContext.Session.Id
+                        });
+                        await _context.SaveChangesAsync();
+
+                        // Create alert for critical risk
+                        if (result.RiskScore >= 95)
+                        {
+                            await _context.Alerts.AddAsync(new Alert
+                            {
+                                Type = "Security",
+                                Message = $"Critical CBBA risk detected for user {username}. Risk Score: {result.RiskScore}%",
+                                Severity = "Critical",
+                                Status = "Active"
+                            });
+                            await _context.SaveChangesAsync();
+                        }
+                    }
+
+                    return Ok(new
+                    {
+                        success = true,
+                        riskScore = result.RiskScore,
+                        riskLevel = result.RiskLevel,
+                        status = result.Status,
+                        action = result.Action,
+                        isTrained = result.IsTrained,
+                        details = result.Details
+                    });
+                }
+                else
+                {
+                    return Ok(new 
+                    { 
+                        success = false, 
+                        error = result.Error,
+                        riskScore = 50.0,
+                        riskLevel = "unknown",
+                        action = "monitor"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error assessing CBBA risk: {ex.Message}");
+                return StatusCode(500, new { success = false, error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Get user's CBBA profile status
+        /// GET /api/biometric/status
+        /// </summary>
+        [HttpGet("status")]
+        public async Task<IActionResult> GetProfileStatus()
+        {
+            try
+            {
+                var username = User.Identity?.Name ?? "Unknown";
+                var userId = GetUserIdFromClaims();
+                // Use username as user_id for Python service (matches trained model)
+                var userIdentifier = username;
+
+                // Get status from Python service
+                var result = await _cbbaService.GetUserStatus(userIdentifier);
+
+                // Get profile from database
+                var profile = await _context.BiometricProfiles.FirstOrDefaultAsync(p => p.UserId == userId);
+
+                return Ok(new
+                {
+                    success = true,
+                    userId = userId,
+                    username = username,
+                    isTrained = profile?.IsTrained ?? false,
+                    trainedAt = profile?.TrainedAt,
+                    lastUpdated = profile?.LastUpdated,
+                    sampleCount = profile?.SampleCount ?? 0,
+                    pythonServiceStatus = result.Success ? "connected" : "disconnected"
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error getting CBBA status: {ex.Message}");
+                return StatusCode(500, new { success = false, error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Update user's profile with new legitimate behavioral data
+        /// POST /api/biometric/update-profile
+        /// </summary>
+        [HttpPost("update-profile")]
+        public async Task<IActionResult> UpdateProfile([FromBody] CBBARiskRequest request)
+        {
+            try
+            {
+                var username = User.Identity?.Name ?? "Unknown";
+                var userId = GetUserIdFromClaims();
+                // Use username as user_id for Python service (matches trained model)
+                var userIdentifier = username;
+
+                // Call Python service to update profile
+                var result = await _cbbaService.UpdateProfile(userIdentifier, request.KeystrokeData, request.MouseData);
+
+                if (result.Success)
+                {
+                    // Update encrypted profile in database
+                    var profile = await _context.BiometricProfiles.FirstOrDefaultAsync(p => p.UserId == userId);
+                    
+                    if (profile != null)
+                    {
+                        profile.EncryptedProfile = result.EncryptedProfile;
+                        profile.LastUpdated = DateTime.UtcNow;
+                        await _context.SaveChangesAsync();
+                    }
+
+                    return Ok(new { success = true, message = "Profile updated successfully" });
+                }
+                else
+                {
+                    return BadRequest(new { success = false, error = result.Error });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error updating CBBA profile: {ex.Message}");
+                return StatusCode(500, new { success = false, error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Check if Python CBBA service is healthy
+        /// GET /api/biometric/health
+        /// </summary>
+        [HttpGet("health")]
+        [AllowAnonymous]
+        public async Task<IActionResult> CheckHealth()
+        {
+            var isHealthy = await _cbbaService.IsHealthy();
+            return Ok(new { healthy = isHealthy, service = "CBBA Python Service" });
+        }
+
+        private int GetUserIdFromClaims()
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return userId;
+            }
+            return 0;
+        }
+    }
+
+    // Request Models
+    public class CBBATrainingRequest
+    {
+        public List<BehavioralSession> TrainingData { get; set; } = new List<BehavioralSession>();
+    }
+
+    public class CBBARiskRequest
+    {
+        public List<object> KeystrokeData { get; set; } = new List<object>();
+        public List<object> MouseData { get; set; } = new List<object>();
     }
 }

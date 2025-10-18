@@ -248,6 +248,125 @@ namespace db_biometrics_mvp.Backend.Controllers
         {
             return Ok();
         }
+
+        /// <summary>
+        /// Verify Google Authenticator code for moderate risk authentication
+        /// This endpoint is called when CBBA detects moderate risk (50-79%)
+        /// </summary>
+        [Authorize]
+        [HttpPost("verify-moderate-risk")]
+        public async Task<IActionResult> VerifyModerateRisk([FromBody] ModerateRiskVerifyDto dto)
+        {
+            try
+            {
+                _logger.LogInformation($"Moderate risk verification attempt - Code length: {dto.Code?.Length}, RiskScore: {dto.RiskScore}");
+                
+                // Get user ID from JWT token
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+                {
+                    _logger.LogWarning("Moderate risk verification failed - Invalid token");
+                    return Unauthorized(new { message = "Invalid token" });
+                }
+
+                // Get user with 2FA settings
+                var user = await _context.Users
+                    .Include(u => u.TwoFactorAuth)
+                    .FirstOrDefaultAsync(u => u.Id == userId);
+
+                if (user == null)
+                {
+                    _logger.LogWarning($"Moderate risk verification failed - User not found: {userId}");
+                    return NotFound(new { message = "User not found" });
+                }
+
+                // Check if 2FA is enabled
+                if (!user.IsTwoFactorEnabled || user.TwoFactorAuth == null)
+                {
+                    _logger.LogWarning($"Moderate risk verification failed - 2FA not enabled for user: {userId}");
+                    return BadRequest(new { message = "Two-factor authentication is not enabled for this account" });
+                }
+
+                _logger.LogInformation($"Validating TOTP code for user {userId} (Username: {user.Username})");
+                
+                // Verify the code
+                var isValid = _twoFactorService.ValidateTotp(user.TwoFactorAuth.SecretKey, dto.Code);
+
+                if (!isValid)
+                {
+                    _logger.LogWarning($"Moderate risk verification failed - Invalid code for user {userId}");
+                    // Log failed verification attempt
+                    await LogModerateRiskEvent(userId, dto.RiskScore, false);
+                    
+                    return BadRequest(new { message = "Invalid verification code. Please try again." });
+                }
+
+                _logger.LogInformation($"Moderate risk verification successful for user {userId}");
+
+                // Log successful verification
+                await LogModerateRiskEvent(userId, dto.RiskScore, true);
+
+                // Create audit log entry
+                var auditLog = new AuditLog
+                {
+                    Username = user.Username,
+                    Action = "MODERATE_RISK_VERIFICATION",
+                    Details = $"User verified identity via 2FA due to moderate risk detection (Risk: {dto.RiskScore}%)",
+                    Timestamp = DateTime.UtcNow,
+                    SessionId = HttpContext.Connection.Id ?? "Unknown"
+                };
+                _context.AuditLogs.Add(auditLog);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"Moderate risk verification successful for user {userId} (Risk: {dto.RiskScore}%)");
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Verification successful. You may continue.",
+                    riskScore = dto.RiskScore,
+                    timestamp = DateTime.UtcNow
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during moderate risk verification");
+                return StatusCode(500, new { message = "An error occurred during verification" });
+            }
+        }
+
+        /// <summary>
+        /// Log moderate risk authentication events
+        /// </summary>
+        private async Task LogModerateRiskEvent(int userId, double riskScore, bool success)
+        {
+            try
+            {
+                var alert = new Alert
+                {
+                    Type = "MODERATE_RISK_AUTH",
+                    Severity = riskScore >= 70 ? "High" : "Medium",
+                    Message = success 
+                        ? $"User ID {userId} successfully verified identity (Risk: {riskScore}%)" 
+                        : $"User ID {userId} failed verification attempt (Risk: {riskScore}%)",
+                    Status = success ? "Resolved" : "Active",
+                    Timestamp = DateTime.UtcNow
+                };
+                
+                _context.Alerts.Add(alert);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error logging moderate risk event");
+            }
+        }
+
+        [HttpOptions("verify-moderate-risk")]
+        public IActionResult OptionsVerifyModerateRisk()
+        {
+            return Ok();
+        }
     }
 
     // DTOs for 2FA operations
@@ -267,5 +386,11 @@ namespace db_biometrics_mvp.Backend.Controllers
     {
         public string Email { get; set; } = string.Empty;
         public string Code { get; set; } = string.Empty;
+    }
+
+    public class ModerateRiskVerifyDto
+    {
+        public string Code { get; set; } = string.Empty;
+        public double RiskScore { get; set; }
     }
 }

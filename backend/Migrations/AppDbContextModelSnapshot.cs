@@ -51,7 +51,7 @@ namespace db_biometrics_mvp.Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Alerts");
+                    b.ToTable("Alerts", (string)null);
 
                     b.HasData(
                         new
@@ -111,7 +111,7 @@ namespace db_biometrics_mvp.Backend.Migrations
                     b.HasIndex("Timestamp", "Username")
                         .HasDatabaseName("IX_AuditLogs_Timestamp_Username");
 
-                    b.ToTable("AuditLogs");
+                    b.ToTable("AuditLogs", (string)null);
 
                     b.HasData(
                         new
@@ -200,7 +200,7 @@ namespace db_biometrics_mvp.Backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("BiometricProfiles");
+                    b.ToTable("BiometricProfiles", (string)null);
                 });
 
             modelBuilder.Entity("db_biometrics_mvp.Backend.Models.CBBA", b =>
@@ -265,7 +265,7 @@ namespace db_biometrics_mvp.Backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CBBAs");
+                    b.ToTable("CBBAs", (string)null);
                 });
 
             modelBuilder.Entity("db_biometrics_mvp.Backend.Models.CaptchaVerification", b =>
@@ -329,7 +329,7 @@ namespace db_biometrics_mvp.Backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CaptchaVerifications");
+                    b.ToTable("CaptchaVerifications", (string)null);
                 });
 
             modelBuilder.Entity("db_biometrics_mvp.Backend.Models.DBAConsole", b =>
@@ -382,7 +382,7 @@ namespace db_biometrics_mvp.Backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("DBAConsoles");
+                    b.ToTable("DBAConsoles", (string)null);
                 });
 
             modelBuilder.Entity("db_biometrics_mvp.Backend.Models.DbConfiguration", b =>
@@ -412,7 +412,7 @@ namespace db_biometrics_mvp.Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DbConfigurations");
+                    b.ToTable("DbConfigurations", (string)null);
 
                     b.HasData(
                         new
@@ -454,7 +454,7 @@ namespace db_biometrics_mvp.Backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("EmailVerificationTokens");
+                    b.ToTable("EmailVerificationTokens", (string)null);
                 });
 
             modelBuilder.Entity("db_biometrics_mvp.Backend.Models.KeyStroke", b =>
@@ -528,7 +528,7 @@ namespace db_biometrics_mvp.Backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("KeyStrokes");
+                    b.ToTable("KeyStrokes", (string)null);
                 });
 
             modelBuilder.Entity("db_biometrics_mvp.Backend.Models.MouseMovement", b =>
@@ -595,7 +595,7 @@ namespace db_biometrics_mvp.Backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("MouseMovements");
+                    b.ToTable("MouseMovements", (string)null);
                 });
 
             modelBuilder.Entity("db_biometrics_mvp.Backend.Models.PasswordResetToken", b =>
@@ -626,7 +626,7 @@ namespace db_biometrics_mvp.Backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PasswordResetTokens");
+                    b.ToTable("PasswordResetTokens", (string)null);
                 });
 
             modelBuilder.Entity("db_biometrics_mvp.Backend.Models.PrivilegedAdministrator", b =>
@@ -683,7 +683,7 @@ namespace db_biometrics_mvp.Backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PrivilegedAdministrators");
+                    b.ToTable("PrivilegedAdministrators", (string)null);
                 });
 
             modelBuilder.Entity("db_biometrics_mvp.Backend.Models.RiskScore", b =>
@@ -773,7 +773,7 @@ namespace db_biometrics_mvp.Backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RiskScores");
+                    b.ToTable("RiskScores", (string)null);
                 });
 
             modelBuilder.Entity("db_biometrics_mvp.Backend.Models.SecurityLog", b =>
@@ -855,7 +855,7 @@ namespace db_biometrics_mvp.Backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("SecurityLogs");
+                    b.ToTable("SecurityLogs", (string)null);
                 });
 
             modelBuilder.Entity("db_biometrics_mvp.Backend.Models.TwoFactorAuth", b =>
@@ -884,7 +884,7 @@ namespace db_biometrics_mvp.Backend.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("TwoFactorAuths");
+                    b.ToTable("TwoFactorAuths", (string)null);
                 });
 
             modelBuilder.Entity("db_biometrics_mvp.Backend.Models.UniqueCode", b =>
@@ -930,7 +930,7 @@ namespace db_biometrics_mvp.Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UniqueCodes");
+                    b.ToTable("UniqueCodes", (string)null);
                 });
 
             modelBuilder.Entity("db_biometrics_mvp.Backend.Models.User", b =>
@@ -986,7 +986,7 @@ namespace db_biometrics_mvp.Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
 
                     b.HasData(
                         new
@@ -1047,7 +1047,7 @@ namespace db_biometrics_mvp.Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("WebsiteContents");
+                    b.ToTable("WebsiteContents", (string)null);
 
                     b.HasData(
                         new

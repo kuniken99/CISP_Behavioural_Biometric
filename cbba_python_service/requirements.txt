@@ -1,0 +1,10 @@
+# CBBA Python Service Dependencies
+scikit-learn>=1.3.0
+pandas>=2.0.0
+numpy>=1.24.0
+cryptography>=41.0.0
+flask>=3.0.0
+flask-cors>=4.0.0
+joblib>=1.3.0
+scipy>=1.10.0
+python-dotenv>=1.0.0

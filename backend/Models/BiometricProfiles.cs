@@ -49,5 +49,26 @@ namespace db_biometrics_mvp.Backend.Models
         public decimal ThresholdScore { get; set; } = 0.5m; // Threshold for anomaly detection
         
         public string AdaptationRate { get; set; } = "Medium"; // How quickly the profile adapts to changes
+
+        // CBBA fields
+        public string EncryptedProfile { get; set; } = string.Empty; // AES-256 encrypted biometric profile BLOB
+        
+        public bool IsTrained { get; set; } = false; // Whether the ML model has been trained
+        
+        public DateTime? TrainedAt { get; set; } // When the model was last trained
+        
+        public int SampleCount { get; set; } = 0; // Number of samples used for training
+        
+        public string? IsolationForestParams { get; set; } // ML model parameters for Isolation Forest
+        
+        public string? SVMParams { get; set; } // ML model parameters for SVM
+        
+        public string? OneClassSVMParams { get; set; } // ML model parameters for One-Class SVM
+        
+        public string? FeatureWeights { get; set; } // Feature weights for ML models
+        
+        public string? EncryptionKeyId { get; set; } // ID of the encryption key used
+        
+        public string? EncryptionAlgorithm { get; set; } // Encryption algorithm used (e.g., AES-256)
     }
 }

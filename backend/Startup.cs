@@ -29,7 +29,17 @@ namespace db_biometrics_mvp.Backend
         public void ConfigureServices(IServiceCollection services)
         {
             // Add MVC Controllers to the service collection
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.MaxDepth = 64; // Increase max depth for nested objects
+                });
+
+            // Configure Kestrel to accept larger requests (100MB)
+            services.Configure<Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerOptions>(options =>
+            {
+                options.Limits.MaxRequestBodySize = 100 * 1024 * 1024; // 100 MB
+            });
 
             // Configure SQL Server DbContext using the connection string from appsettings.json
             services.AddDbContext<AppDbContext>(options =>

@@ -3,12 +3,14 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import useAuth from './hooks/useAuth';
-import useBiometricTracking from './hooks/useBiometricTracking';
+import { CBBAProvider, useCBBAContext } from './context/CBBAContext';
 import Footer from './components/Footer';
 import CBBAMonitor from './components/CBBAMonitor';
 import Header from './components/Layout/Header';
 import Sidebar from './components/Layout/Sidebar';
 import SessionManager from './components/security/SessionManager';
+import StepUpAuth from './components/security/StepUpAuth';
+import SessionLock from './components/security/SessionLock';
 
 // Import all page components
 import AuthWrapper from './pages/AuthWrapper';
@@ -53,89 +55,154 @@ function App() {
     setIsMobileMenuOpen(false);
   };
 
-  // Temporarily disable biometric tracking to debug auto-refresh issue
-  // eslint-disable-next-line no-unused-vars
-  // const { cbbaStatus, lastCbbaScore, sessionId } = useBiometricTracking(isAuthenticated, handleLogout);
-  const cbbaStatus = "CBBA: Disabled for debugging";
-  const lastCbbaScore = 0;
-  const sessionId = null;
+  // CBBA Risk Detection Handler (defined in App, passed to provider)
+  const [showStepUpAuth, setShowStepUpAuth] = React.useState(false);
+  const [showSessionLock, setShowSessionLock] = React.useState(false);
+  const [detectedRiskScore, setDetectedRiskScore] = React.useState(0);
+
+  const handleRiskDetected = React.useCallback((action, riskScore) => {
+    setDetectedRiskScore(riskScore);
+    if (action === 'challenge') {
+      // Moderate risk (50-79%) - Show Google Authenticator modal (StepUpAuth)
+      if (riskScore >= 50 && riskScore < 80) {
+        setShowStepUpAuth(true);
+      } 
+      // High risk (80%+) - Show 15-minute account lockout (SessionLock)
+      else if (riskScore >= 80) {
+        setShowSessionLock(true);
+      }
+    } else if (action === 'lock') {
+      setShowSessionLock(true);
+    }
+  }, []);
 
   // Protected Route Component
   const ProtectedRoute = ({ children }) => {
     return isAuthenticated ? children : <Navigate to="/login" replace />;
   };
 
-  // Scroll to top component every time the user enter the page
+  // Scroll to top component only when the actual route path changes
   const ScrollToTop = () => {
     const location = useLocation();
+    const prevPathRef = React.useRef(location.pathname);
     
     useEffect(() => {
-      window.scrollTo(0, 0);
+      // Only scroll if the path actually changed (not just a re-render)
+      if (prevPathRef.current !== location.pathname) {
+        window.scrollTo(0, 0);
+        prevPathRef.current = location.pathname;
+      }
     }, [location.pathname]);
     
     return null;
   };
 
   // Main Dashboard Layout Component
-  const DashboardLayout = ({ children }) => (
-    <div className="app-container">
-      <ScrollToTop />
-      <div className="main-app-wrapper">
-        <Sidebar 
-          isOpen={isMobileMenuOpen} 
-          onClose={closeMobileMenu}
-        />
-        <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-          <Header 
-            currentUser={currentUser}
-            userRole={userRole}
-            handleLogout={handleLogout}
-            onToggleMobileMenu={toggleMobileMenu}
-            isMobileMenuOpen={isMobileMenuOpen}
+  const DashboardLayout = ({ children }) => {
+    const { riskScore, riskLevel, cbbaStatus } = useCBBAContext();
+    
+    return (
+      <div className="app-container">
+        <ScrollToTop />
+        <div className="main-app-wrapper">
+          <Sidebar 
+            isOpen={isMobileMenuOpen} 
+            onClose={closeMobileMenu}
           />
-          <div className="main-content">
-            <div style={{ flex: 1, overflow: 'auto' }}>
-              {children}
+          <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+            <Header 
+              currentUser={currentUser}
+              userRole={userRole}
+              handleLogout={handleLogout}
+              onToggleMobileMenu={toggleMobileMenu}
+              isMobileMenuOpen={isMobileMenuOpen}
+            />
+            <div className="main-content">
+              <div style={{ flex: 1, overflow: 'auto' }}>
+                {children}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      {/* Mobile menu backdrop */}
-      {isMobileMenuOpen && (
-        <div 
-          className="mobile-menu-backdrop" 
-          onClick={closeMobileMenu}
+        {/* Mobile menu backdrop */}
+        {isMobileMenuOpen && (
+          <div 
+            className="mobile-menu-backdrop" 
+            onClick={closeMobileMenu}
+          />
+        )}
+        <Footer />
+        <CBBAMonitor 
+          status={cbbaStatus}
+          riskScore={riskScore}
+          riskLevel={riskLevel}
+          isAuthenticated={isAuthenticated}
         />
-      )}
-      <Footer />
-      <CBBAMonitor 
-        status="Active" 
-        riskScore={lastCbbaScore ? Math.round(Math.abs(lastCbbaScore * 100)) : 12}
-        isAuthenticated={isAuthenticated}
-      />
-      {/* Session timeout manager - only active when authenticated */}
-      {isAuthenticated && <SessionManager />}
-    </div>
-  );
+        {/* Session timeout manager - only active when authenticated */}
+        {isAuthenticated && <SessionManager />}
+        
+        {/* StepUpAuth - Moderate Risk (50-79%) Google Authenticator Modal */}
+        {showStepUpAuth && (
+          <StepUpAuth
+            show={showStepUpAuth}
+            riskScore={detectedRiskScore}
+            username={currentUser}
+            onVerify={(success, data) => {
+              if (success) {
+                console.log('[CBBA] StepUp authentication successful:', data);
+                setShowStepUpAuth(false);
+                // Optionally reset risk score or update session
+              }
+            }}
+            onCancel={() => {
+              // User failed verification multiple times or cancelled
+              console.log('[CBBA] StepUp authentication cancelled - logging out');
+              setShowStepUpAuth(false);
+              handleLogout(); // Force logout for security
+            }}
+          />
+        )}
+        
+        {/* SessionLock - High Risk (80%+) 15-Minute Account Lockout */}
+        {showSessionLock && (
+          <SessionLock
+            isLocked={showSessionLock}
+            onUnlock={() => {
+              setShowSessionLock(false);
+              // Optionally re-authenticate
+            }}
+            onLogout={handleLogout}
+            riskScore={detectedRiskScore}
+            username={currentUser}
+          />
+        )}
+      </div>
+    );
+  };
 
   return (
-    <Router>
-      <Routes>
-        {/* Public Routes */}
-        <Route 
-          path="/login" 
-          element={
-            isAuthenticated ? (
-              <Navigate to="/dashboard" replace />
-            ) : (
-              <div className="app-container">
-                <div className="main-content login-mode">
-                  <AuthWrapper onLogin={handleLogin} />
+    <CBBAProvider 
+      isAuthenticated={isAuthenticated}
+      currentUser={currentUser}
+      onRiskDetected={handleRiskDetected}
+    >
+      <Router>
+        <Routes>
+          {/* Public Routes */}
+          <Route 
+            path="/login" 
+            element={
+              isAuthenticated ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <div className="app-container">
+                  <div className="main-content login-mode">
+                    <AuthWrapper onLogin={handleLogin} />
+                  </div>
                 </div>
-              </div>
-            )
-          } 
-        />
+              )
+            } 
+          />
         <Route 
           path="/reset-password/:token" 
           element={
@@ -302,9 +369,8 @@ function App() {
             <Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />
           } 
         />
-      </Routes>
-    </Router>
+        </Routes>
+      </Router>
+    </CBBAProvider>
   );
-}
-
-export default App;
+}export default App;

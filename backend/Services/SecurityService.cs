@@ -25,9 +25,8 @@ namespace db_biometrics_mvp.Backend.Services
 
         public string HashPassword(string password)
         {
-            using var rng = new RNGCryptoServiceProvider();
             var salt = new byte[SaltSize];
-            rng.GetBytes(salt);
+            RandomNumberGenerator.Fill(salt);
 
             using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations, HashAlgorithmName.SHA256);
             var hash = pbkdf2.GetBytes(HashSize);
