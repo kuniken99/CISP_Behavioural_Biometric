@@ -29,17 +29,17 @@ class AnomalyDetector:
         self.model_file = os.path.join(model_path, f'user_{user_id}_model.pkl')
         
         # Initialize models with production-tuned parameters
-        # Balanced contamination (0.08 = 8% outlier tolerance) for lower baseline scores
+        # Standard contamination (0.1 = 10% outlier tolerance) for balanced sensitivity
         self.isolation_forest = IsolationForest(
-            contamination=0.08,
+            contamination=0.1,
             n_estimators=100,
             random_state=42,
             max_samples='auto'
         )
         
-        # Balanced nu (0.08) for more relaxed SVM boundary
+        # Standard nu (0.1) for balanced SVM boundary
         self.one_class_svm = OneClassSVM(
-            nu=0.08,
+            nu=0.1,
             gamma='auto',
             kernel='rbf'
         )
@@ -235,25 +235,23 @@ class AnomalyDetector:
         
         Production-tuned normalization for accurate risk assessment
         Normal trained behavior typically scores 0.1 to 0.4
-        
-        VERY LENIENT scoring to reduce false positives with synthetic training data
         """
-        # Ultra-lenient scoring - prioritize low false positives
-        if score >= 0.0:
-            # Normal to very normal: 0-15%
-            risk = max(0, 15 - score * 30)
-        elif score >= -0.3:
-            # Slight deviation: 15-35%
-            risk = 15 + (0.0 - score) * 66.7
-        elif score >= -0.5:
-            # Moderate deviation: 35-55%
-            risk = 35 + (-0.3 - score) * 100
-        elif score >= -0.7:
-            # Moderate anomaly: 55-75%
-            risk = 55 + (-0.5 - score) * 100
+        # Production scoring - balanced sensitivity
+        if score >= 0.3:
+            # Very normal behavior: 0-20%
+            risk = max(0, 20 - score * 40)
+        elif score >= 0.0:
+            # Normal behavior: 20-40%
+            risk = 20 + (0.3 - score) * 66.7
+        elif score >= -0.2:
+            # Slightly anomalous: 40-60%
+            risk = 40 + (0.0 - score) * 100
+        elif score >= -0.4:
+            # Moderately anomalous: 60-80%
+            risk = 60 + (-0.2 - score) * 100
         else:
-            # High anomaly: 75-100%
-            risk = 75 + max((-0.7 - score) * 125, 0)
+            # Highly anomalous: 80-100%
+            risk = 80 + max((-0.4 - score) * 100, 0)
         
         return np.clip(risk, 0, 100)
     
@@ -264,25 +262,23 @@ class AnomalyDetector:
         
         Production-tuned normalization for accurate risk assessment
         Normal trained behavior typically scores 0.5 to 1.5
-        
-        VERY LENIENT scoring to reduce false positives with synthetic training data
         """
-        # Ultra-lenient scoring - prioritize low false positives
-        if score >= 0.5:
-            # Very normal: 0-12%
-            risk = max(0, 12 - score * 8)
+        # Production scoring - balanced sensitivity
+        if score >= 1.0:
+            # Very normal behavior: 0-15%
+            risk = max(0, 15 - score * 10)
+        elif score >= 0.3:
+            # Normal behavior: 15-35%
+            risk = 15 + (1.0 - score) * 28.6
         elif score >= 0.0:
-            # Normal: 12-25%
-            risk = 12 + (0.5 - score) * 26
+            # Slightly anomalous: 35-50%
+            risk = 35 + (0.3 - score) * 50
         elif score >= -0.5:
-            # Slight deviation: 25-40%
-            risk = 25 + (0.0 - score) * 30
-        elif score >= -1.0:
-            # Moderate deviation: 40-60%
-            risk = 40 + (-0.5 - score) * 40
+            # Moderately anomalous: 50-70%
+            risk = 50 + (0.0 - score) * 40
         else:
-            # High anomaly: 60-100%
-            risk = 60 + max((-1.0 - score) * 40, 0)
+            # Highly anomalous: 70-100%
+            risk = 70 + max((-0.5 - score) * 20, 0)
         
         return np.clip(risk, 0, 100)
     
@@ -324,23 +320,23 @@ class AnomalyDetector:
             # Normal users typically within 2-3 std devs
             # Anomalies beyond 5+ std devs
             
-            # Map distance to 0-100 risk scale (ULTRA LENIENT for synthetic training data):
-            # 0.0 - 3.0 std: Very similar (0-15% risk)
-            # 3.0 - 4.0 std: Similar (15-25% risk)
-            # 4.0 - 5.0 std: Moderate difference (25-40% risk)
-            # 5.0 - 7.0 std: Significant difference (40-60% risk)
-            # 7.0+ std: Very different (60-100% risk)
+            # Map distance to 0-100 risk scale (PRODUCTION BALANCED):
+            # 0.0 - 2.0 std: Very similar (0-20% risk)
+            # 2.0 - 3.0 std: Similar (20-35% risk)
+            # 3.0 - 4.0 std: Moderate difference (35-50% risk)
+            # 4.0 - 5.0 std: Significant difference (50-70% risk)
+            # 5.0+ std: Very different (70-100% risk)
             
-            if std_distance < 3.0:
-                risk = std_distance * 5.0  # 0-15%
+            if std_distance < 2.0:
+                risk = std_distance * 10.0  # 0-20%
+            elif std_distance < 3.0:
+                risk = 20 + (std_distance - 2.0) * 15  # 20-35%
             elif std_distance < 4.0:
-                risk = 15 + (std_distance - 3.0) * 10  # 15-25%
+                risk = 35 + (std_distance - 3.0) * 15  # 35-50%
             elif std_distance < 5.0:
-                risk = 25 + (std_distance - 4.0) * 15  # 25-40%
-            elif std_distance < 7.0:
-                risk = 40 + (std_distance - 5.0) * 10  # 40-60%
+                risk = 50 + (std_distance - 4.0) * 20  # 50-70%
             else:
-                risk = 60 + min((std_distance - 7.0) * 20, 40)  # 60-100%
+                risk = 70 + min((std_distance - 5.0) * 15, 30)  # 70-100%
             
             return np.clip(risk, 0, 100)
             

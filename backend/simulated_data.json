@@ -1,5 +1,5 @@
 {
-  "nextEntryId": 2007,
+  "nextEntryId": 2004,
   "entries": {
     "Products": [
       {
@@ -40,7 +40,7 @@
         "Data": {
           "name": "Speaker",
           "price": 5,
-          "stock": "10",
+          "stock": "5",
           "id": 2001
         }
       },
@@ -52,30 +52,6 @@
           "stock": "3",
           "id": 2002
         }
-      },
-      {
-        "Id": 2003,
-        "Data": {
-          "name": "Monitor",
-          "price": 350,
-          "stock": 200
-        }
-      },
-      {
-        "Id": 2004,
-        "Data": {
-          "name": "masa",
-          "price": 1,
-          "stock": 1
-        }
-      },
-      {
-        "Id": 2006,
-        "Data": {
-          "name": "mouse and keyboard",
-          "price": 5,
-          "stock": 2
-        }
       }
     ],
     "Orders": [
@@ -85,8 +61,7 @@
           "product_id": 101,
           "user_id": 1,
           "quantity": 1,
-          "order_date": "2025-01-15",
-          "id": 1001
+          "order_date": "2023-01-15"
         }
       },
       {
@@ -95,17 +70,7 @@
           "product_id": 102,
           "user_id": 2,
           "quantity": 2,
-          "order_date": "2025-01-16",
-          "id": 1002
-        }
-      },
-      {
-        "Id": 2005,
-        "Data": {
-          "product_id": 103,
-          "user_id": 1,
-          "quantity": 1,
-          "order_date": "2025-10-18"
+          "order_date": "2023-01-16"
         }
       }
     ]

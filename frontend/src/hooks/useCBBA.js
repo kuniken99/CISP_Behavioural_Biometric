@@ -535,6 +535,12 @@ const useCBBA = (isAuthenticated, user, onRiskDetected) => {
 
     try {
       const token = localStorage.getItem('jwt_token');
+      
+      // Temporarily pause assessments during training
+      const wasTrainingMode = trainingModeRef.current;
+      trainingModeRef.current = true;
+      console.log('[CBBA Training] ⏸️ Assessments paused during training...');
+      
       const response = await fetch(`${API_BASE_URL}/Biometric/train`, {
         method: 'POST',
         headers: {
@@ -555,15 +561,32 @@ const useCBBA = (isAuthenticated, user, onRiskDetected) => {
         // Clear assessment buffers to prevent immediate false positives
         keystrokeDataRef.current = [];
         mouseDataRef.current = [];
-        console.log('[CBBA Training] ⚠️ Assessment buffers cleared. Interact normally to establish baseline.');
+        
+        // Reset risk score to 0 after training
+        setRiskScore(0);
+        setRiskLevel('low');
+        setCbbaStatus('active');
+        
+        console.log('[CBBA Training] ✅ Training complete! Risk reset to 0. Interact normally to establish baseline.');
+        
+        // Restore training mode to previous state
+        trainingModeRef.current = wasTrainingMode;
+        if (!wasTrainingMode) {
+          console.log('[CBBA Training] ▶️ Assessments resumed.');
+        }
         
         return result;
       } else {
+        // Restore training mode on error
+        trainingModeRef.current = wasTrainingMode;
+        
         const err = await response.json();
         console.error('[CBBA Training] Training failed:', err);
         return { success: false, error: err.error || 'Training failed' };
       }
     } catch (error) {
+      // Restore training mode on exception
+      trainingModeRef.current = wasTrainingMode;
       return { success: false, error: error.message };
     }
   }, [isAuthenticated, user]);
