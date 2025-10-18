@@ -177,11 +177,26 @@ class AnomalyDetector:
             # This provides full 0-100% range based on how much behavior differs from baseline
             feature_based_risk = self._calculate_feature_risk(normalized_features)
             
+            # Bot Detection: Check for repetitive clicks at same coordinates
+            # Feature vector index 17 (last feature) is repetitive_click_ratio
+            bot_risk_penalty = 0.0
+            if feature_vector.shape[1] >= 18:  # Ensure feature exists
+                repetitive_click_ratio = feature_vector[0, -1]  # Last feature
+                
+                if repetitive_click_ratio > 0.3:  # More than 30% repetitive clicks
+                    # High repetition = likely bot behavior
+                    # Add 20-40% risk penalty based on severity
+                    bot_risk_penalty = min(40.0, repetitive_click_ratio * 100)
+                    print(f"[BOT DETECTION] User {self.user_id} - Repetitive clicks: {repetitive_click_ratio*100:.1f}% → +{bot_risk_penalty:.1f}% risk")
+            
             # Combine all three risk assessments:
             # - Isolation Forest (40%): Statistical outlier detection
             # - SVM (30%): Boundary-based anomaly detection  
             # - Feature deviation (30%): Direct behavioral difference measurement
             combined_risk = (if_risk * 0.4 + svm_risk * 0.3 + feature_based_risk * 0.3)
+            
+            # Apply bot detection penalty
+            combined_risk += bot_risk_penalty
             
             # Add small natural variance for realistic scoring (±3% instead of ±20%)
             # This accounts for minor timing variations without causing false positives

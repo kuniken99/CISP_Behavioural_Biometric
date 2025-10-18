@@ -116,6 +116,7 @@ class FeatureExtractor:
         - Curvature: Path deviation from straight line
         - Click patterns: Click rate, double-click timing
         - Scroll habits: Scroll speed and frequency
+        - Repetitive clicks: Bot detection (same coordinate clicks)
         
         Args:
             mouse_data: List of mouse events
@@ -125,12 +126,13 @@ class FeatureExtractor:
             Feature vector as numpy array
         """
         if not mouse_data or len(mouse_data) < 3:
-            return np.zeros(10)  # Return zero vector if insufficient data
+            return np.zeros(11)  # Increased from 10 to 11 features
         
         velocities = []
         accelerations = []
         curvatures = []
         click_times = []
+        click_positions = []  # Track click coordinates
         double_click_intervals = []
         scroll_speeds = []
         
@@ -199,6 +201,7 @@ class FeatureExtractor:
                 
             elif event_type == 'click':
                 click_times.append(timestamp)
+                click_positions.append((x, y))  # Store click position
                 
                 # Detect double clicks
                 if last_click_time is not None:
@@ -228,6 +231,31 @@ class FeatureExtractor:
             path_efficiency = straight_line_distance / path_length
         else:
             path_efficiency = 0
+        
+        # Bot Detection: Repetitive clicks at same coordinates
+        repetitive_click_ratio = 0.0
+        if len(click_positions) >= 3:
+            # Count clicks at identical coordinates (within 5 pixel tolerance)
+            repetitive_clicks = 0
+            tolerance = 5  # pixels
+            
+            for i in range(len(click_positions)):
+                same_position_clicks = 0
+                for j in range(len(click_positions)):
+                    if i != j:
+                        dist = np.sqrt(
+                            (click_positions[i][0] - click_positions[j][0])**2 + 
+                            (click_positions[i][1] - click_positions[j][1])**2
+                        )
+                        if dist <= tolerance:
+                            same_position_clicks += 1
+                
+                # If 2+ clicks at same position, count as repetitive
+                if same_position_clicks >= 2:
+                    repetitive_clicks += 1
+            
+            # Calculate ratio of repetitive clicks
+            repetitive_click_ratio = repetitive_clicks / len(click_positions)
         
         # Extract statistical features
         features = []
@@ -275,6 +303,9 @@ class FeatureExtractor:
         
         # Path efficiency
         features.append(path_efficiency)
+        
+        # Repetitive click ratio (bot detection)
+        features.append(repetitive_click_ratio)
         
         return np.array(features)
     
