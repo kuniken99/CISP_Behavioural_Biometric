@@ -147,6 +147,15 @@ const SessionLock = ({ show, riskScore, onLockExpired, username, threatDetails }
         {/* Title */}
         <h1 className="lock-title">Account Temporarily Locked</h1>
         
+        {/* Risk Score Badge */}
+        {riskScore && (
+          <div className="risk-score-badge">
+            <span className="risk-icon">⚠️</span>
+            <span className="risk-label">Risk Level:</span>
+            <span className="risk-value">{Math.round(riskScore)}%</span>
+          </div>
+        )}
+        
         {/* Description */}
         <p className="lock-description">
           <span className="description-highlight">Your account has been locked</span> due to suspicious activity detected. 
@@ -187,12 +196,6 @@ const SessionLock = ({ show, riskScore, onLockExpired, username, threatDetails }
           </button>
         </div>
 
-        {/* Footer Message */}
-        <div className="lock-footer">
-          <p className="footer-message">
-            <span className="footer-highlight">If you believe this is an error, please contact our security team.</span>
-          </p>
-        </div>
       </div>
     </div>
   );
