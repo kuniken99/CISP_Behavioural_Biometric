@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq; // For JArray handling
 using db_biometrics_mvp.Backend.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,8 +67,11 @@ namespace db_biometrics_mvp.Backend.Services
         /// <summary>
         /// Assess real-time risk score for current behavioral data
         /// </summary>
-        public async Task<CBBARiskAssessment> AssessRisk(string userIdentifier, List<object> keystrokeData, List<object> mouseData)
+        public async Task<CBBARiskAssessment> AssessRisk(string userIdentifier, JArray keystrokeData, JArray mouseData)
         {
+            // DEBUG: Log what we're sending
+            Console.WriteLine($"[BACKEND DEBUG] Sending to Python - User: {userIdentifier}, Keystroke: {keystrokeData.Count}, Mouse: {mouseData.Count}");
+            
             var payload = new
             {
                 user_id = userIdentifier,  // Support both string (username) and int user IDs
@@ -76,6 +80,8 @@ namespace db_biometrics_mvp.Backend.Services
             };
 
             var jsonPayload = JsonConvert.SerializeObject(payload);
+            Console.WriteLine($"[BACKEND DEBUG] Payload size: {jsonPayload.Length} bytes");
+            
             var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
             try
@@ -124,7 +130,7 @@ namespace db_biometrics_mvp.Backend.Services
         /// <summary>
         /// Update user's profile with new legitimate behavioral data
         /// </summary>
-        public async Task<CBBAUpdateResult> UpdateProfile(string userIdentifier, List<object> keystrokeData, List<object> mouseData)
+        public async Task<CBBAUpdateResult> UpdateProfile(string userIdentifier, JArray keystrokeData, JArray mouseData)
         {
             var payload = new
             {
@@ -205,8 +211,11 @@ namespace db_biometrics_mvp.Backend.Services
     // Request/Response Models
     public class BehavioralSession
     {
-        public List<object> KeystrokeData { get; set; } = new List<object>();
-        public List<object> MouseData { get; set; } = new List<object>();
+        [JsonProperty("keystroke_data")]
+        public JArray KeystrokeData { get; set; } = new JArray();
+        
+        [JsonProperty("mouse_data")]
+        public JArray MouseData { get; set; } = new JArray();
     }
 
     public class CBBATrainingResult

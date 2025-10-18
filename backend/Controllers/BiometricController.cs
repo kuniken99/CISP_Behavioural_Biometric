@@ -11,7 +11,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization; // Add for authorization
 using db_biometrics_mvp.Backend.Data; // For AuditLogging
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq; // For JArray handling
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace db_biometrics_mvp.Backend.Controllers
 {
@@ -184,8 +187,24 @@ namespace db_biometrics_mvp.Backend.Controllers
                 // Use username as user_id for Python service (matches trained model)
                 var userIdentifier = username;
 
+                // Convert JsonElement to JArray for Python service
+                JArray keystrokeData = new JArray();
+                JArray mouseData = new JArray();
+                
+                if (request.KeystrokeData.HasValue && request.KeystrokeData.Value.ValueKind == JsonValueKind.Array)
+                {
+                    var jsonString = request.KeystrokeData.Value.GetRawText();
+                    keystrokeData = JArray.Parse(jsonString);
+                }
+                
+                if (request.MouseData.HasValue && request.MouseData.Value.ValueKind == JsonValueKind.Array)
+                {
+                    var jsonString = request.MouseData.Value.GetRawText();
+                    mouseData = JArray.Parse(jsonString);
+                }
+
                 // Call Python service to assess risk
-                var result = await _cbbaService.AssessRisk(userIdentifier, request.KeystrokeData, request.MouseData);
+                var result = await _cbbaService.AssessRisk(userIdentifier, keystrokeData, mouseData);
 
                 if (result.Success)
                 {
@@ -320,8 +339,24 @@ namespace db_biometrics_mvp.Backend.Controllers
                 // Use username as user_id for Python service (matches trained model)
                 var userIdentifier = username;
 
+                // Convert JsonElement to JArray for Python service
+                JArray keystrokeData = new JArray();
+                JArray mouseData = new JArray();
+                
+                if (request.KeystrokeData.HasValue && request.KeystrokeData.Value.ValueKind == JsonValueKind.Array)
+                {
+                    var jsonString = request.KeystrokeData.Value.GetRawText();
+                    keystrokeData = JArray.Parse(jsonString);
+                }
+                
+                if (request.MouseData.HasValue && request.MouseData.Value.ValueKind == JsonValueKind.Array)
+                {
+                    var jsonString = request.MouseData.Value.GetRawText();
+                    mouseData = JArray.Parse(jsonString);
+                }
+
                 // Call Python service to update profile
-                var result = await _cbbaService.UpdateProfile(userIdentifier, request.KeystrokeData, request.MouseData);
+                var result = await _cbbaService.UpdateProfile(userIdentifier, keystrokeData, mouseData);
 
                 if (result.Success)
                 {
@@ -477,7 +512,10 @@ namespace db_biometrics_mvp.Backend.Controllers
 
     public class CBBARiskRequest
     {
-        public List<object> KeystrokeData { get; set; } = new List<object>();
-        public List<object> MouseData { get; set; } = new List<object>();
+        [JsonPropertyName("keystrokeData")]
+        public JsonElement? KeystrokeData { get; set; }
+        
+        [JsonPropertyName("mouseData")]
+        public JsonElement? MouseData { get; set; }
     }
 }

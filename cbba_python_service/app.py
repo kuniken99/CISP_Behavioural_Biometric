@@ -99,6 +99,15 @@ def assess_risk():
         keystroke_data = data.get('keystroke_data', [])
         mouse_data = data.get('mouse_data', [])
         
+        # DEBUG: Log first few events to see exact structure
+        if mouse_data and len(mouse_data) > 0:
+            print(f"[PYTHON DEBUG] Total mouse events: {len(mouse_data)}")
+            print(f"[PYTHON DEBUG] First mouse event RAW: {mouse_data[0]}")
+            print(f"[PYTHON DEBUG] First mouse event TYPE: {type(mouse_data[0])}")
+            if isinstance(mouse_data[0], dict):
+                print(f"[PYTHON DEBUG] Keys in event: {list(mouse_data[0].keys())}")
+                print(f"[PYTHON DEBUG] Event property value: {mouse_data[0].get('event', 'NOT FOUND')}")
+        
         if not user_id:
             return jsonify({'success': False, 'error': 'user_id is required'}), 400
         

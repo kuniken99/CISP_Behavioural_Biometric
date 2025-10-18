@@ -86,18 +86,28 @@ const useCBBA = (isAuthenticated, user, onRiskDetected) => {
       timestamp: now,
       event: 'mousemove'
     });
+    
+    // DEBUG: Log occasionally (every 50th event)
+    if (mouseDataRef.current.length % 50 === 0) {
+      console.log('[CBBA MOUSE]', 'Total events:', mouseDataRef.current.length);
+    }
   }, [isAuthenticated]);
 
   const handleMouseClick = useCallback((event) => {
     if (!isAuthenticated) return;
 
-    mouseDataRef.current.push({
+    const clickData = {
       x: event.clientX,
       y: event.clientY,
       timestamp: Date.now(),
       event: 'click',
       button: event.button
-    });
+    };
+    
+    mouseDataRef.current.push(clickData);
+    
+    // DEBUG: Log every click
+    console.log('[CBBA CLICK]', clickData, 'Total clicks:', mouseDataRef.current.filter(m => m.event === 'click').length);
   }, [isAuthenticated]);
 
   const handleScroll = useCallback((event) => {
@@ -134,12 +144,24 @@ const useCBBA = (isAuthenticated, user, onRiskDetected) => {
       user: user || 'unknown'  // user is already a string (username)
     });
 
+    // DEBUG: Log actual data being sent
+    console.log('[CBBA DEBUG] Mouse data sample:', mouseDataRef.current.slice(0, 5));
+    console.log('[CBBA DEBUG] Keystroke data sample:', keystrokeDataRef.current.slice(0, 5));
+
     try {
       const token = localStorage.getItem('jwt_token');
       
       // Copy and clear data
       const keystrokeData = [...keystrokeDataRef.current];
       const mouseData = [...mouseDataRef.current];
+      
+      // DEBUG: Log what's being sent
+      console.log('[CBBA DEBUG] Sending to backend:', {
+        keystrokeCount: keystrokeData.length,
+        mouseCount: mouseData.length,
+        mouseEventTypes: mouseData.map(m => m.event)
+      });
+      
       keystrokeDataRef.current = [];
       mouseDataRef.current = [];
 
@@ -317,12 +339,15 @@ const useCBBA = (isAuthenticated, user, onRiskDetected) => {
       window.removeEventListener('click', handleMouseClick);
       window.removeEventListener('wheel', handleScroll);
 
-      // Clear intervals
-      if (assessmentInterval.current) {
-        clearInterval(assessmentInterval.current);
+      // Clear intervals - copy ref to local variable to avoid stale closure
+      const assessmentIntervalId = assessmentInterval.current;
+      const collectionIntervalId = collectionInterval.current;
+      
+      if (assessmentIntervalId) {
+        clearInterval(assessmentIntervalId);
       }
-      if (collectionInterval.current) {
-        clearInterval(collectionInterval.current);
+      if (collectionIntervalId) {
+        clearInterval(collectionIntervalId);
       }
     };
   }, [isAuthenticated, handleKeyDown, handleKeyUp, handleMouseMove, handleMouseClick, handleScroll, assessRisk, getProfileStatus]);

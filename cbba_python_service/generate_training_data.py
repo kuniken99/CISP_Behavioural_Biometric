@@ -9,25 +9,74 @@ import json
 import sys
 
 def generate_diverse_keystroke_data(duration_ms=30000, typing_speed_variation='normal'):
-    """Generate diverse keystroke patterns"""
+    """Generate REALISTIC keystroke patterns with human imperfections"""
     keystrokes = []
     current_time = 0
     
-    # Vary typing speed
+    # Vary typing speed with EXTREME variation to match real users
     if typing_speed_variation == 'fast':
-        avg_key_interval = 120  # Fast typing (~100 WPM - professional level)
-        std_dev = 25
+        avg_key_interval = 100  # Very fast typing (~120 WPM - professional level)
+        std_dev = 60  # HUGE variation
     elif typing_speed_variation == 'slow':
-        avg_key_interval = 400  # Slow typing (~30 WPM - beginner)
-        std_dev = 100
+        avg_key_interval = 450  # Very slow typing (~25 WPM - beginner)
+        std_dev = 180  # HUGE variation
     else:
-        avg_key_interval = 200  # Normal typing (~60 WPM - average skilled user)
-        std_dev = 50
+        avg_key_interval = 250  # Normal typing (~50 WPM - typical user)
+        std_dev = 120  # HUGE variation for natural rhythm
     
     keys = list('abcdefghijklmnopqrstuvwxyz .,!?1234567890')
     
+    # Human behaviors to simulate - INCREASED probabilities
+    pause_probability = 0.08  # 8% chance of thinking pause (increased from 5%)
+    burst_typing_probability = 0.15  # 15% chance of typing burst (increased from 10%)
+    typo_probability = 0.05  # 5% chance of typo + correction (increased from 3%)
+    
     while current_time < duration_ms:
+        # Simulate human thinking pauses (500-3000ms) - LONGER pauses
+        if random.random() < pause_probability:
+            pause_duration = random.randint(500, 3000)  # Extended from 2000ms
+            current_time += pause_duration
+            continue
+        
+        # Simulate burst typing (faster for short period)
+        is_burst = random.random() < burst_typing_probability
+        burst_multiplier = random.uniform(0.5, 0.75) if is_burst else 1.0  # Even faster bursts
+        
         key = random.choice(keys)
+        
+        # Simulate typo + backspace + correction
+        if random.random() < typo_probability:
+            # Type wrong key
+            wrong_key = random.choice(keys)
+            keystrokes.append({
+                'key': wrong_key,
+                'timestamp': current_time,
+                'event': 'keydown'
+            })
+            dwell_time = random.randint(60, 120)
+            keystrokes.append({
+                'key': wrong_key,
+                'timestamp': current_time + dwell_time,
+                'event': 'keyup'
+            })
+            current_time += dwell_time + random.randint(80, 150)
+            
+            # Realize mistake, pause slightly
+            current_time += random.randint(100, 300)
+            
+            # Press backspace
+            keystrokes.append({
+                'key': 'Backspace',
+                'timestamp': current_time,
+                'event': 'keydown'
+            })
+            dwell_time = random.randint(70, 110)
+            keystrokes.append({
+                'key': 'Backspace',
+                'timestamp': current_time + dwell_time,
+                'event': 'keyup'
+            })
+            current_time += dwell_time + random.randint(100, 200)
         
         # Keydown event
         keystrokes.append({
@@ -36,13 +85,13 @@ def generate_diverse_keystroke_data(duration_ms=30000, typing_speed_variation='n
             'event': 'keydown'
         })
         
-        # Dwell time (how long key is pressed) - varies by user
+        # Dwell time (how long key is pressed) - varies by user with EXTREME randomness
         if typing_speed_variation == 'fast':
-            dwell_time = random.randint(40, 100)
+            dwell_time = random.randint(20, 150)  # Wider range
         elif typing_speed_variation == 'slow':
-            dwell_time = random.randint(100, 250)
+            dwell_time = random.randint(70, 350)  # Wider range
         else:
-            dwell_time = random.randint(60, 150)
+            dwell_time = random.randint(40, 220)  # Wider range for natural variation
         
         # Keyup event
         keystrokes.append({
@@ -51,9 +100,9 @@ def generate_diverse_keystroke_data(duration_ms=30000, typing_speed_variation='n
             'event': 'keyup'
         })
         
-        # Flight time (time to next key)
-        flight_time = int(random.gauss(avg_key_interval, std_dev))
-        flight_time = max(10, flight_time)  # Minimum 10ms between keys
+        # Flight time (time to next key) with burst adjustment and EXTREME variation
+        flight_time = int(random.gauss(avg_key_interval, std_dev) * burst_multiplier)
+        flight_time = max(10, min(flight_time, 1500))  # Cap at 1.5 seconds max (increased from 1 sec)
         
         current_time += dwell_time + flight_time
     
@@ -61,32 +110,67 @@ def generate_diverse_keystroke_data(duration_ms=30000, typing_speed_variation='n
     return keystrokes
 
 def generate_diverse_mouse_data(duration_ms=30000, pattern='normal'):
-    """Generate diverse mouse movement patterns"""
+    """Generate REALISTIC mouse movement patterns with human imperfections"""
     mouse_data = []
     current_time = 0
     x, y = random.randint(400, 600), random.randint(300, 500)  # Random start position
     
+    # Human behaviors - INCREASED probabilities for more diversity
+    overshoot_probability = 0.12  # 12% chance of overshooting target (increased from 8%)
+    micro_correction_probability = 0.20  # 20% chance of small corrections (increased from 15%)
+    pause_probability = 0.15  # 15% chance of pausing mouse (increased from 10%)
+    
     while current_time < duration_ms:
+        # Random pause (reading, thinking) - LONGER pauses
+        if random.random() < pause_probability:
+            pause_duration = random.randint(200, 1500)  # Extended from 1000ms
+            current_time += pause_duration
+            continue
+        
         if pattern == 'smooth':
-            # Smooth, controlled movements (precise user)
-            dx = random.randint(-5, 5)
-            dy = random.randint(-5, 5)
-            interval = 50
+            # Smooth, controlled movements with micro-corrections
+            dx = random.randint(-12, 12)  # Increased from -8 to 8
+            dy = random.randint(-12, 12)
+            interval = random.randint(25, 80)  # Wider range
         elif pattern == 'erratic':
             # Fast, erratic movements (scanning, searching)
-            dx = random.randint(-50, 50)
-            dy = random.randint(-50, 50)
-            interval = 100
+            dx = random.randint(-80, 80)  # Increased from -60 to 60
+            dy = random.randint(-80, 80)
+            interval = random.randint(70, 180)  # Wider range
         elif pattern == 'fast':
-            # Fast but controlled
-            dx = random.randint(-30, 30)
-            dy = random.randint(-30, 30)
-            interval = 40
+            # Fast but controlled with variation
+            dx = random.randint(-50, 50)  # Increased from -35 to 35
+            dy = random.randint(-50, 50)
+            interval = random.randint(20, 70)  # Wider range
         else:  # normal
-            # Normal movements
-            dx = random.randint(-20, 20)
-            dy = random.randint(-20, 20)
-            interval = 75
+            # Normal movements with natural variation
+            dx = random.randint(-35, 35)  # Increased from -25 to 25
+            dy = random.randint(-35, 35)
+            interval = random.randint(50, 120)  # Wider range
+        
+        # Simulate overshoot and correction (realistic human behavior)
+        if random.random() < overshoot_probability:
+            # Overshoot the movement
+            dx = int(dx * random.uniform(1.5, 2.5))
+            dy = int(dy * random.uniform(1.5, 2.5))
+            
+            # Add correction movement next
+            mouse_data.append({
+                'x': max(0, min(1920, x + dx)),
+                'y': max(0, min(1080, y + dy)),
+                'timestamp': current_time,
+                'event': 'mousemove'
+            })
+            current_time += interval
+            
+            # Correct back
+            dx = -int(dx * random.uniform(0.3, 0.5))
+            dy = -int(dy * random.uniform(0.3, 0.5))
+        
+        # Micro-corrections (small jittery movements) - MORE jitter
+        if random.random() < micro_correction_probability:
+            dx += random.randint(-5, 5)  # Increased from -3 to 3
+            dy += random.randint(-5, 5)
         
         # Keep within screen bounds
         x = max(0, min(1920, x + dx))
@@ -99,21 +183,30 @@ def generate_diverse_mouse_data(duration_ms=30000, pattern='normal'):
             'event': 'mousemove'
         })
         
-        # Add occasional clicks (realistic user behavior)
-        if random.random() < 0.03:  # 3% chance per movement
+        # Add occasional clicks (realistic user behavior) - EVEN MORE CLICKS for diversity
+        if random.random() < 0.08:  # 8% chance (increased from 5%)
+            # Add some click variability (not all at exact same position)
+            click_x = x + random.randint(-3, 3)  # Increased from -2 to 2
+            click_y = y + random.randint(-3, 3)
             mouse_data.append({
-                'x': x,
-                'y': y,
+                'x': click_x,
+                'y': click_y,
                 'timestamp': current_time + 10,
                 'event': 'click',
                 'button': 0
             })
         
-        # Add occasional scrolls
-        if random.random() < 0.02:  # 2% chance
+        # Add occasional scrolls with variation
+        if random.random() < 0.03:  # 3% chance (increased from 2%)
+            scroll_amount = random.choice([
+                random.randint(-50, -20),   # Small scroll up
+                random.randint(20, 50),     # Small scroll down
+                random.randint(-150, -80),  # Large scroll up
+                random.randint(80, 150)     # Large scroll down
+            ])
             mouse_data.append({
-                'deltaY': random.randint(-100, 100),
-                'deltaX': 0,
+                'deltaY': scroll_amount,
+                'deltaX': random.randint(-5, 5),  # Occasional horizontal scroll
                 'timestamp': current_time + 20,
                 'event': 'scroll'
             })
