@@ -290,7 +290,7 @@ namespace db_biometrics_mvp.Backend.Controllers
                 _logger.LogInformation($"Validating TOTP code for user {userId} (Username: {user.Username})");
                 
                 // Verify the code
-                var isValid = _twoFactorService.ValidateTotp(user.TwoFactorAuth.SecretKey, dto.Code);
+                var isValid = _twoFactorService.ValidateTotp(user.TwoFactorAuth.SecretKey, dto.Code ?? "");
 
                 if (!isValid)
                 {

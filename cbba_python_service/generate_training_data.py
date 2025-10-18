@@ -182,7 +182,7 @@ def train_user_profile(username, jwt_token, num_samples=20):
                 'Content-Type': 'application/json'
             },
             json={'trainingData': training_data},
-            timeout=120  # 2 minute timeout for training
+            timeout=timeout_seconds
         )
         
         if response.status_code == 200:
@@ -197,6 +197,28 @@ def train_user_profile(username, jwt_token, num_samples=20):
             print(f"Model is now ready for dynamic 0-100% risk scoring!")
             print(f"{'='*60}\n")
             return True
+        elif response.status_code == 401:
+            print(f"✗ Authentication Failed!\n")
+            print(f"Status Code: 401 Unauthorized")
+            print(f"Error: JWT token is expired or invalid\n")
+            print(f"To get a new token:")
+            print(f"  1. Login to the application at http://localhost:3000")
+            print(f"  2. Open browser console (F12)")
+            print(f"  3. Run: localStorage.getItem('jwt_token')")
+            print(f"  4. Copy the new token and try again\n")
+            return False
+        elif response.status_code == 413:
+            print(f"✗ Request Too Large!\n")
+            print(f"Status Code: 413 Payload Too Large")
+            print(f"Error: Training data size exceeds backend limits\n")
+            print(f"Solution:")
+            print(f"  1. Restart the backend server to apply new size limits:")
+            print(f"     cd E:\\CISP_Behavioural_Biometric\\backend")
+            print(f"     dotnet run")
+            print(f"  2. Wait for 'Now listening on: http://localhost:5000'")
+            print(f"  3. Try training again with your current sample count\n")
+            print(f"Note: Backend now supports up to 500MB (10,000+ samples)\n")
+            return False
         else:
             print(f"✗ Training Failed!\n")
             print(f"Status Code: {response.status_code}")
@@ -225,14 +247,20 @@ def print_usage():
     print("Parameters:")
     print("  username     - Your username (e.g., tank108)")
     print("  jwt_token    - Your JWT authentication token")
-    print("  num_samples  - Number of training samples (default: 50, minimum: 50)\n")
+    print("  num_samples  - Number of training samples (default: 100, recommended: 200-500)\n")
+    print("Recommended sample counts:")
+    print("  • Basic training:     100-200 samples (faster, decent accuracy)")
+    print("  • Good accuracy:      200-500 samples (balanced, recommended)")
+    print("  • High accuracy:      500-1000 samples (better false positive reduction)")
+    print("  • Maximum accuracy:   1000-5000 samples (best accuracy, slower training)\n")
     print("Example:")
-    print("  python generate_training_data.py tank108 eyJhbGciOi... 50\n")
+    print("  python generate_training_data.py tank108 eyJhbGciOi... 500\n")
     print("How to get your JWT token:")
     print("  1. Login to the application")
     print("  2. Open browser console (F12)")
     print("  3. Run: localStorage.getItem('jwt_token')")
-    print("  4. Copy the token (without quotes)\n")
+    print("  4. Copy the token (without quotes)")
+    print("  5. Token expires after inactivity - if 401 error, get a new token\n")
     print("="*60 + "\n")
 
 if __name__ == '__main__':
@@ -242,7 +270,7 @@ if __name__ == '__main__':
     
     username = sys.argv[1]
     jwt_token = sys.argv[2]
-    num_samples = int(sys.argv[3]) if len(sys.argv) > 3 else 50
+    num_samples = int(sys.argv[3]) if len(sys.argv) > 3 else 100
     
     # Validate inputs
     if not username or not jwt_token:
@@ -250,10 +278,17 @@ if __name__ == '__main__':
         print_usage()
         sys.exit(1)
     
-    if num_samples < 50:
-        print(f"Error: At least 50 samples required for training, got {num_samples}.")
-        print(f"This is required by the ML models for accurate behavioral profiling.\n")
+    if num_samples < 20:
+        print(f"Error: At least 20 samples required for training, got {num_samples}.")
+        print(f"Recommended: 200-500 samples for good accuracy.\n")
         sys.exit(1)
+    
+    if num_samples > 5000:
+        print(f"Warning: {num_samples} samples is very high and may take a long time.")
+        print(f"Recommended maximum: 5000 samples for best balance.\n")
+        confirm = input("Continue anyway? (yes/no): ")
+        if confirm.lower() != 'yes':
+            sys.exit(1)
     
     # Run training
     success = train_user_profile(username, jwt_token, num_samples)

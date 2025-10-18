@@ -35,10 +35,10 @@ namespace db_biometrics_mvp.Backend
                     options.JsonSerializerOptions.MaxDepth = 64; // Increase max depth for nested objects
                 });
 
-            // Configure Kestrel to accept larger requests (100MB)
+            // Configure Kestrel to accept larger requests (500MB for training data)
             services.Configure<Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerOptions>(options =>
             {
-                options.Limits.MaxRequestBodySize = 100 * 1024 * 1024; // 100 MB
+                options.Limits.MaxRequestBodySize = 524288000; // 500 MB (for up to 10,000 training samples)
             });
 
             // Configure SQL Server DbContext using the connection string from appsettings.json

@@ -3,9 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using db_biometrics_mvp.Backend.Models;
 using db_biometrics_mvp.Backend.Data;
 
@@ -199,15 +202,60 @@ namespace db_biometrics_mvp.Backend.Controllers
                 return BadRequest("Table name is required.");
             }
 
-            // Users table is read-only for security
-            if (dto.TableName.ToLower() == "users")
-            {
-                return BadRequest("Adding users is not allowed for security reasons.");
-            }
-
             // Handle Products and Orders with proper field validation
             switch (dto.TableName.ToLower())
             {
+                case "users":
+                    // Validate required fields for Users table
+                    if (!dto.Entry.ContainsKey("username") || !dto.Entry.ContainsKey("email") || !dto.Entry.ContainsKey("password"))
+                    {
+                        return BadRequest("Users table requires 'username', 'email', and 'password' fields.");
+                    }
+
+                    // Extract values before using in lambda expressions
+                    var username = dto.Entry["username"]?.ToString() ?? "";
+                    var email = dto.Entry["email"]?.ToString() ?? "";
+
+                    // Check if username already exists
+                    var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+                    if (existingUser != null)
+                    {
+                        return BadRequest($"Username '{username}' already exists.");
+                    }
+
+                    // Check if email already exists
+                    var existingEmail = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                    if (existingEmail != null)
+                    {
+                        return BadRequest($"Email '{email}' is already registered.");
+                    }
+
+                    // Create new user with hashed password
+                    var newUser = new User
+                    {
+                        Username = dto.Entry["username"]?.ToString() ?? "",
+                        Email = dto.Entry["email"]?.ToString() ?? "",
+                        PasswordHash = HashPassword(dto.Entry["password"]?.ToString() ?? ""),
+                        Role = dto.Entry.ContainsKey("role") ? dto.Entry["role"]?.ToString() ?? "user" : "user",
+                        IsActive = dto.Entry.ContainsKey("isactive") ? bool.Parse(dto.Entry["isactive"]?.ToString() ?? "true") : true,
+                        IsEmailVerified = dto.Entry.ContainsKey("isemailverified") ? bool.Parse(dto.Entry["isemailverified"]?.ToString() ?? "false") : false,
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    _context.Users.Add(newUser);
+                    await _context.SaveChangesAsync();
+
+                    // Log activity
+                    await _context.AuditLogs.AddAsync(new AuditLog 
+                    { 
+                        Username = User.Identity?.Name ?? "Unknown", 
+                        Action = "ADD_USER", 
+                        Details = $"Added new user: {newUser.Username}, Email: {newUser.Email}, Role: {newUser.Role}" 
+                    });
+                    await _context.SaveChangesAsync();
+
+                    return Ok(new { message = $"User '{newUser.Username}' added successfully with ID: {newUser.Id}" });
+
                 case "products":
                     // Validate required fields for Products table
                     if (!dto.Entry.ContainsKey("name") || !dto.Entry.ContainsKey("price") || !dto.Entry.ContainsKey("stock"))
@@ -377,6 +425,16 @@ namespace db_biometrics_mvp.Backend.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = $"Entry {dto.EntryId} deleted from {actualTableName}." });
+        }
+
+        // Helper method to hash passwords using SHA256
+        private static string HashPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return Convert.ToBase64String(bytes);
+            }
         }
     }
 }

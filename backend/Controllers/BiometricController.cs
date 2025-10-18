@@ -95,6 +95,8 @@ namespace db_biometrics_mvp.Backend.Controllers
         /// POST /api/biometric/train
         /// </summary>
         [HttpPost("train")]
+        [RequestSizeLimit(524288000)] // 500MB limit for large training datasets
+        [RequestFormLimits(MultipartBodyLengthLimit = 524288000)]
         public async Task<IActionResult> TrainProfile([FromBody] CBBATrainingRequest request)
         {
             try

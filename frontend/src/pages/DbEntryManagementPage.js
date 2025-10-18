@@ -264,7 +264,7 @@ const DbEntryManagementPage = () => {
               fontSize: '14px',
               color: '#1976d2'
             }}>
-              <strong>Note:</strong> Users cannot be deleted for security reasons. Navigate to <strong>User Management</strong> page to activate/deactivate users instead.
+              <strong>Note:</strong> When adding new users, you must provide a password. Users cannot be deleted for security reasons. Navigate to <strong>User Management</strong> page to activate/deactivate users instead.
             </div>
           )}
           <table>
@@ -365,6 +365,27 @@ const DbEntryManagementPage = () => {
                 />
               </div>
             ))}
+            {/* Add password field for Users table when adding new entry */}
+            {selectedTable.toLowerCase() === 'users' && !editingEntryId && (
+              <div className="form-group">
+                <label>password: <span style={{ color: 'red' }}>*</span></label>
+                <input
+                  type="password"
+                  placeholder="Enter password"
+                  value={newEntryData['password'] || ''}
+                  onChange={(e) => setNewEntryData({ ...newEntryData, password: e.target.value })}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleAddEntry();
+                      return false;
+                    }
+                  }}
+                  style={{ borderColor: '#ff6b6b' }}
+                />
+              </div>
+            )}
           </form>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             {editingEntryId ? (
