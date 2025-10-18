@@ -15,13 +15,13 @@ def generate_diverse_keystroke_data(duration_ms=30000, typing_speed_variation='n
     
     # Vary typing speed
     if typing_speed_variation == 'fast':
-        avg_key_interval = 80  # Fast typing (~750 WPM)
-        std_dev = 20
+        avg_key_interval = 120  # Fast typing (~100 WPM - professional level)
+        std_dev = 25
     elif typing_speed_variation == 'slow':
-        avg_key_interval = 300  # Slow typing (~200 WPM)
-        std_dev = 80
+        avg_key_interval = 400  # Slow typing (~30 WPM - beginner)
+        std_dev = 100
     else:
-        avg_key_interval = 150  # Normal typing (~400 WPM)
+        avg_key_interval = 200  # Normal typing (~60 WPM - average skilled user)
         std_dev = 50
     
     keys = list('abcdefghijklmnopqrstuvwxyz .,!?1234567890')
