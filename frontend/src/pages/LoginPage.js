@@ -12,6 +12,7 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [recaptchaVerified, setRecaptchaVerified] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [recaptchaToken, setRecaptchaToken] = useState('');
   const recaptchaRef = useRef(null);
 
@@ -35,6 +36,8 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
       setError('Please verify the reCAPTCHA');
       return;
     }
+
+    setIsLoading(true);
 
     try {
       const response = await fetch(`${API_BASE_URL}/Auth/login`, {
@@ -112,6 +115,8 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
       console.error(err);
       // Reset reCAPTCHA after network error
       resetRecaptcha();
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -150,6 +155,7 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
               onChange={(e) => setEmail(e.target.value)} 
               required 
               autoComplete="email"
+              disabled={isLoading}
             />
           </div>
           
@@ -163,6 +169,7 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
                 onChange={(e) => setPassword(e.target.value)} 
                 required 
                 autoComplete="current-password"
+                disabled={isLoading}
               />
               <button 
                 type="button"
@@ -212,9 +219,9 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
           <button 
             type="submit" 
             className="btn btn-primary btn-full"
-            disabled={!recaptchaVerified}
+            disabled={!recaptchaVerified || isLoading}
           >
-            Login
+            {isLoading ? '🔐 Logging in...' : 'Login'}
           </button>
 
           <div className="terms-text">
