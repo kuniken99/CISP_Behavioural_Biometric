@@ -15,17 +15,17 @@ class FeatureExtractor:
         Keystroke metrics:
         - Dwell Time: Time between key press and release
         - Flight Time: Time between releasing one key and pressing the next
-        - Typing Speed: Characters per second (WEIGHTED for fast typing detection)
+        - Typing Speed: Characters per second
         
         Args:
             keystroke_data: List of keystroke events
             [{'key': 'a', 'timestamp': 1234567890, 'event': 'keydown'}, ...]
             
         Returns:
-            Feature vector as numpy array with enhanced velocity metrics
+            Feature vector as numpy array
         """
         if not keystroke_data or len(keystroke_data) < 2:
-            return np.zeros(10)  # Updated from 7 to 10 for additional velocity features
+            return np.zeros(7)  # Return zero vector if insufficient data
         
         dwell_times = []
         flight_times = []
@@ -76,22 +76,12 @@ class FeatureExtractor:
         # Extract statistical features
         features = []
         
-        # Dwell time features (ENHANCED for fast keypress detection)
+        # Dwell time features
         if dwell_times:
-            mean_dwell = np.mean(dwell_times)
-            std_dwell = np.std(dwell_times)
-            
-            # Normal dwell: 80-200ms for legitimate users
-            # Fast dwell: <50ms may indicate automated input
-            features.append(mean_dwell)
-            features.append(std_dwell)
-            
-            # Rapid keypress detection: Count very short dwell times
-            rapid_keypress_count = sum(1 for dt in dwell_times if dt < 50)
-            rapid_keypress_ratio = rapid_keypress_count / len(dwell_times) if dwell_times else 0
-            features.append(rapid_keypress_ratio)  # NEW: Rapid keypress ratio
+            features.append(np.mean(dwell_times))
+            features.append(np.std(dwell_times))
         else:
-            features.extend([0, 0, 0])  # Updated from 2 to 3 features
+            features.extend([0, 0])
         
         # Flight time features
         if flight_times:
@@ -100,21 +90,12 @@ class FeatureExtractor:
         else:
             features.extend([0, 0])
         
-        # Typing speed features (ENHANCED for fast typing detection)
+        # Typing speed features
         if typing_speeds:
-            mean_typing_speed = np.mean(typing_speeds)
-            std_typing_speed = np.std(typing_speeds) if len(typing_speeds) > 1 else 0
-            
-            # Normal typing: 3-8 chars/sec for legitimate users
-            # Fast/automated typing: 10-20+ chars/sec for attackers
-            features.append(mean_typing_speed)
-            features.append(std_typing_speed)
-            
-            # Fast typing detection: Above 10 chars/sec threshold
-            fast_typing_indicator = 1.0 if mean_typing_speed > 10.0 else 0.0
-            features.append(fast_typing_indicator)  # NEW: Fast typing flag
+            features.append(np.mean(typing_speeds))
+            features.append(np.std(typing_speeds) if len(typing_speeds) > 1 else 0)
         else:
-            features.extend([0, 0, 0])  # Updated from 2 to 3 features
+            features.extend([0, 0])
         
         # Key press variance (rhythm consistency)
         if dwell_times and len(dwell_times) > 1:
@@ -130,7 +111,7 @@ class FeatureExtractor:
         Extract features from mouse dynamics data
         
         Mouse metrics:
-        - Velocity: Speed of cursor movement (WEIGHTED HEAVILY for fast movement detection)
+        - Velocity: Speed of cursor movement
         - Acceleration: Rate of velocity change
         - Curvature: Path deviation from straight line
         - Click patterns: Click rate, double-click timing
@@ -141,10 +122,10 @@ class FeatureExtractor:
             [{'x': 100, 'y': 200, 'timestamp': 1234567890, 'event': 'move'}, ...]
             
         Returns:
-            Feature vector as numpy array with enhanced velocity metrics
+            Feature vector as numpy array
         """
         if not mouse_data or len(mouse_data) < 3:
-            return np.zeros(13)  # Updated from 10 to 13 for additional velocity features
+            return np.zeros(10)  # Return zero vector if insufficient data
         
         velocities = []
         accelerations = []
@@ -251,33 +232,19 @@ class FeatureExtractor:
         # Extract statistical features
         features = []
         
-        # Velocity features (ENHANCED for fast movement detection)
+        # Velocity features
         if velocities:
-            mean_velocity = np.mean(velocities)
-            max_velocity = np.max(velocities)
-            std_velocity = np.std(velocities)
-            
-            # Normal baseline: ~200-500 px/s for legitimate users
-            # Attacker baseline: ~800-2000+ px/s for automated/rapid movements
-            features.append(mean_velocity)
-            features.append(std_velocity)
-            features.append(max_velocity)  # NEW: Peak velocity for burst detection
-            
-            # Fast movement detection: Count movements above 1000 px/s threshold
-            rapid_movement_count = sum(1 for v in velocities if v > 1000)
-            rapid_movement_ratio = rapid_movement_count / len(velocities) if velocities else 0
-            features.append(rapid_movement_ratio)  # NEW: Rapid movement ratio
+            features.append(np.mean(velocities))
+            features.append(np.std(velocities))
         else:
-            features.extend([0, 0, 0, 0])  # Updated from 2 to 4 features
+            features.extend([0, 0])
         
-        # Acceleration features (ENHANCED for sudden movement detection)
+        # Acceleration features
         if accelerations:
-            mean_accel = np.mean(accelerations)
-            max_accel = np.max(accelerations)
-            features.append(mean_accel)
-            features.append(max_accel)  # NEW: Peak acceleration
+            features.append(np.mean(accelerations))
+            features.append(np.std(accelerations))
         else:
-            features.extend([0, 0])  # Updated from 2 to 2 (kept same)
+            features.extend([0, 0])
         
         # Curvature features
         if curvatures:

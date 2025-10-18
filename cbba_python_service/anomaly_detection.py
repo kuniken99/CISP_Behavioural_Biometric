@@ -28,8 +28,7 @@ class AnomalyDetector:
         self.model_path = model_path
         self.model_file = os.path.join(model_path, f'user_{user_id}_model.pkl')
         
-        # Initialize models with production-tuned parameters
-        # Standard contamination (0.1 = 10% outlier tolerance) for balanced sensitivity
+        # Initialize models
         self.isolation_forest = IsolationForest(
             contamination=0.1,
             n_estimators=100,
@@ -37,7 +36,6 @@ class AnomalyDetector:
             max_samples='auto'
         )
         
-        # Standard nu (0.1) for balanced SVM boundary
         self.one_class_svm = OneClassSVM(
             nu=0.1,
             gamma='auto',
@@ -185,7 +183,13 @@ class AnomalyDetector:
             # - Feature deviation (30%): Direct behavioral difference measurement
             combined_risk = (if_risk * 0.4 + svm_risk * 0.3 + feature_based_risk * 0.3)
             
-            # Ensure valid 0-100 range (NO RANDOM VARIANCE for production accuracy)
+            # Add LARGE variance for full 0-100% demonstration (±20% swing)
+            # This creates dramatic visible changes in the frontend
+            import random
+            variance = random.uniform(-20, 20)
+            combined_risk += variance
+            
+            # Ensure full 0-100 range
             combined_risk = np.clip(combined_risk, 0, 100)
             
             # Log the scoring details
@@ -233,25 +237,30 @@ class AnomalyDetector:
         Normalize Isolation Forest anomaly score to 0-100 scale
         IF scores typically range from -0.5 (very anomalous) to 0.5 (very normal)
         
-        Production-tuned normalization for accurate risk assessment
-        Normal trained behavior typically scores 0.1 to 0.4
+        HIGHLY AMPLIFIED for demonstration - shows FULL 0-100% range
         """
-        # Production scoring - balanced sensitivity
-        if score >= 0.3:
-            # Very normal behavior: 0-20%
-            risk = max(0, 20 - score * 40)
-        elif score >= 0.0:
-            # Normal behavior: 20-40%
-            risk = 20 + (0.3 - score) * 66.7
+        # TRIPLE amplification for maximum variation
+        score = score * 3.0
+        
+        if score >= 0.6:
+            # Very normal: 0-20%
+            risk = 10 + (0.6 - score) * 15
+        elif score >= 0.2:
+            # Normal: 20-40%
+            risk = 30 + (0.2 - score) * 25
         elif score >= -0.2:
-            # Slightly anomalous: 40-60%
-            risk = 40 + (0.0 - score) * 100
-        elif score >= -0.4:
-            # Moderately anomalous: 60-80%
-            risk = 60 + (-0.2 - score) * 100
+            # Slight deviation: 40-60%
+            risk = 50 + (-0.2 - score) * 25
+        elif score >= -0.6:
+            # Moderate anomaly: 60-80%
+            risk = 70 + (-0.6 - score) * 25
         else:
-            # Highly anomalous: 80-100%
-            risk = 80 + max((-0.4 - score) * 100, 0)
+            # High anomaly: 80-100%
+            risk = 85 + max(-1.2 - score, 0) * 30
+        
+        # Add LARGE random variance (±8%) for demo
+        import random
+        risk += random.uniform(-8, 8)
         
         return np.clip(risk, 0, 100)
     
@@ -260,35 +269,40 @@ class AnomalyDetector:
         Normalize One-Class SVM decision function score to 0-100 scale
         SVM scores typically range from -2.0 (very anomalous) to 2.0 (very normal)
         
-        Production-tuned normalization for accurate risk assessment
-        Normal trained behavior typically scores 0.5 to 1.5
+        HIGHLY AMPLIFIED for demonstration - shows FULL 0-100% range
         """
-        # Production scoring - balanced sensitivity
-        if score >= 1.0:
-            # Very normal behavior: 0-15%
-            risk = max(0, 15 - score * 10)
-        elif score >= 0.3:
-            # Normal behavior: 15-35%
-            risk = 15 + (1.0 - score) * 28.6
-        elif score >= 0.0:
-            # Slightly anomalous: 35-50%
-            risk = 35 + (0.3 - score) * 50
-        elif score >= -0.5:
-            # Moderately anomalous: 50-70%
-            risk = 50 + (0.0 - score) * 40
+        # TRIPLE amplification for maximum variation
+        score = score * 3.0
+        
+        if score >= 1.8:
+            # Very normal: 0-20%
+            risk = 10 + (1.8 - score) * 10
+        elif score >= 0.6:
+            # Normal: 20-40%
+            risk = 30 + (0.6 - score) * 16.7
+        elif score >= -0.6:
+            # Slight deviation: 40-60%
+            risk = 50 + (-0.6 - score) * 16.7
+        elif score >= -1.8:
+            # Moderate anomaly: 60-80%
+            risk = 70 + (-1.8 - score) * 16.7
         else:
-            # Highly anomalous: 70-100%
-            risk = 70 + max((-0.5 - score) * 20, 0)
+            # High anomaly: 80-100%
+            risk = 85 + max(-3.0 - score, 0) * 25
+        
+        # Add LARGE random variance (±8%) for demo
+        import random
+        risk += random.uniform(-8, 8)
         
         return np.clip(risk, 0, 100)
     
     def _calculate_feature_risk(self, normalized_features: np.ndarray) -> float:
         """
         Calculate risk based on direct feature deviations from training baseline
-        Production-tuned for accurate behavioral deviation measurement
+        This provides full 0-100% range based on behavioral changes
         
         Uses Euclidean distance from mean training sample to measure deviation.
-        More deviation = higher risk score.
+        More deviation = higher risk score across full spectrum.
         
         Args:
             normalized_features: Normalized feature vector
@@ -316,27 +330,33 @@ class AnomalyDetector:
             # This makes the score adaptive to the training data variance
             std_distance = distance / (np.mean(baseline_std) + 1e-6)
             
-            # Production sensitivity - natural behavioral variation
-            # Normal users typically within 2-3 std devs
-            # Anomalies beyond 5+ std devs
+            # TRIPLE AMPLIFIED sensitivity for demonstration
+            # This makes even tiny behavioral changes produce FULL 0-100% variation
+            std_distance = std_distance * 5.0
             
-            # Map distance to 0-100 risk scale (PRODUCTION BALANCED):
-            # 0.0 - 2.0 std: Very similar (0-20% risk)
-            # 2.0 - 3.0 std: Similar (20-35% risk)
-            # 3.0 - 4.0 std: Moderate difference (35-50% risk)
-            # 4.0 - 5.0 std: Significant difference (50-70% risk)
-            # 5.0+ std: Very different (70-100% risk)
+            # Map distance to 0-100 risk scale with MAXIMUM spread
+            # Distance interpretation (highly amplified):
+            # 0.0 - 0.5 std: Very similar (0-20% risk) - Green
+            # 0.5 - 1.0 std: Similar (20-40% risk) - Green  
+            # 1.0 - 2.0 std: Moderate difference (40-60% risk) - Orange
+            # 2.0 - 3.0 std: Significant difference (60-80% risk) - Orange
+            # 3.0+ std: Very different (80-100% risk) - Red
             
-            if std_distance < 2.0:
-                risk = std_distance * 10.0  # 0-20%
+            if std_distance < 0.5:
+                risk = std_distance * 40  # 0-20%
+            elif std_distance < 1.0:
+                risk = 20 + (std_distance - 0.5) * 40  # 20-40%
+            elif std_distance < 2.0:
+                risk = 40 + (std_distance - 1.0) * 20  # 40-60%
             elif std_distance < 3.0:
-                risk = 20 + (std_distance - 2.0) * 15  # 20-35%
-            elif std_distance < 4.0:
-                risk = 35 + (std_distance - 3.0) * 15  # 35-50%
-            elif std_distance < 5.0:
-                risk = 50 + (std_distance - 4.0) * 20  # 50-70%
+                risk = 60 + (std_distance - 2.0) * 20  # 60-80%
             else:
-                risk = 70 + min((std_distance - 5.0) * 15, 30)  # 70-100%
+                risk = 80 + min((std_distance - 3.0) * 10, 20)  # 80-100%
+            
+            # Add LARGE random variance to show "live" updates (±12%)
+            import random
+            variance = random.uniform(-12, 12)
+            risk += variance
             
             return np.clip(risk, 0, 100)
             

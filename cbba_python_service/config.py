@@ -8,7 +8,7 @@ class Config:
     """CBBA Service Configuration"""
     
     # Flask settings
-    FLASK_PORT = int(os.getenv('FLASK_PORT', 5001))  # Python service on 5001, backend on 5000
+    FLASK_PORT = int(os.getenv('FLASK_PORT', 5001)) # Python service on 5001, backend on 5000
     FLASK_HOST = '127.0.0.1'
     DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
     
@@ -32,7 +32,7 @@ class Config:
     ONE_CLASS_SVM_GAMMA = 'auto'
     
     # Training parameters
-    MIN_TRAINING_SAMPLES = 5  # Minimum samples needed for initial training (lowered for development - was 10, originally 50)
+    MIN_TRAINING_SAMPLES = 20  # Minimum samples needed for initial training
     TRAINING_WINDOW_SIZE = 100  # Number of recent samples to use for training
     
     # Feature extraction parameters

@@ -37,7 +37,7 @@ const AlertSystemPage = () => {
         });
         const data = await response.json();
         if (response.ok) {
-          // Transform the data to match expected format with GMT+8 timezone
+          // Transform the data to match expected format
           const transformedAlerts = data.map(alert => {
             // Convert UTC timestamp to GMT+8 (Singapore time)
             const utcDate = new Date(alert.timestamp);

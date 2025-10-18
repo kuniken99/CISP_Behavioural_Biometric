@@ -8,87 +8,28 @@ import time
 import requests
 from datetime import datetime
 
-def generate_keystroke_events(num_keys=30):
-    """Generate realistic keystroke event sequences (keydown/keyup pairs)"""
-    events = []
-    current_time = 0
-    keys = list('abcdefghijklmnopqrstuvwxyz .,!?')
-    
-    for _ in range(num_keys):
-        key = random.choice(keys)
-        
-        # Keydown event
-        events.append({
-            "key": key,
-            "timestamp": current_time,
-            "event": "keydown"
-        })
-        
-        # Normal dwell time: 80-150ms (time key is held down)
-        dwell_time = random.uniform(80, 150)
-        
-        # Keyup event
-        events.append({
-            "key": key,
-            "timestamp": current_time + dwell_time,
-            "event": "keyup"
-        })
-        
-        # Normal flight time: 100-200ms (time to next key)
-        flight_time = random.uniform(100, 200)
-        current_time += dwell_time + flight_time
-    
-    return events
+def generate_keystroke_sample():
+    """Generate realistic keystroke dynamics data"""
+    return {
+        "key": random.choice(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']),
+        "timestamp": time.time() * 1000,
+        "dwell_time": random.uniform(50, 150),  # ms key held down
+        "flight_time": random.uniform(100, 300),  # ms between keys
+    }
 
-def generate_mouse_events(num_events=100):
-    """Generate realistic mouse movement events"""
-    events = []
-    current_time = 0
-    x, y = random.uniform(400, 600), random.uniform(300, 500)  # Start position
-    
-    for _ in range(num_events):
-        # Normal mouse movement: 10-20px increments
-        dx = random.uniform(-20, 20)
-        dy = random.uniform(-20, 20)
-        
-        x = max(0, min(1920, x + dx))
-        y = max(0, min(1080, y + dy))
-        
-        events.append({
-            "x": x,
-            "y": y,
-            "timestamp": current_time,
-            "event": "mousemove"
-        })
-        
-        # Occasional clicks (5% chance)
-        if random.random() < 0.05:
-            events.append({
-                "x": x,
-                "y": y,
-                "timestamp": current_time + 10,
-                "event": "click",
-                "button": 0
-            })
-        
-        # Occasional scrolls (2% chance)
-        if random.random() < 0.02:
-            events.append({
-                "deltaY": random.uniform(-100, 100),
-                "deltaX": 0,
-                "timestamp": current_time + 20,
-                "event": "scroll"
-            })
-        
-        # Normal interval: 50-100ms between movements
-        current_time += random.uniform(50, 100)
-    
-    return events
+def generate_mouse_sample():
+    """Generate realistic mouse dynamics data"""
+    return {
+        "x": random.uniform(100, 1800),
+        "y": random.uniform(100, 900),
+        "timestamp": time.time() * 1000,
+        "click": random.choice([None, 'left', 'right']) if random.random() < 0.1 else None,
+    }
 
 def generate_training_session():
     """Generate one behavioral session (keystroke + mouse)"""
-    keystroke_data = generate_keystroke_events(num_keys=random.randint(20, 40))
-    mouse_data = generate_mouse_events(num_events=random.randint(80, 150))
+    keystroke_data = [generate_keystroke_sample() for _ in range(random.randint(20, 40))]
+    mouse_data = [generate_mouse_sample() for _ in range(random.randint(50, 100))]
     
     return {
         "keystroke_data": keystroke_data,
@@ -232,57 +173,27 @@ def test_anomalous_behavior(user_id):
     
     print("Generating anomalous behavioral data...")
     
-    # Generate anomalous keystroke events (VERY FAST typing - automated)
-    anomalous_keystroke = []
-    current_time = 0
-    keys = list('abc')
+    # Generate anomalous keystroke data (much faster/slower typing)
+    anomalous_keystroke = [
+        {
+            "key": random.choice(['a', 'b', 'c']),
+            "timestamp": time.time() * 1000 + i * 10,
+            "dwell_time": random.uniform(10, 30),  # Much shorter (anomalous)
+            "flight_time": random.uniform(20, 50),  # Much faster (anomalous)
+        }
+        for i in range(30)
+    ]
     
-    for i in range(40):
-        key = random.choice(keys)
-        
-        # Keydown
-        anomalous_keystroke.append({
-            "key": key,
-            "timestamp": current_time,
-            "event": "keydown"
-        })
-        
-        # VERY SHORT dwell time: 20-40ms (automated/bot-like)
-        dwell_time = random.uniform(20, 40)
-        
-        # Keyup
-        anomalous_keystroke.append({
-            "key": key,
-            "timestamp": current_time + dwell_time,
-            "event": "keyup"
-        })
-        
-        # VERY SHORT flight time: 30-60ms (typing 15-20 chars/sec!)
-        flight_time = random.uniform(30, 60)
-        current_time += dwell_time + flight_time
-    
-    # Generate anomalous mouse events (VERY FAST erratic movements)
-    anomalous_mouse = []
-    current_time = 0
-    x, y = 500, 400
-    
-    for i in range(120):
-        # LARGE jumps: 50-200px (bot-like cursor teleportation)
-        dx = random.uniform(-200, 200)
-        dy = random.uniform(-200, 200)
-        
-        x = max(0, min(1920, x + dx))
-        y = max(0, min(1080, y + dy))
-        
-        anomalous_mouse.append({
-            "x": x,
-            "y": y,
-            "timestamp": current_time,
-            "event": "mousemove"
-        })
-        
-        # VERY SHORT interval: 15-30ms (2000+ px/s velocity!)
-        current_time += random.uniform(15, 30)
+    # Generate anomalous mouse data (erratic movements)
+    anomalous_mouse = [
+        {
+            "x": random.uniform(0, 2000),
+            "y": random.uniform(0, 1000),
+            "timestamp": time.time() * 1000 + i * 5,
+            "click": random.choice(['left', 'right']) if random.random() < 0.5 else None,
+        }
+        for i in range(80)
+    ]
     
     payload = {
         "user_id": user_id,
