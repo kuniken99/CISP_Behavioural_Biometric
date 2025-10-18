@@ -183,11 +183,16 @@ class AnomalyDetector:
             if feature_vector.shape[1] >= 18:  # Ensure feature exists
                 repetitive_click_ratio = feature_vector[0, -1]  # Last feature
                 
+                # DEBUG: Always log the repetitive click ratio
+                print(f"[BOT DETECTION DEBUG] User {self.user_id} - Repetitive clicks: {repetitive_click_ratio*100:.1f}% (threshold: 30%)")
+                
                 if repetitive_click_ratio > 0.3:  # More than 30% repetitive clicks
                     # High repetition = likely bot behavior
                     # Add 20-40% risk penalty based on severity
                     bot_risk_penalty = min(40.0, repetitive_click_ratio * 100)
-                    print(f"[BOT DETECTION] User {self.user_id} - Repetitive clicks: {repetitive_click_ratio*100:.1f}% → +{bot_risk_penalty:.1f}% risk")
+                    print(f"[BOT DETECTION TRIGGERED] User {self.user_id} - Repetitive clicks: {repetitive_click_ratio*100:.1f}% → +{bot_risk_penalty:.1f}% risk")
+                else:
+                    print(f"[BOT DETECTION] No penalty - below 30% threshold")
             
             # Combine all three risk assessments:
             # - Isolation Forest (40%): Statistical outlier detection
@@ -252,10 +257,10 @@ class AnomalyDetector:
         Normalize Isolation Forest anomaly score to 0-100 scale
         IF scores typically range from -0.5 (very anomalous) to 0.5 (very normal)
         
-        Balanced sensitivity: Low false positives, high anomaly detection
+        Enhanced sensitivity: Can reach 80%+ for severe anomalies
         """
-        # Balanced amplification (×2.2) - detects anomalies without over-amplifying normal behavior
-        score = score * 2.2
+        # Higher amplification (×3.5) - more sensitive to anomalies
+        score = score * 3.5
         
         if score >= 0.4:
             # Very normal: 5-15%
@@ -264,14 +269,14 @@ class AnomalyDetector:
             # Normal: 15-30%
             risk = 15 + (0.1 - score) * 50
         elif score >= -0.1:
-            # Slight deviation: 30-50%
-            risk = 30 + (-0.1 - score) * 100
+            # Slight deviation: 30-55%
+            risk = 30 + (-0.1 - score) * 125
         elif score >= -0.4:
-            # Moderate anomaly: 50-75%
-            risk = 50 + (-0.4 - score) * 83.3
+            # Moderate anomaly: 55-80%
+            risk = 55 + (-0.4 - score) * 83.3
         else:
-            # High anomaly: 75-95%
-            risk = 75 + max(-0.8 - score, 0) * 50
+            # High anomaly: 80-100%
+            risk = 80 + min(max(-0.8 - score, 0) * 50, 20)
         
         # Add minimal natural variance (±2%) for realism
         import random
@@ -284,10 +289,10 @@ class AnomalyDetector:
         Normalize One-Class SVM decision function score to 0-100 scale
         SVM scores typically range from -2.0 (very anomalous) to 2.0 (very normal)
         
-        Balanced sensitivity: Low false positives, high anomaly detection
+        Enhanced sensitivity: Can reach 80%+ for severe anomalies
         """
-        # Balanced amplification (×2.2) - detects anomalies without over-amplifying normal behavior
-        score = score * 2.2
+        # Higher amplification (×3.5) - more sensitive to anomalies
+        score = score * 3.5
         
         if score >= 1.2:
             # Very normal: 5-15%
@@ -296,14 +301,14 @@ class AnomalyDetector:
             # Normal: 15-30%
             risk = 15 + (0.4 - score) * 18.75
         elif score >= -0.4:
-            # Slight deviation: 30-50%
-            risk = 30 + (-0.4 - score) * 25
+            # Slight deviation: 30-55%
+            risk = 30 + (-0.4 - score) * 31.25
         elif score >= -1.2:
-            # Moderate anomaly: 50-75%
-            risk = 50 + (-1.2 - score) * 31.25
+            # Moderate anomaly: 55-80%
+            risk = 55 + (-1.2 - score) * 31.25
         else:
-            # High anomaly: 75-95%
-            risk = 75 + max(-2.0 - score, 0) * 25
+            # High anomaly: 80-100%
+            risk = 80 + min(max(-2.0 - score, 0) * 25, 20)
         
         # Add minimal natural variance (±2%) for realism
         import random
@@ -345,28 +350,28 @@ class AnomalyDetector:
             # This makes the score adaptive to the training data variance
             std_distance = distance / (np.mean(baseline_std) + 1e-6)
             
-            # Balanced amplification (×3.0) - more sensitive than ×2.0, less than ×5.0
-            # This detects real anomalies like fast typing, erratic mouse while keeping normal behavior low
-            std_distance = std_distance * 3.0
+            # Higher amplification (×4.0) - more sensitive to detect 80%+ risk
+            # This ensures fast typing, erratic mouse, and bot behavior can reach session lock threshold
+            std_distance = std_distance * 4.0
             
-            # Map distance to 0-100 risk scale with balanced thresholds
-            # Distance interpretation (balanced sensitivity):
+            # Map distance to 0-100 risk scale with enhanced thresholds
+            # Distance interpretation (enhanced sensitivity):
             # 0.0 - 1.0 std: Very similar (5-20% risk) - Green (Normal)
-            # 1.0 - 2.0 std: Similar (20-35% risk) - Green (Normal with variation)
-            # 2.0 - 3.0 std: Moderate difference (35-60% risk) - Orange (Moderate)
-            # 3.0 - 4.0 std: Significant difference (60-80% risk) - Orange/Red (Suspicious)
-            # 4.0+ std: Very different (80-95% risk) - Red (High risk)
+            # 1.0 - 2.0 std: Similar (20-40% risk) - Green (Normal with variation)
+            # 2.0 - 3.0 std: Moderate difference (40-65% risk) - Orange (Moderate)
+            # 3.0 - 4.0 std: Significant difference (65-85% risk) - Orange/Red (Suspicious)
+            # 4.0+ std: Very different (85-100% risk) - Red (High risk / Session Lock)
             
             if std_distance < 1.0:
                 risk = 5 + std_distance * 15  # 5-20%
             elif std_distance < 2.0:
-                risk = 20 + (std_distance - 1.0) * 15  # 20-35%
+                risk = 20 + (std_distance - 1.0) * 20  # 20-40%
             elif std_distance < 3.0:
-                risk = 35 + (std_distance - 2.0) * 25  # 35-60%
+                risk = 40 + (std_distance - 2.0) * 25  # 40-65%
             elif std_distance < 4.0:
-                risk = 60 + (std_distance - 3.0) * 20  # 60-80%
+                risk = 65 + (std_distance - 3.0) * 20  # 65-85%
             else:
-                risk = 80 + min((std_distance - 4.0) * 15, 15)  # 80-95%
+                risk = 85 + min((std_distance - 4.0) * 15, 15)  # 85-100%
             
             # Add minimal natural variance for realism (±2% instead of ±12%)
             import random

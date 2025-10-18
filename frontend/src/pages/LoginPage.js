@@ -10,6 +10,7 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [logoutMessage, setLogoutMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [recaptchaVerified, setRecaptchaVerified] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,6 +26,15 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
         email: userData.email, 
         username: userData.username
       });
+    }
+    
+    // Check for logout message from SessionManager
+    const message = sessionStorage.getItem('logoutMessage');
+    if (message) {
+      setLogoutMessage(message);
+      sessionStorage.removeItem('logoutMessage');
+      // Auto-clear message after 10 seconds
+      setTimeout(() => setLogoutMessage(''), 10000);
     }
   }, [location.state, setCurrentAuthPage]);
 
@@ -213,6 +223,21 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
               theme="light"
             />
           </div>
+
+          {logoutMessage && (
+            <div style={{
+              padding: '12px',
+              backgroundColor: '#fff3cd',
+              border: '1px solid #ffc107',
+              borderRadius: '4px',
+              color: '#856404',
+              marginBottom: '16px',
+              fontSize: '14px',
+              textAlign: 'center'
+            }}>
+              {logoutMessage}
+            </div>
+          )}
 
           {error && <div className="error">{error}</div>}
           

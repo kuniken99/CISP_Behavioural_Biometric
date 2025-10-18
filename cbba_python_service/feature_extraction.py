@@ -239,6 +239,10 @@ class FeatureExtractor:
             repetitive_clicks = 0
             tolerance = 5  # pixels
             
+            # DEBUG: Log click positions
+            print(f"[FEATURE DEBUG] Total clicks: {len(click_positions)}")
+            print(f"[FEATURE DEBUG] Click positions (first 10): {click_positions[:10]}")
+            
             for i in range(len(click_positions)):
                 same_position_clicks = 0
                 for j in range(len(click_positions)):
@@ -256,6 +260,9 @@ class FeatureExtractor:
             
             # Calculate ratio of repetitive clicks
             repetitive_click_ratio = repetitive_clicks / len(click_positions)
+            
+            # DEBUG: Log detection results
+            print(f"[FEATURE DEBUG] Repetitive clicks detected: {repetitive_clicks}/{len(click_positions)} = {repetitive_click_ratio*100:.1f}%")
         
         # Extract statistical features
         features = []

@@ -71,15 +71,16 @@ const SessionManager = () => {
             // Clear all timers
             if (checkIntervalRef.current) clearInterval(checkIntervalRef.current);
             
-            // Navigate to login with appropriate message
+            // Store logout message in sessionStorage before redirect
             const message = reason === 'manual' 
                 ? 'You have been logged out successfully.' 
                 : 'Your session has expired due to inactivity. Please log in again.';
             
-            navigate('/login', { 
-                state: { message },
-                replace: true // Use replace to avoid adding to history
-            });
+            sessionStorage.setItem('logoutMessage', message);
+            
+            // Force page reload to /login to ensure all state is cleared
+            // This is more reliable than navigate() for complete cleanup
+            window.location.href = '/login';
         }
     }, [navigate]);
 
