@@ -181,8 +181,7 @@ def train_user_profile(username, jwt_token, num_samples=20):
                 'Authorization': f'Bearer {jwt_token}',
                 'Content-Type': 'application/json'
             },
-            json={'trainingData': training_data},
-            timeout=timeout_seconds
+            json={'trainingData': training_data}
         )
         
         if response.status_code == 200:

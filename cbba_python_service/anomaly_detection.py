@@ -183,13 +183,13 @@ class AnomalyDetector:
             # - Feature deviation (30%): Direct behavioral difference measurement
             combined_risk = (if_risk * 0.4 + svm_risk * 0.3 + feature_based_risk * 0.3)
             
-            # Add LARGE variance for full 0-100% demonstration (±20% swing)
-            # This creates dramatic visible changes in the frontend
+            # Add small natural variance for realistic scoring (±3% instead of ±20%)
+            # This accounts for minor timing variations without causing false positives
             import random
-            variance = random.uniform(-20, 20)
+            variance = random.uniform(-3, 3)
             combined_risk += variance
             
-            # Ensure full 0-100 range
+            # Ensure 0-100 range
             combined_risk = np.clip(combined_risk, 0, 100)
             
             # Log the scoring details
@@ -237,30 +237,30 @@ class AnomalyDetector:
         Normalize Isolation Forest anomaly score to 0-100 scale
         IF scores typically range from -0.5 (very anomalous) to 0.5 (very normal)
         
-        HIGHLY AMPLIFIED for demonstration - shows FULL 0-100% range
+        Balanced sensitivity: Low false positives, high anomaly detection
         """
-        # TRIPLE amplification for maximum variation
-        score = score * 3.0
+        # Balanced amplification (×2.2) - detects anomalies without over-amplifying normal behavior
+        score = score * 2.2
         
-        if score >= 0.6:
-            # Very normal: 0-20%
-            risk = 10 + (0.6 - score) * 15
-        elif score >= 0.2:
-            # Normal: 20-40%
-            risk = 30 + (0.2 - score) * 25
-        elif score >= -0.2:
-            # Slight deviation: 40-60%
-            risk = 50 + (-0.2 - score) * 25
-        elif score >= -0.6:
-            # Moderate anomaly: 60-80%
-            risk = 70 + (-0.6 - score) * 25
+        if score >= 0.4:
+            # Very normal: 5-15%
+            risk = 5 + (0.4 - score) * 25
+        elif score >= 0.1:
+            # Normal: 15-30%
+            risk = 15 + (0.1 - score) * 50
+        elif score >= -0.1:
+            # Slight deviation: 30-50%
+            risk = 30 + (-0.1 - score) * 100
+        elif score >= -0.4:
+            # Moderate anomaly: 50-75%
+            risk = 50 + (-0.4 - score) * 83.3
         else:
-            # High anomaly: 80-100%
-            risk = 85 + max(-1.2 - score, 0) * 30
+            # High anomaly: 75-95%
+            risk = 75 + max(-0.8 - score, 0) * 50
         
-        # Add LARGE random variance (±8%) for demo
+        # Add minimal natural variance (±2%) for realism
         import random
-        risk += random.uniform(-8, 8)
+        risk += random.uniform(-2, 2)
         
         return np.clip(risk, 0, 100)
     
@@ -269,30 +269,30 @@ class AnomalyDetector:
         Normalize One-Class SVM decision function score to 0-100 scale
         SVM scores typically range from -2.0 (very anomalous) to 2.0 (very normal)
         
-        HIGHLY AMPLIFIED for demonstration - shows FULL 0-100% range
+        Balanced sensitivity: Low false positives, high anomaly detection
         """
-        # TRIPLE amplification for maximum variation
-        score = score * 3.0
+        # Balanced amplification (×2.2) - detects anomalies without over-amplifying normal behavior
+        score = score * 2.2
         
-        if score >= 1.8:
-            # Very normal: 0-20%
-            risk = 10 + (1.8 - score) * 10
-        elif score >= 0.6:
-            # Normal: 20-40%
-            risk = 30 + (0.6 - score) * 16.7
-        elif score >= -0.6:
-            # Slight deviation: 40-60%
-            risk = 50 + (-0.6 - score) * 16.7
-        elif score >= -1.8:
-            # Moderate anomaly: 60-80%
-            risk = 70 + (-1.8 - score) * 16.7
+        if score >= 1.2:
+            # Very normal: 5-15%
+            risk = 5 + (1.2 - score) * 16.7
+        elif score >= 0.4:
+            # Normal: 15-30%
+            risk = 15 + (0.4 - score) * 18.75
+        elif score >= -0.4:
+            # Slight deviation: 30-50%
+            risk = 30 + (-0.4 - score) * 25
+        elif score >= -1.2:
+            # Moderate anomaly: 50-75%
+            risk = 50 + (-1.2 - score) * 31.25
         else:
-            # High anomaly: 80-100%
-            risk = 85 + max(-3.0 - score, 0) * 25
+            # High anomaly: 75-95%
+            risk = 75 + max(-2.0 - score, 0) * 25
         
-        # Add LARGE random variance (±8%) for demo
+        # Add minimal natural variance (±2%) for realism
         import random
-        risk += random.uniform(-8, 8)
+        risk += random.uniform(-2, 2)
         
         return np.clip(risk, 0, 100)
     
@@ -330,32 +330,32 @@ class AnomalyDetector:
             # This makes the score adaptive to the training data variance
             std_distance = distance / (np.mean(baseline_std) + 1e-6)
             
-            # TRIPLE AMPLIFIED sensitivity for demonstration
-            # This makes even tiny behavioral changes produce FULL 0-100% variation
-            std_distance = std_distance * 5.0
+            # Balanced amplification (×3.0) - more sensitive than ×2.0, less than ×5.0
+            # This detects real anomalies like fast typing, erratic mouse while keeping normal behavior low
+            std_distance = std_distance * 3.0
             
-            # Map distance to 0-100 risk scale with MAXIMUM spread
-            # Distance interpretation (highly amplified):
-            # 0.0 - 0.5 std: Very similar (0-20% risk) - Green
-            # 0.5 - 1.0 std: Similar (20-40% risk) - Green  
-            # 1.0 - 2.0 std: Moderate difference (40-60% risk) - Orange
-            # 2.0 - 3.0 std: Significant difference (60-80% risk) - Orange
-            # 3.0+ std: Very different (80-100% risk) - Red
+            # Map distance to 0-100 risk scale with balanced thresholds
+            # Distance interpretation (balanced sensitivity):
+            # 0.0 - 1.0 std: Very similar (5-20% risk) - Green (Normal)
+            # 1.0 - 2.0 std: Similar (20-35% risk) - Green (Normal with variation)
+            # 2.0 - 3.0 std: Moderate difference (35-60% risk) - Orange (Moderate)
+            # 3.0 - 4.0 std: Significant difference (60-80% risk) - Orange/Red (Suspicious)
+            # 4.0+ std: Very different (80-95% risk) - Red (High risk)
             
-            if std_distance < 0.5:
-                risk = std_distance * 40  # 0-20%
-            elif std_distance < 1.0:
-                risk = 20 + (std_distance - 0.5) * 40  # 20-40%
+            if std_distance < 1.0:
+                risk = 5 + std_distance * 15  # 5-20%
             elif std_distance < 2.0:
-                risk = 40 + (std_distance - 1.0) * 20  # 40-60%
+                risk = 20 + (std_distance - 1.0) * 15  # 20-35%
             elif std_distance < 3.0:
-                risk = 60 + (std_distance - 2.0) * 20  # 60-80%
+                risk = 35 + (std_distance - 2.0) * 25  # 35-60%
+            elif std_distance < 4.0:
+                risk = 60 + (std_distance - 3.0) * 20  # 60-80%
             else:
-                risk = 80 + min((std_distance - 3.0) * 10, 20)  # 80-100%
+                risk = 80 + min((std_distance - 4.0) * 15, 15)  # 80-95%
             
-            # Add LARGE random variance to show "live" updates (±12%)
+            # Add minimal natural variance for realism (±2% instead of ±12%)
             import random
-            variance = random.uniform(-12, 12)
+            variance = random.uniform(-2, 2)
             risk += variance
             
             return np.clip(risk, 0, 100)
