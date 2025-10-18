@@ -60,18 +60,65 @@ function App() {
   const [showSessionLock, setShowSessionLock] = React.useState(false);
   const [detectedRiskScore, setDetectedRiskScore] = React.useState(0);
 
+  // Check session risk state on mount/refresh to prevent bypass
+  useEffect(() => {
+    const checkSessionRiskState = async () => {
+      if (!isAuthenticated) return;
+
+      try {
+        const token = localStorage.getItem('jwt_token');
+        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+        
+        const response = await fetch(`${API_BASE_URL}/api/biometric/session-risk-state`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          credentials: 'include' // Important for session cookies
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('[CBBA] Session risk state on page load:', data);
+
+          if (data.success) {
+            setDetectedRiskScore(data.riskScore);
+            
+            // Check for session lock (80%+ risk)
+            if (data.isLocked) {
+              console.log('[CBBA] Session is locked - showing SessionLock modal');
+              setShowSessionLock(true);
+            }
+            // Check for auth requirement (50-79% risk)
+            else if (data.requiresAuth && !data.authCompleted) {
+              console.log('[CBBA] Auth required - showing StepUpAuth modal');
+              setShowStepUpAuth(true);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('[CBBA] Error checking session risk state:', error);
+      }
+    };
+
+    checkSessionRiskState();
+  }, [isAuthenticated]);
+
   const handleRiskDetected = React.useCallback((action, riskScore) => {
+    console.log(`[APP] handleRiskDetected called - Action: ${action}, Risk: ${riskScore}%`);
     setDetectedRiskScore(riskScore);
     if (action === 'challenge') {
       // Moderate risk (50-79%) - Show Google Authenticator modal (StepUpAuth)
       if (riskScore >= 50 && riskScore < 80) {
+        console.log('[APP] Setting showStepUpAuth = true');
         setShowStepUpAuth(true);
       } 
       // High risk (80%+) - Show 15-minute account lockout (SessionLock)
       else if (riskScore >= 80) {
+        console.log('[APP] Setting showSessionLock = true');
         setShowSessionLock(true);
       }
     } else if (action === 'lock') {
+      console.log('[APP] Action is lock - Setting showSessionLock = true');
       setShowSessionLock(true);
     }
   }, []);
@@ -166,12 +213,11 @@ function App() {
         {/* SessionLock - High Risk (80%+) 15-Minute Account Lockout */}
         {showSessionLock && (
           <SessionLock
-            isLocked={showSessionLock}
-            onUnlock={() => {
+            show={showSessionLock}
+            onLockExpired={() => {
               setShowSessionLock(false);
-              // Optionally re-authenticate
+              handleLogout(); // Force logout after lockout expires
             }}
-            onLogout={handleLogout}
             riskScore={detectedRiskScore}
             username={currentUser}
           />

@@ -267,11 +267,5 @@
   user-select: text;
 }
 
-/* Accessibility */
-.stepup-btn-clear:focus-visible,
-.stepup-btn-verify:focus-visible,
-.stepup-input:focus-visible {
-  outline: 3px solid #D08700;
-  outline-offset: 2px;
-}
+
 

@@ -187,6 +187,26 @@ namespace db_biometrics_mvp.Backend.Controllers
 
                 if (result.Success)
                 {
+                    // Store risk state in session to persist across page refreshes
+                    HttpContext.Session.SetInt32("RiskScore", (int)result.RiskScore);
+                    HttpContext.Session.SetString("RiskLevel", result.RiskLevel);
+                    HttpContext.Session.SetString("Action", result.Action);
+                    HttpContext.Session.SetString("Username", username);
+                    
+                    // Set flag if authentication is required (50-79%)
+                    if (result.RiskScore >= 50 && result.RiskScore < 80)
+                    {
+                        HttpContext.Session.SetString("RequiresAuth", "true");
+                        HttpContext.Session.SetString("AuthCompleted", "false");
+                    }
+                    // Set lock flag for high risk (80%+)
+                    else if (result.RiskScore >= 80 || result.Action == "lock")
+                    {
+                        HttpContext.Session.SetString("IsLocked", "true");
+                        HttpContext.Session.SetString("LockStartTime", DateTime.UtcNow.ToString("o"));
+                        HttpContext.Session.SetString("LockDuration", "15"); // 15 minutes
+                    }
+
                     // Log high-risk assessments
                     if (result.RiskScore >= 70)
                     {
@@ -337,6 +357,103 @@ namespace db_biometrics_mvp.Backend.Controllers
         {
             var isHealthy = await _cbbaService.IsHealthy();
             return Ok(new { healthy = isHealthy, service = "CBBA Python Service" });
+        }
+
+        /// <summary>
+        /// Get current session risk state (for page refresh persistence)
+        /// GET /api/biometric/session-risk-state
+        /// </summary>
+        [HttpGet("session-risk-state")]
+        public IActionResult GetSessionRiskState()
+        {
+            try
+            {
+                var riskScore = HttpContext.Session.GetInt32("RiskScore");
+                var riskLevel = HttpContext.Session.GetString("RiskLevel");
+                var action = HttpContext.Session.GetString("Action");
+                var requiresAuth = HttpContext.Session.GetString("RequiresAuth");
+                var authCompleted = HttpContext.Session.GetString("AuthCompleted");
+                var isLocked = HttpContext.Session.GetString("IsLocked");
+                var lockStartTime = HttpContext.Session.GetString("LockStartTime");
+                var lockDuration = HttpContext.Session.GetString("LockDuration");
+
+                if (riskScore.HasValue)
+                {
+                    return Ok(new
+                    {
+                        success = true,
+                        riskScore = riskScore.Value,
+                        riskLevel = riskLevel ?? "unknown",
+                        action = action ?? "monitor",
+                        requiresAuth = requiresAuth == "true",
+                        authCompleted = authCompleted == "true",
+                        isLocked = isLocked == "true",
+                        lockStartTime = lockStartTime,
+                        lockDuration = int.TryParse(lockDuration, out int duration) ? duration : 15
+                    });
+                }
+                else
+                {
+                    return Ok(new
+                    {
+                        success = false,
+                        message = "No risk state found in session"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error getting session risk state: {ex.Message}");
+                return StatusCode(500, new { success = false, error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Clear authentication requirement after successful verification
+        /// POST /api/biometric/clear-auth-requirement
+        /// </summary>
+        [HttpPost("clear-auth-requirement")]
+        public IActionResult ClearAuthRequirement()
+        {
+            try
+            {
+                HttpContext.Session.SetString("RequiresAuth", "false");
+                HttpContext.Session.SetString("AuthCompleted", "true");
+                _logger.LogInformation($"Auth requirement cleared for session {HttpContext.Session.Id}");
+                
+                return Ok(new { success = true, message = "Auth requirement cleared" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error clearing auth requirement: {ex.Message}");
+                return StatusCode(500, new { success = false, error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Clear session lock after timeout expires
+        /// POST /api/biometric/clear-lock
+        /// </summary>
+        [HttpPost("clear-lock")]
+        public IActionResult ClearLock()
+        {
+            try
+            {
+                HttpContext.Session.SetString("IsLocked", "false");
+                HttpContext.Session.Remove("LockStartTime");
+                HttpContext.Session.Remove("LockDuration");
+                HttpContext.Session.Remove("RiskScore");
+                HttpContext.Session.Remove("RiskLevel");
+                HttpContext.Session.Remove("Action");
+                _logger.LogInformation($"Session lock cleared for session {HttpContext.Session.Id}");
+                
+                return Ok(new { success = true, message = "Lock cleared" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error clearing lock: {ex.Message}");
+                return StatusCode(500, new { success = false, error = ex.Message });
+            }
         }
 
         private int GetUserIdFromClaims()

@@ -306,6 +306,10 @@ namespace db_biometrics_mvp.Backend.Controllers
                 // Log successful verification
                 await LogModerateRiskEvent(userId, dto.RiskScore, true);
 
+                // Clear the authentication requirement in session
+                HttpContext.Session.SetString("RequiresAuth", "false");
+                HttpContext.Session.SetString("AuthCompleted", "true");
+
                 // Create audit log entry
                 var auditLog = new AuditLog
                 {

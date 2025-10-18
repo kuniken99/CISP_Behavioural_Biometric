@@ -83,6 +83,16 @@ namespace db_biometrics_mvp.Backend
             // Register the Two-Factor Authentication service
             services.AddScoped<ITwoFactorAuthService, TwoFactorAuthService>();
 
+            // Configure Session with in-memory cache
+            services.AddDistributedMemoryCache(); // Required for session storage
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30); // Session timeout after 30 minutes of inactivity
+                options.Cookie.HttpOnly = true; // Make the session cookie HTTP-only for security
+                options.Cookie.IsEssential = true; // Mark as essential for GDPR compliance
+                options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax; // CSRF protection
+            });
+
             // Configure CORS
            
 
@@ -121,6 +131,9 @@ namespace db_biometrics_mvp.Backend
 
             // Use the CORS middleware before Authentication and Authorization
             app.UseCors("FrontendPolicy");
+
+            // Enable Session middleware (must be before authentication)
+            app.UseSession();
 
             // Enable Authentication and Authorization middleware
             app.UseAuthentication();
