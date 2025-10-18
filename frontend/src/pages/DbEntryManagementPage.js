@@ -87,12 +87,20 @@ const DbEntryManagementPage = () => {
       const data = await response.json();
       if (response.ok) {
         alert(data.message);
+        setNewEntryData({}); // Clear form after successful add
         fetchEntries(selectedTable);
       } else {
-        setError(data.message || 'Failed to add entry.');
+        // Show detailed error message to user
+        const errorMsg = data.message || data.error || 'Failed to add entry.';
+        setError(errorMsg);
+        alert(`Error: ${errorMsg}`);
+        console.error('Add entry error:', data);
       }
     } catch (err) {
-      setError('Network error adding entry.');
+      const errorMsg = 'Network error adding entry: ' + err.message;
+      setError(errorMsg);
+      alert(errorMsg);
+      console.error('Network error:', err);
     }
   };
 

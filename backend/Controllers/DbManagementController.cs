@@ -196,13 +196,13 @@ namespace db_biometrics_mvp.Backend.Controllers
         {
             if (string.IsNullOrEmpty(dto.TableName))
             {
-                return BadRequest("Table name is required.");
+                return BadRequest(new { error = "Table name is required." });
             }
 
             // Users table is read-only for security
             if (dto.TableName.ToLower() == "users")
             {
-                return BadRequest("Adding users is not allowed for security reasons.");
+                return BadRequest(new { error = "Adding users is not allowed for security reasons." });
             }
 
             // Handle Products and Orders with proper field validation
@@ -212,7 +212,7 @@ namespace db_biometrics_mvp.Backend.Controllers
                     // Validate required fields for Products table
                     if (!dto.Entry.ContainsKey("name") || !dto.Entry.ContainsKey("price") || !dto.Entry.ContainsKey("stock"))
                     {
-                        return BadRequest("Products table requires 'name', 'price', and 'stock' fields.");
+                        return BadRequest(new { error = "Products table requires 'name', 'price', and 'stock' fields." });
                     }
 
                     var productEntry = new TableEntry 
@@ -238,7 +238,7 @@ namespace db_biometrics_mvp.Backend.Controllers
                     // Validate required fields for Orders table
                     if (!dto.Entry.ContainsKey("product_id") || !dto.Entry.ContainsKey("user_id") || !dto.Entry.ContainsKey("quantity"))
                     {
-                        return BadRequest("Orders table requires 'product_id', 'user_id', and 'quantity' fields.");
+                        return BadRequest(new { error = "Orders table requires 'product_id', 'user_id', and 'quantity' fields." });
                     }
 
                     var orderEntry = new TableEntry 
@@ -262,7 +262,7 @@ namespace db_biometrics_mvp.Backend.Controllers
                     return Ok(new { message = $"Order added successfully with ID: {orderEntry.Id}" });
 
                 default:
-                    return BadRequest($"Table '{dto.TableName}' is not supported for adding entries.");
+                    return BadRequest(new { error = $"Table '{dto.TableName}' is not supported for adding entries." });
             }
         }
 

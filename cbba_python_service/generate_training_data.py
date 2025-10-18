@@ -148,7 +148,7 @@ def generate_training_session(session_type='normal'):
         'mouse_data': mouse_data
     }
 
-def train_user_profile(username, jwt_token, num_samples=20):
+def train_user_profile(username, num_samples=60):
     """Train user profile with diverse behavioral data"""
     
     print(f"\n{'='*60}")
@@ -158,7 +158,7 @@ def train_user_profile(username, jwt_token, num_samples=20):
     # Generate diverse training sessions
     training_data = []
     
-    # Mix of different behavioral patterns
+    # Mix of different behavioral patterns for DIVERSE training
     session_types = ['normal', 'fast_typing', 'slow_typing', 'erratic_mouse', 'fast_interaction']
     
     print(f"Generating {num_samples} diverse training samples...\n")
@@ -174,14 +174,16 @@ def train_user_profile(username, jwt_token, num_samples=20):
     print(f"{'='*60}\n")
     
     try:
-        # Send to backend API
+        # Send to CBBA Python service (direct, no JWT needed)
         response = requests.post(
-            'http://localhost:5000/api/Biometric/train',
+            'http://localhost:5001/api/cbba/train',
             headers={
-                'Authorization': f'Bearer {jwt_token}',
                 'Content-Type': 'application/json'
             },
-            json={'trainingData': training_data},
+            json={
+                'user_id': username,
+                'training_data': training_data
+            },
             timeout=120  # 2 minute timeout for training
         )
         
@@ -189,10 +191,11 @@ def train_user_profile(username, jwt_token, num_samples=20):
             result = response.json()
             print(f"✓ Training Successful!\n")
             print(f"Results:")
-            print(f"  • Samples trained: {result.get('samplesTrained', num_samples)}")
+            print(f"  • User ID: {result.get('user_id', username)}")
+            print(f"  • Samples trained: {result.get('samples_trained', num_samples)}")
             print(f"  • Profile status: {result.get('status', 'trained')}")
-            print(f"  • User ID: {result.get('userId', username)}")
-            print(f"  • Model ready: Yes")
+            print(f"  • Model type: Isolation Forest + One-Class SVM")
+            print(f"  • Training patterns: Mixed (normal, fast, slow, erratic)")
             print(f"\n{'='*60}")
             print(f"Model is now ready for dynamic 0-100% risk scoring!")
             print(f"{'='*60}\n")
@@ -205,10 +208,10 @@ def train_user_profile(username, jwt_token, num_samples=20):
             
     except requests.exceptions.ConnectionError:
         print(f"✗ Connection Error!\n")
-        print(f"Could not connect to backend at http://localhost:5000")
-        print(f"Make sure the backend service is running:\n")
-        print(f"  cd E:\\CISP_Behavioural_Biometric\\backend")
-        print(f"  dotnet run\n")
+        print(f"Could not connect to CBBA service at http://localhost:5001")
+        print(f"Make sure the Python service is running:\n")
+        print(f"  cd E:\\CISP_Behavioural_Biometric\\cbba_python_service")
+        print(f"  python app.py\n")
         return False
     except Exception as e:
         print(f"✗ Training Error!\n")
@@ -218,35 +221,35 @@ def train_user_profile(username, jwt_token, num_samples=20):
 def print_usage():
     """Print usage instructions"""
     print("\n" + "="*60)
-    print("CBBA Model Training Data Generator")
+    print("CBBA Model Training - Production Grade")
     print("="*60 + "\n")
     print("Usage:")
-    print("  python generate_training_data.py <username> <jwt_token> [num_samples]\n")
+    print("  python generate_training_data.py <username> [num_samples]\n")
     print("Parameters:")
     print("  username     - Your username (e.g., tank108)")
-    print("  jwt_token    - Your JWT authentication token")
-    print("  num_samples  - Number of training samples (default: 50, minimum: 50)\n")
-    print("Example:")
-    print("  python generate_training_data.py tank108 eyJhbGciOi... 50\n")
-    print("How to get your JWT token:")
-    print("  1. Login to the application")
-    print("  2. Open browser console (F12)")
-    print("  3. Run: localStorage.getItem('jwt_token')")
-    print("  4. Copy the token (without quotes)\n")
+    print("  num_samples  - Number of training samples (default: 60, minimum: 50)\n")
+    print("Examples:")
+    print("  python generate_training_data.py tank108")
+    print("  python generate_training_data.py tank108 100")
+    print("  python generate_training_data.py admin 80\n")
+    print("Features:")
+    print("  ✓ Diverse behavioral patterns (normal, fast, slow, erratic)")
+    print("  ✓ Production-grade training data")
+    print("  ✓ More realistic variation than simple training")
+    print("  ✓ Better baseline calibration\n")
     print("="*60 + "\n")
 
 if __name__ == '__main__':
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 2:
         print_usage()
         sys.exit(1)
     
     username = sys.argv[1]
-    jwt_token = sys.argv[2]
-    num_samples = int(sys.argv[3]) if len(sys.argv) > 3 else 50
+    num_samples = int(sys.argv[2]) if len(sys.argv) > 2 else 60
     
     # Validate inputs
-    if not username or not jwt_token:
-        print("Error: Username and JWT token are required!\n")
+    if not username:
+        print("Error: Username is required!\n")
         print_usage()
         sys.exit(1)
     
@@ -256,13 +259,13 @@ if __name__ == '__main__':
         sys.exit(1)
     
     # Run training
-    success = train_user_profile(username, jwt_token, num_samples)
+    success = train_user_profile(username, num_samples)
     
     if success:
         print("Next steps:")
-        print("  1. Refresh your browser")
-        print("  2. Interact with the application")
-        print("  3. Watch risk scores vary dynamically (0-100%)")
+        print("  1. Refresh your browser (Ctrl+Shift+R)")
+        print("  2. Login and interact with the application")
+        print("  3. Watch risk scores vary dynamically (should be 10-30% for normal)")
         print("  4. Check console for: [CBBA] Combined: XX.X%\n")
         sys.exit(0)
     else:

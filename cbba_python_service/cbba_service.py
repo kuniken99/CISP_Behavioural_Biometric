@@ -152,16 +152,28 @@ class CBBAService:
                 keystroke_data = session.get('keystroke_data', [])
                 mouse_data = session.get('mouse_data', [])
                 
+                # Always extract features (returns zero-padded arrays if empty)
                 keystroke_features = self.feature_extractor.extract_keystroke_features(keystroke_data)
                 mouse_features = self.feature_extractor.extract_mouse_features(mouse_data)
+                
+                # Ensure consistent dimensions (10 keystroke + 13 mouse = 23 total)
+                if len(keystroke_features) != 10:
+                    keystroke_features = np.zeros(10)
+                if len(mouse_features) != 13:
+                    mouse_features = np.zeros(13)
+                
                 combined_features = self.feature_extractor.combine_features(
                     keystroke_features,
                     mouse_features
                 )
                 
+                # Verify combined feature vector is correct dimension
+                if len(combined_features) != 23:
+                    raise ValueError(f"Feature vector has incorrect dimension: {len(combined_features)} (expected 23)")
+                
                 feature_vectors.append(combined_features)
             
-            # Convert to numpy array
+            # Convert to numpy array (should now have consistent shape)
             feature_matrix = np.array(feature_vectors)
             
             # Train anomaly detector

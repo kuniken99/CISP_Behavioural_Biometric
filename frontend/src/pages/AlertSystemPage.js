@@ -37,15 +37,29 @@ const AlertSystemPage = () => {
         });
         const data = await response.json();
         if (response.ok) {
-          // Transform the data to match expected format
-          const transformedAlerts = data.map(alert => ({
-            id: `ALT-${alert.id.toString().padStart(3, '0')}`,
-            timestamp: new Date(alert.timestamp).toLocaleString(),
-            type: alert.type,
-            message: alert.message,
-            severity: alert.severity,
-            status: alert.status
-          }));
+          // Transform the data to match expected format with GMT+8 timezone
+          const transformedAlerts = data.map(alert => {
+            // Convert UTC timestamp to GMT+8 (Singapore time)
+            const utcDate = new Date(alert.timestamp);
+            const gmt8Date = new Date(utcDate.getTime() + (8 * 60 * 60 * 1000)); // Add 8 hours
+            
+            return {
+              id: `ALT-${alert.id.toString().padStart(3, '0')}`,
+              timestamp: gmt8Date.toLocaleString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+              }),
+              type: alert.type,
+              message: alert.message,
+              severity: alert.severity,
+              status: alert.status
+            };
+          });
           setAlerts(transformedAlerts);
         } else {
           setError(data.message || 'Failed to fetch alerts.');

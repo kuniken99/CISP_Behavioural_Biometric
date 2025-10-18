@@ -32,7 +32,7 @@ class Config:
     ONE_CLASS_SVM_GAMMA = 'auto'
     
     # Training parameters
-    MIN_TRAINING_SAMPLES = 50  # Minimum samples needed for initial training
+    MIN_TRAINING_SAMPLES = 10  # Minimum samples needed for initial training (lowered for development)
     TRAINING_WINDOW_SIZE = 100  # Number of recent samples to use for training
     
     # Feature extraction parameters
