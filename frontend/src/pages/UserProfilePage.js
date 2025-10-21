@@ -208,46 +208,51 @@ const UserProfilePage = ({ currentUser, userRole }) => {
 
             {/* Email Address - Inline */}
             <div style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'space-between',
               paddingBottom: '16px', 
               borderBottom: '1px solid #e5e7eb',
               marginBottom: '16px'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <label style={{ 
-                  fontWeight: 'bold', 
-                  color: '#111827', 
-                  minWidth: '130px',
-                  fontSize: '16px'
-                }}>
-                  Email Address
-                </label>
-                <span style={{ 
-                  color: '#6b7280', 
-                  fontSize: '16px'
-                }}>
-                  {userProfile.email}
-                </span>
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'space-between',
+                marginBottom: showChangeEmail ? '12px' : '0'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <label style={{ 
+                    fontWeight: 'bold', 
+                    color: '#111827', 
+                    minWidth: '130px',
+                    fontSize: '16px'
+                  }}>
+                    Email Address
+                  </label>
+                  <span style={{ 
+                    color: '#6b7280', 
+                    fontSize: '16px'
+                  }}>
+                    {userProfile.email}
+                  </span>
+                </div>
+                {!showChangeEmail && (
+                  <button 
+                    type="button"
+                    onClick={() => setShowChangeEmail(true)}
+                    style={{
+                      color: '#2563eb',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      textDecoration: 'underline'
+                    }}
+                  >
+                    Change
+                  </button>
+                )}
               </div>
-              {!showChangeEmail ? (
-                <button 
-                  type="button"
-                  onClick={() => setShowChangeEmail(true)}
-                  style={{
-                    color: '#2563eb',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    textDecoration: 'underline'
-                  }}
-                >
-                  Change
-                </button>
-              ) : (
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              {showChangeEmail && (
+                <div style={{ marginLeft: '130px' }}>
                   <input
                     type="email"
                     value={newEmail}
@@ -257,113 +262,128 @@ const UserProfilePage = ({ currentUser, userRole }) => {
                       padding: '6px 12px',
                       border: '1px solid #d1d5db',
                       borderRadius: '4px',
-                      fontSize: '14px'
+                      fontSize: '14px',
+                      width: '300px',
+                      marginBottom: '8px',
+                      display: 'block'
                     }}
                   />
-                  <button 
-                    type="button" 
-                    onClick={handleEmailChange}
-                    style={{
-                      padding: '6px 12px',
-                      backgroundColor: '#10b981',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      fontSize: '12px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Save
-                  </button>
-                  <button 
-                    type="button" 
-                    onClick={() => setShowChangeEmail(false)}
-                    style={{
-                      padding: '6px 12px',
-                      backgroundColor: '#6b7280',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      fontSize: '12px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Cancel
-                  </button>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button 
+                      type="button" 
+                      onClick={handleEmailChange}
+                      style={{
+                        padding: '6px 12px',
+                        backgroundColor: '#10b981',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Save
+                    </button>
+                    <button 
+                      type="button" 
+                      onClick={() => {
+                        setShowChangeEmail(false);
+                        setNewEmail('');
+                      }}
+                      style={{
+                        padding: '6px 12px',
+                        backgroundColor: '#6b7280',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
 
             {/* Password - Inline */}
             <div style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'space-between',
               paddingBottom: '16px', 
               borderBottom: '1px solid #e5e7eb',
               marginBottom: '16px'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <label style={{ 
-                  fontWeight: 'bold', 
-                  color: '#111827', 
-                  minWidth: '130px',
-                  fontSize: '16px'
-                }}>
-                  Password
-                </label>
-                <span style={{ 
-                  color: '#6b7280', 
-                  fontSize: '16px'
-                }}>
-                  **********
-                </span>
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'space-between',
+                marginBottom: showChangePassword ? '12px' : '0'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <label style={{ 
+                    fontWeight: 'bold', 
+                    color: '#111827', 
+                    minWidth: '130px',
+                    fontSize: '16px'
+                  }}>
+                    Password
+                  </label>
+                  <span style={{ 
+                    color: '#6b7280', 
+                    fontSize: '16px'
+                  }}>
+                    **********
+                  </span>
+                </div>
+                {!showChangePassword && (
+                  <button 
+                    type="button"
+                    onClick={() => setShowChangePassword(true)}
+                    style={{
+                      color: '#2563eb',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      textDecoration: 'underline'
+                    }}
+                  >
+                    Change
+                  </button>
+                )}
               </div>
-              {!showChangePassword ? (
-                <button 
-                  type="button"
-                  onClick={() => setShowChangePassword(true)}
-                  style={{
-                    color: '#2563eb',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    textDecoration: 'underline'
-                  }}
-                >
-                  Change
-                </button>
-              ) : (
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexDirection: 'column' }}>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <input
-                      type="password"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      placeholder="Enter new password"
-                      style={{
-                        padding: '6px 12px',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '4px',
-                        fontSize: '14px',
-                        width: '150px'
-                      }}
-                    />
-                    <input
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="Confirm password"
-                      style={{
-                        padding: '6px 12px',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '4px',
-                        fontSize: '14px',
-                        width: '150px'
-                      }}
-                    />
-                  </div>
+              {showChangePassword && (
+                <div style={{ marginLeft: '130px' }}>
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Enter new password"
+                    style={{
+                      padding: '6px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '4px',
+                      fontSize: '14px',
+                      width: '300px',
+                      marginBottom: '8px',
+                      display: 'block'
+                    }}
+                  />
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm password"
+                    style={{
+                      padding: '6px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '4px',
+                      fontSize: '14px',
+                      width: '300px',
+                      marginBottom: '8px',
+                      display: 'block'
+                    }}
+                  />
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button 
                       type="button"
@@ -382,7 +402,11 @@ const UserProfilePage = ({ currentUser, userRole }) => {
                     </button>
                     <button 
                       type="button"
-                      onClick={() => setShowChangePassword(false)}
+                      onClick={() => {
+                        setShowChangePassword(false);
+                        setNewPassword('');
+                        setConfirmPassword('');
+                      }}
                       style={{
                         padding: '6px 12px',
                         backgroundColor: '#6b7280',

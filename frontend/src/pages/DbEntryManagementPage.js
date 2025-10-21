@@ -15,6 +15,53 @@ const DbEntryManagementPage = () => {
   const [newEntryData, setNewEntryData] = useState({});
   const [editingEntryId, setEditingEntryId] = useState(null);
   const [editingEntryData, setEditingEntryData] = useState({});
+  const [passwordStrength, setPasswordStrength] = useState({
+    score: 0,
+    label: '',
+    color: '#dc2626',
+    requirements: {
+      minLength: false,
+      hasUppercase: false,
+      hasLowercase: false,
+      hasNumbers: false,
+      hasSpecialChars: false
+    }
+  });
+
+  const checkPasswordStrength = (password) => {
+    const requirements = {
+      minLength: password.length >= 12,
+      hasUppercase: /[A-Z]/.test(password),
+      hasLowercase: /[a-z]/.test(password),
+      hasNumbers: /[0-9]/.test(password),
+      hasSpecialChars: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    };
+
+    const metRequirements = Object.values(requirements).filter(Boolean).length;
+    let score = 0;
+    let label = '';
+    let color = '#dc2626';
+
+    if (password.length === 0) {
+      score = 0;
+      label = '';
+      color = '#dc2626';
+    } else if (metRequirements <= 2) {
+      score = 1;
+      label = 'Weak';
+      color = '#dc2626';
+    } else if (metRequirements <= 3) {
+      score = 2;
+      label = 'Medium';
+      color = '#f59e0b';
+    } else if (metRequirements >= 4) {
+      score = 3;
+      label = 'Strong';
+      color = '#10b981';
+    }
+
+    return { score, label, color, requirements };
+  };
 
   useEffect(() => {
     const fetchTables = async () => {
@@ -74,6 +121,28 @@ const DbEntryManagementPage = () => {
 
   const handleAddEntry = async () => {
     setError('');
+    
+    // Validate password strength for Users table
+    if (selectedTable.toLowerCase() === 'users' && newEntryData.password) {
+      const strength = checkPasswordStrength(newEntryData.password);
+      
+      if (!strength.requirements.minLength) {
+        setError('Password must be at least 12 characters long');
+        return;
+      }
+
+      const unmetRequirements = [];
+      if (!strength.requirements.hasUppercase) unmetRequirements.push('uppercase letters');
+      if (!strength.requirements.hasLowercase) unmetRequirements.push('lowercase letters');
+      if (!strength.requirements.hasNumbers) unmetRequirements.push('numbers');
+      if (!strength.requirements.hasSpecialChars) unmetRequirements.push('special characters');
+
+      if (unmetRequirements.length > 1) {
+        setError('Password must include at least 3 of the following: uppercase letters, lowercase letters, numbers, and special characters');
+        return;
+      }
+    }
+    
     try {
       const token = localStorage.getItem('jwt_token');
       const response = await fetch(`${API_BASE_URL}/DbManagement/add-entry`, {
@@ -205,7 +274,7 @@ const DbEntryManagementPage = () => {
       <div className="card">
         <h2>Select Table</h2>
         <form onSubmit={(e) => { e.preventDefault(); return false; }}>
-          <div className="form-group">
+          <div className="form-group" style={{marginBottom: '5px'}}>
             <div style={{ position: 'relative', display: 'inline-block', width: '250px' }}>
               <select 
                 value={selectedTable} 
@@ -371,9 +440,13 @@ const DbEntryManagementPage = () => {
                 <label>password: <span style={{ color: 'red' }}>*</span></label>
                 <input
                   type="password"
-                  placeholder="Enter password"
+                  placeholder="Enter password (min. 12 characters)"
                   value={newEntryData['password'] || ''}
-                  onChange={(e) => setNewEntryData({ ...newEntryData, password: e.target.value })}
+                  onChange={(e) => {
+                    setNewEntryData({ ...newEntryData, password: e.target.value });
+                    const strength = checkPasswordStrength(e.target.value);
+                    setPasswordStrength(strength);
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault();
@@ -382,8 +455,56 @@ const DbEntryManagementPage = () => {
                       return false;
                     }
                   }}
-                  style={{ borderColor: '#ff6b6b' }}
                 />
+                
+                {/* Password Strength Indicator */}
+                {newEntryData['password'] && (
+                  <div style={{ marginTop: '8px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                      <span style={{ fontSize: '16px', color: '#6b7280' }}>Password Strength</span>
+                      <span style={{ fontSize: '16px', fontWeight: '600', color: passwordStrength.color }}>
+                        {passwordStrength.label}
+                      </span>
+                    </div>
+                    
+                    <div style={{ 
+                      width: '100%', 
+                      height: '4px', 
+                      backgroundColor: '#e5e7eb', 
+                      borderRadius: '2px', 
+                      overflow: 'hidden',
+                      marginBottom: '8px'
+                    }}>
+                      <div style={{ 
+                        width: `${(passwordStrength.score / 3) * 100}%`,
+                        height: '100%',
+                        backgroundColor: passwordStrength.color,
+                        transition: 'width 0.3s ease, background-color 0.3s ease'
+                      }}></div>
+                    </div>
+                    
+                    <div style={{ fontSize: '15px', color: '#6b7280' }}>
+                      <div style={{ fontWeight: '600', marginBottom: '4px' }}>Requirements:</div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px' }}>
+                        <div style={{ color: passwordStrength.requirements.minLength ? '#10b981' : '#ef4444' }}>
+                          <span>{passwordStrength.requirements.minLength ? '✓' : '✗'}</span> 12+ characters
+                        </div>
+                        <div style={{ color: passwordStrength.requirements.hasUppercase ? '#10b981' : '#ef4444' }}>
+                          <span>{passwordStrength.requirements.hasUppercase ? '✓' : '✗'}</span> Uppercase (A-Z)
+                        </div>
+                        <div style={{ color: passwordStrength.requirements.hasLowercase ? '#10b981' : '#ef4444' }}>
+                          <span>{passwordStrength.requirements.hasLowercase ? '✓' : '✗'}</span> Lowercase (a-z)
+                        </div>
+                        <div style={{ color: passwordStrength.requirements.hasNumbers ? '#10b981' : '#ef4444' }}>
+                          <span>{passwordStrength.requirements.hasNumbers ? '✓' : '✗'}</span> Numbers (0-9)
+                        </div>
+                        <div style={{ color: passwordStrength.requirements.hasSpecialChars ? '#10b981' : '#ef4444', gridColumn: 'span 2' }}>
+                          <span>{passwordStrength.requirements.hasSpecialChars ? '✓' : '✗'}</span> Special characters (!@#$%^&*)
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </form>

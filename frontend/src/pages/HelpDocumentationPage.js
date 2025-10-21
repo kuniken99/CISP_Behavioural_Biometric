@@ -4,7 +4,7 @@ import HelpIcon from '../assets/help-icon.svg';
 const HelpDocumentationPage = () => (
   <div className="card">
     <div style={{ paddingBottom: '20px', borderBottom: '1px solid #e5e7eb', marginBottom: '20px' }}>
-      <h3>Dashboard</h3>
+      <h3 style={{marginTop: '0'}}>Dashboard</h3>
       <p>Provides a quick overview of database health and performance metrics.</p>
     </div>
     
