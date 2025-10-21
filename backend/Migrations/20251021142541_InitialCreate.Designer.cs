@@ -12,8 +12,8 @@ using db_biometrics_mvp.Backend.Data;
 namespace db_biometrics_mvp.Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251016070611_AddFailedLoginTracking")]
-    partial class AddFailedLoginTracking
+    [Migration("20251021142541_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -152,8 +152,27 @@ namespace db_biometrics_mvp.Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("EncryptedProfile")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EncryptionAlgorithm")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EncryptionKeyId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FeatureWeights")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<bool>("IsTrained")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("IsolationForestParams")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("KeystrokeProfile")
                         .IsRequired()
@@ -173,6 +192,9 @@ namespace db_biometrics_mvp.Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("OneClassSVMParams")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PreferredClickPatterns")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -185,12 +207,21 @@ namespace db_biometrics_mvp.Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("SVMParams")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SampleCount")
+                        .HasColumnType("int");
+
                     b.Property<int>("SessionCount")
                         .HasColumnType("int");
 
                     b.Property<decimal>("ThresholdScore")
                         .HasPrecision(18, 6)
                         .HasColumnType("decimal(18,6)");
+
+                    b.Property<DateTime?>("TrainedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("TypingRhythm")
                         .IsRequired()
@@ -995,7 +1026,7 @@ namespace db_biometrics_mvp.Backend.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 10, 16, 7, 6, 6, 93, DateTimeKind.Utc).AddTicks(5811),
+                            CreatedAt = new DateTime(2025, 10, 21, 14, 25, 35, 705, DateTimeKind.Utc).AddTicks(4493),
                             Email = "admin@system.com",
                             FailedLoginAttempts = 0,
                             IsActive = true,
@@ -1009,7 +1040,7 @@ namespace db_biometrics_mvp.Backend.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 10, 16, 7, 6, 6, 93, DateTimeKind.Utc).AddTicks(6792),
+                            CreatedAt = new DateTime(2025, 10, 21, 14, 25, 35, 705, DateTimeKind.Utc).AddTicks(5260),
                             Email = "37256v4t@psba.edu.sg",
                             FailedLoginAttempts = 0,
                             IsActive = true,
@@ -1023,7 +1054,7 @@ namespace db_biometrics_mvp.Backend.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 10, 16, 7, 6, 6, 93, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 10, 21, 14, 25, 35, 705, DateTimeKind.Utc).AddTicks(5263),
                             Email = "ktan8563@gmail.com",
                             FailedLoginAttempts = 0,
                             IsActive = true,
