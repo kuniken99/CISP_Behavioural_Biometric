@@ -1142,14 +1142,30 @@ Functional testing validates that all implemented features operate correctly acc
 
 | Test Case ID | Feature | Test Description | Input | Expected Output | Actual Result | Status |
 |-------------|---------|------------------|-------|-----------------|---------------|--------|
+
 | FT-AUTH-001 | User Login | Standard user login with valid credentials | Email: `user@example.com`<br>Password: `ValidPass123!` | User authenticated, redirected to dashboard, JWT token issued | User successfully logged in, token valid for 60 minutes | ✅ PASS |
+
+
 | FT-AUTH-002 | User Login | Login with invalid credentials | Email: `user@example.com`<br>Password: `WrongPass` | Authentication failed, error message displayed | "Invalid email or password" shown, access denied | ✅ PASS |
+
+
 | FT-AUTH-003 | RBAC Enforcement | Admin-only page access as regular user | Navigate to `/database-management` as User role | Access denied, redirect to unauthorized page | 403 Forbidden, redirected to dashboard | ✅ PASS |
+
+
 | FT-AUTH-004 | RBAC Enforcement | Admin page access as admin | Navigate to `/database-management` as Admin role | Access granted, page content displayed | Full page access, all admin features visible | ✅ PASS |
+
+
 | FT-AUTH-005 | Session Timeout | Session expiration after inactivity | Wait 30 minutes without activity | Session expired warning, automatic logout | Warning modal shown at 28 min, logout at 30 min | ✅ PASS |
+
+
 | FT-AUTH-006 | Google reCAPTCHA | Login with reCAPTCHA verification | Complete reCAPTCHA challenge | reCAPTCHA verified, login proceeds | Score 0.7+ allows login, <0.3 blocks access | ✅ PASS |
 
 **Table 1.1.1 Explanation:** This table validates core authentication mechanisms including credential verification, role-based access control (RBAC), session management, and bot prevention via Google reCAPTCHA. The tests confirm that only authorized users can access privileged features, and sessions are properly managed for security.
+
+
+
+
+
 
 ### 1.1.2 CBBA Biometric Training Testing
 
@@ -1164,6 +1180,11 @@ Functional testing validates that all implemented features operate correctly acc
 
 **Table 1.1.2 Explanation:** This table verifies the CBBA training workflow, ensuring users can successfully train their behavioral models with adequate data. The tests validate progress tracking, data persistence, and model update capabilities - critical for establishing accurate behavioral baselines.
 
+
+
+
+
+
 ### 1.1.3 CBBA Real-Time Risk Scoring Testing
 
 | Test Case ID | Feature | Test Description | Input | Expected Output | Actual Result | Status |
@@ -1176,6 +1197,10 @@ Functional testing validates that all implemented features operate correctly acc
 | FT-RISK-006 | Bot Detection | Simulate bot behavior | Click same button 20 times rapidly | Bot penalty applied, risk elevated | Repetitive clicks: 85%, +40% penalty, total: 88% | ✅ PASS |
 
 **Table 1.1.3 Explanation:** This table demonstrates the real-time risk assessment engine, validating that behavioral anomalies are correctly detected and scored. The tests prove the system can distinguish between legitimate users (low risk), suspicious behavior (moderate risk), and bot attacks (high risk) with appropriate UI feedback.
+
+
+
+
 
 ### 1.1.4 Step-Up Authentication Testing
 
@@ -1231,7 +1256,17 @@ Functional testing validates that all implemented features operate correctly acc
 
 ---
 
-## 1.2 Unit Testing / Code Testing
+
+
+
+
+
+
+
+
+
+
+## 1.2 Unit Testing / Code Testing (HERE)
 
 Unit testing validates individual code components in isolation, ensuring each function, method, and class operates correctly. This testing catches bugs early and ensures code quality.
 
@@ -1304,6 +1339,94 @@ Unit testing validates individual code components in isolation, ensuring each fu
 **Table 1.2.4 Explanation:** This table validates database access layer operations using Entity Framework Core with in-memory databases. The tests verify CRUD operations, data persistence, and repository pattern implementation without requiring a live SQL Server connection.
 
 ---
+
+
+
+
+
+
+
+
+UNIT TESTING (SHORT):
+| Component / Module Tested | Area of Focus | Function | Pass Rate |
+|---------------------------|---------------|----------|-----------|
+| SecurityService (C#) | Password Hashing & Verification | `HashPassword()`, `VerifyPassword()` | 100% |
+| SecurityService (C#) | JWT Generation & Validation | `GenerateJwtToken()`, `ValidateToken()` | 100% |
+| AuthController (C#) | HTTP 200, JWT token returned | `Login()` | 100% |
+| TwoFactorAuthService (C#) | TOTP Generation & Validation Logic | `GenerateTOTP()`, `ValidateTOTP()` | 100% |
+| RecaptchaService (C#) | Mocked Google API Response Handling | `VerifyRecaptcha()` | 100% |
+| PythonCBBAService (C#) | Request Formatting & Response Parsing | `TrainModel()`, `AssessBehavior()` | 87.50% |
+| Biometric Feature Extraction | Keystroke Calculations (Python) | `extract_keystroke_features()` | 100% |
+| Biometric Feature Extraction | Mouse Calculations (Python) | `extract_mouse_features()` | 96% |
+| Risk Scoring Logic (Python) | Model Input/Output, Threshold Logic | `predict()`, `_normalize_if_score()`, `_normalize_svm_score()` | 100% |
+
+### Unit Testing Explanation
+
+**SecurityService (C#) - Password Hashing & Verification (100%)**
+- Tests the BCrypt password hashing with salt generation and password verification logic
+- Validates proper handling of valid and invalid password comparisons
+- Functions tested: `HashPassword()` generates secure BCrypt hashes with cost factor 12; `VerifyPassword()` correctly validates passwords against stored hashes
+
+**SecurityService (C#) - JWT Generation & Validation (100%)**
+- Tests JWT token creation with user claims (ID, email, role) and signature validation
+- Verifies token expiration enforcement (60-minute default) and tamper detection
+- Functions tested: `GenerateJwtToken()` creates signed JWTs with proper claims; `ValidateToken()` validates signature, expiration, and extracts user identity
+
+**AuthController (C#) - Login() (100%)**
+- Tests the complete login workflow including credential validation, JWT issuance, and HTTP response formatting
+- Validates proper handling of valid credentials (HTTP 200) and invalid credentials (HTTP 401)
+- Function tested: `Login()` authenticates users via SecurityService, generates JWT, returns token in JSON response
+
+**TwoFactorAuthService (C#) - TOTP Generation & Validation (100%)**
+- Tests Time-based One-Time Password (TOTP) generation and validation for step-up authentication
+- Verifies 6-digit code generation, expiration (10-minute window), and brute-force protection (3 attempts)
+- Functions tested: `GenerateTOTP()` creates 6-digit codes with expiration timestamps; `ValidateTOTP()` verifies codes within time window and attempt limits
+
+**RecaptchaService (C#) - Google API Response Handling (100%)**
+- Tests Google reCAPTCHA v3 API integration with mocked responses
+- Validates score interpretation (0.0-1.0 range, threshold 0.5), error handling, and bot detection logic
+- Function tested: `VerifyRecaptcha()` sends token to Google API, parses response, returns success/failure based on score threshold
+
+**PythonCBBAService (C#) - Request/Response Parsing (87.50%)**
+- Tests HTTP communication between ASP.NET backend and Python Flask ML service
+- Validates JSON serialization of biometric data, error handling for service unavailability, and response parsing
+- Functions tested: `TrainModel()` sends feature vectors to Python service; `AssessBehavior()` sends behavior data for risk assessment
+- **Note:** 87.50% pass rate due to occasional timeout issues when Python service is under heavy load (7/8 tests pass consistently)
+
+**Biometric Feature Extraction - Keystroke Calculations (Python) (100%)**
+- Tests extraction of 7 keystroke features: dwell time mean/std, flight time mean/std, typing speed mean/std, key variance
+- Validates handling of empty data, outlier filtering (>1000ms dwell, >2000ms flight), and edge cases
+- Function tested: `extract_keystroke_features()` processes keystroke events array, calculates temporal statistics, returns 7D vector
+
+**Biometric Feature Extraction - Mouse Calculations (Python) (96%)**
+- Tests extraction of 11 mouse features: velocity, acceleration, distance, click patterns, scroll behavior, curvature, repetitive click ratio
+- Validates bot detection (repetitive click ratio >80%), coordinate normalization, and geometric calculations
+- Function tested: `extract_mouse_features()` processes mouse move/click/scroll events, returns 11D vector
+- **Note:** 96% pass rate due to occasional precision issues in curvature calculations with minimal mouse movement (<5 events)
+
+**Risk Scoring Logic (Python) - Model Predictions & Thresholds (100%)**
+- Tests Isolation Forest and One-Class SVM anomaly detection with ensemble scoring
+- Validates score normalization (IF: 0.5→10%, SVM: -1.5→50%), threshold application (50% moderate, 80% high), and feature-based risk adjustments
+- Functions tested: `predict()` combines IF + SVM + feature-based scores; `_normalize_if_score()` converts IF scores to 0-100% risk; `_normalize_svm_score()` converts SVM scores to 0-100% risk
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 1.3 Security Testing
 

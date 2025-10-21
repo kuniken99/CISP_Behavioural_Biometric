@@ -20,7 +20,54 @@ const SetNewPasswordPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tokenValid, setTokenValid] = useState(null);
   const [userEmail, setUserEmail] = useState('');
+  const [passwordStrength, setPasswordStrength] = useState({
+    score: 0,
+    label: '',
+    color: '#dc2626',
+    requirements: {
+      minLength: false,
+      hasUppercase: false,
+      hasLowercase: false,
+      hasNumbers: false,
+      hasSpecialChars: false
+    }
+  });
   const recaptchaRef = useRef(null);
+
+  const checkPasswordStrength = (password) => {
+    const requirements = {
+      minLength: password.length >= 12,
+      hasUppercase: /[A-Z]/.test(password),
+      hasLowercase: /[a-z]/.test(password),
+      hasNumbers: /[0-9]/.test(password),
+      hasSpecialChars: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    };
+
+    const metRequirements = Object.values(requirements).filter(Boolean).length;
+    let score = 0;
+    let label = '';
+    let color = '#dc2626';
+
+    if (password.length === 0) {
+      score = 0;
+      label = '';
+      color = '#dc2626';
+    } else if (metRequirements <= 2) {
+      score = 1;
+      label = 'Weak';
+      color = '#dc2626';
+    } else if (metRequirements <= 3) {
+      score = 2;
+      label = 'Medium';
+      color = '#f59e0b';
+    } else if (metRequirements >= 4) {
+      score = 3;
+      label = 'Strong';
+      color = '#10b981';
+    }
+
+    return { score, label, color, requirements };
+  };
 
   useEffect(() => {
     // Verify token on component mount
@@ -74,8 +121,21 @@ const SetNewPasswordPage = () => {
       return;
     }
 
-    if (newPassword.length < 8) {
-      setError('Password must be at least 8 characters long');
+    // Enhanced password validation using strength requirements
+    const strength = checkPasswordStrength(newPassword);
+    if (!strength.requirements.minLength) {
+      setError('Password must be at least 12 characters long');
+      return;
+    }
+
+    const unmetRequirements = [];
+    if (!strength.requirements.hasUppercase) unmetRequirements.push('uppercase letters');
+    if (!strength.requirements.hasLowercase) unmetRequirements.push('lowercase letters');
+    if (!strength.requirements.hasNumbers) unmetRequirements.push('numbers');
+    if (!strength.requirements.hasSpecialChars) unmetRequirements.push('special characters');
+
+    if (unmetRequirements.length > 1) {
+      setError(`Password must include at least 3 of the following: uppercase letters, lowercase letters, numbers, and special characters`);
       return;
     }
 
@@ -218,11 +278,15 @@ const SetNewPasswordPage = () => {
             <div className="password-input-container">
               <input 
                 type={showNewPassword ? "text" : "password"}
-                placeholder="Enter new password (min. 8 characters)"
+                placeholder="Enter new password (min. 12 characters)"
                 value={newPassword} 
-                onChange={(e) => setNewPassword(e.target.value)} 
+                onChange={(e) => {
+                  setNewPassword(e.target.value);
+                  const strength = checkPasswordStrength(e.target.value);
+                  setPasswordStrength(strength);
+                }} 
                 required 
-                minLength={8}
+                minLength={12}
                 disabled={isSubmitting}
               />
               <button 
@@ -234,6 +298,67 @@ const SetNewPasswordPage = () => {
                 <img src={eyeIcon} alt="Toggle password visibility" className="eye-icon" />
               </button>
             </div>
+            
+            {/* Password Strength Indicator */}
+            {newPassword && (
+              <div className="password-strength-container">
+                <div className="password-strength-header">
+                  <span className="password-strength-label">Password Strength</span>
+                  <span 
+                    className="password-strength-score"
+                    style={{ color: passwordStrength.color, fontWeight: '600' }}
+                  >
+                    {passwordStrength.label}
+                  </span>
+                </div>
+                
+                <div className="password-strength-bar">
+                  <div 
+                    className="password-strength-progress"
+                    style={{ 
+                      width: `${(passwordStrength.score / 3) * 100}%`,
+                      backgroundColor: passwordStrength.color 
+                    }}
+                  ></div>
+                </div>
+                
+                <div className="password-requirements">
+                  <div className="requirements-title">Password Requirements:</div>
+                  <div className="requirements-list">
+                    <div className={`requirement ${passwordStrength.requirements.minLength ? 'met' : 'unmet'}`}>
+                      <span className="requirement-icon">
+                        {passwordStrength.requirements.minLength ? '✓' : '✗'}
+                      </span>
+                      <span>Minimum 12 characters long</span>
+                    </div>
+                    <div className={`requirement ${passwordStrength.requirements.hasUppercase ? 'met' : 'unmet'}`}>
+                      <span className="requirement-icon">
+                        {passwordStrength.requirements.hasUppercase ? '✓' : '✗'}
+                      </span>
+                      <span>Uppercase letters (A-Z)</span>
+                    </div>
+                    <div className={`requirement ${passwordStrength.requirements.hasLowercase ? 'met' : 'unmet'}`}>
+                      <span className="requirement-icon">
+                        {passwordStrength.requirements.hasLowercase ? '✓' : '✗'}
+                      </span>
+                      <span>Lowercase letters (a-z)</span>
+                    </div>
+                    <div className={`requirement ${passwordStrength.requirements.hasNumbers ? 'met' : 'unmet'}`}>
+                      <span className="requirement-icon">
+                        {passwordStrength.requirements.hasNumbers ? '✓' : '✗'}
+                      </span>
+                      <span>Numbers (0-9)</span>
+                    </div>
+                    <div className={`requirement ${passwordStrength.requirements.hasSpecialChars ? 'met' : 'unmet'}`}>
+                      <span className="requirement-icon">
+                        {passwordStrength.requirements.hasSpecialChars ? '✓' : '✗'}
+                      </span>
+                      <span>Special characters (!@#$%^&*)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="form-group">
@@ -245,7 +370,7 @@ const SetNewPasswordPage = () => {
                 value={confirmPassword} 
                 onChange={(e) => setConfirmPassword(e.target.value)} 
                 required 
-                minLength={8}
+                minLength={12}
                 disabled={isSubmitting}
               />
               <button 
