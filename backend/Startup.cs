@@ -43,8 +43,16 @@ namespace db_biometrics_mvp.Backend
 
             // Configure SQL Server DbContext using the connection string from appsettings.json
             services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("DefaultConnection"),
+                    sqlServerOptionsAction: sqlOptions =>
+                    {
+                        sqlOptions.EnableRetryOnFailure(
+                            maxRetryCount: 5, // Number of retry attempts
+                            maxRetryDelay: TimeSpan.FromSeconds(30), // Max delay between retries
+                            errorNumbersToAdd: null); // Use default transient error codes
+                    }));
+                
             // Configure JWT Authentication
             services.AddAuthentication(options =>
             {
