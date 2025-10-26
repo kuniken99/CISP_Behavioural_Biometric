@@ -48,6 +48,24 @@ Thumbs.db
 *.sqlite
 *.sqlite3
 
+# Deployment
+backend/publish/
+backend/publish.zip
+*.zip
+.vercel
+
+# Azure
+azure-pipelines.yml
+.azure/
+
+# Docker
+**/.dockerignore.bak
+**/docker-compose.override.yml
+
+# Backup files
+*_OLD.md
+*.bak
+
 # Logs
 *.log
 logs/
