@@ -217,7 +217,17 @@ def generate_diverse_mouse_data(duration_ms=30000, pattern='normal'):
     return mouse_data
 
 def generate_training_session(session_type='normal'):
-    """Generate a complete training session with varied behavior"""
+    """
+    Generate a complete training session with varied behavior
+    
+    Session types include patterns to train keystroke anomaly detector:
+    - normal: Typical user behavior (establishes baseline)
+    - fast_typing: Fast but consistent typing
+    - slow_typing: Slow but consistent typing
+    - mixed_speed: Varying speeds (helps detector learn user's range)
+    - erratic_mouse: Normal typing with erratic mouse
+    - fast_interaction: Fast typing + fast mouse
+    """
     print(f"  Creating {session_type} session...")
     
     if session_type == 'fast_typing':
@@ -226,6 +236,13 @@ def generate_training_session(session_type='normal'):
     elif session_type == 'slow_typing':
         keystroke_data = generate_diverse_keystroke_data(30000, 'slow')
         mouse_data = generate_diverse_mouse_data(30000, 'smooth')
+    elif session_type == 'mixed_speed':
+        # Mix of fast and normal typing to show user's natural variation
+        # This helps the keystroke detector learn your actual speed range
+        keystroke_normal = generate_diverse_keystroke_data(15000, 'normal')
+        keystroke_fast = generate_diverse_keystroke_data(15000, 'fast')
+        keystroke_data = keystroke_normal + keystroke_fast
+        mouse_data = generate_diverse_mouse_data(30000, 'normal')
     elif session_type == 'erratic_mouse':
         keystroke_data = generate_diverse_keystroke_data(30000, 'normal')
         mouse_data = generate_diverse_mouse_data(30000, 'erratic')
@@ -260,9 +277,13 @@ def train_user_profile(username, jwt_token, num_samples=20, backend_url=None):
     training_data = []
     
     # Mix of different behavioral patterns
-    session_types = ['normal', 'fast_typing', 'slow_typing', 'erratic_mouse', 'fast_interaction']
+    # UPDATED: Added 'mixed_speed' to help keystroke detector learn user's speed range
+    # This establishes better baseline for the new keystroke anomaly detection
+    session_types = ['normal', 'fast_typing', 'slow_typing', 'mixed_speed', 'erratic_mouse', 'fast_interaction']
     
     print(f"Generating {num_samples} diverse training samples...\n")
+    print(f"Note: Training includes varied typing speeds to establish keystroke baseline")
+    print(f"      This helps the anomaly detector learn YOUR specific typing patterns\n")
     
     for i in range(num_samples):
         session_type = session_types[i % len(session_types)]
@@ -293,8 +314,15 @@ def train_user_profile(username, jwt_token, num_samples=20, backend_url=None):
             print(f"  • Profile status: {result.get('status', 'trained')}")
             print(f"  • User ID: {result.get('userId', username)}")
             print(f"  • Model ready: Yes")
+            print(f"  • Keystroke baseline: Established")
             print(f"\n{'='*60}")
             print(f"Model is now ready for dynamic 0-100% risk scoring!")
+            print(f"Keystroke anomaly detector learned your typing patterns:")
+            print(f"  • Typing speed (WPM)")
+            print(f"  • Dwell time (key hold duration)")
+            print(f"  • Flight time (timing between keys)")
+            print(f"  • Backspace usage patterns")
+            print(f"  • Pause frequency")
             print(f"{'='*60}\n")
             return True
         elif response.status_code == 401:
@@ -352,6 +380,11 @@ def print_usage():
     print("  • Good accuracy:      200-500 samples (balanced, recommended)")
     print("  • High accuracy:      500-1000 samples (better false positive reduction)")
     print("  • Maximum accuracy:   1000-5000 samples (best accuracy, slower training)\n")
+    print("What training does:")
+    print("  • Trains ML models (Isolation Forest, One-Class SVM)")
+    print("  • Establishes keystroke baseline (typing speed, dwell/flight times)")
+    print("  • Learns YOUR specific behavioral patterns")
+    print("  • Enables advanced anomaly detection (hesitation, speed changes, etc.)\n")
     print("Examples:")
     print("  Local development:")
     print("    python generate_training_data.py tank108 eyJhbGciOi... 500\n")
