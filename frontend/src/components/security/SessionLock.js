@@ -68,7 +68,7 @@ const SessionLock = ({ show, riskScore, onLockExpired, username, threatDetails }
   const logLockEvent = async (risk) => {
     try {
       const token = localStorage.getItem('jwt_token');
-      await fetch(`${API_BASE_URL}/api/Audit/log-session-lock`, {
+      await fetch(`${API_BASE_URL}/Audit/log-session-lock`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ const SessionLock = ({ show, riskScore, onLockExpired, username, threatDetails }
     try {
       // Clear the lock in backend session
       const token = localStorage.getItem('jwt_token');
-      await fetch(`${API_BASE_URL}/api/biometric/clear-lock`, {
+      await fetch(`${API_BASE_URL}/biometric/clear-lock`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -26,7 +26,7 @@ function TwoFactorLoginPage({ setCurrentAuthPage, email, onLogin }) {
     setError('');
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/twofactor/login`, {
+      const response = await fetch(`${API_BASE_URL}/twofactor/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

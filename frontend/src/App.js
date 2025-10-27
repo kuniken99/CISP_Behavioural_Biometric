@@ -69,7 +69,7 @@ function App() {
         const token = localStorage.getItem('jwt_token');
         const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
         
-        const response = await fetch(`${API_BASE_URL}/api/biometric/session-risk-state`, {
+        const response = await fetch(`${API_BASE_URL}/biometric/session-risk-state`, {
           headers: {
             'Authorization': `Bearer ${token}`
           },

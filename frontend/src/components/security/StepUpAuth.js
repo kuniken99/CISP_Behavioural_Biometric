@@ -64,10 +64,10 @@ const StepUpAuth = ({ show, riskScore, onVerify, onCancel, username }) => {
       console.log('[CBBA] Submitting verification code:', {
         codeLength: cleanCode.length,
         riskScore: riskScore,
-        endpoint: `${API_BASE_URL}/api/twofactor/verify-moderate-risk`
+        endpoint: `${API_BASE_URL}/twofactor/verify-moderate-risk`
       });
       
-      const response = await fetch(`${API_BASE_URL}/api/twofactor/verify-moderate-risk`, {
+      const response = await fetch(`${API_BASE_URL}/twofactor/verify-moderate-risk`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

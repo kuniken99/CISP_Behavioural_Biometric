@@ -40,7 +40,7 @@ function TwoFactorSetupPage({ setCurrentAuthPage, email, onSetupComplete }) {
     setError('');
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/twofactor/setup`, {
+      const response = await fetch(`${API_BASE_URL}/twofactor/setup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -99,7 +99,7 @@ function TwoFactorSetupPage({ setCurrentAuthPage, email, onSetupComplete }) {
     setError('');
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/twofactor/verify`, {
+      const response = await fetch(`${API_BASE_URL}/twofactor/verify`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
