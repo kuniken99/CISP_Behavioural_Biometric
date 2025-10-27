@@ -678,20 +678,30 @@ Deploying your ASP.NET Core backend to Azure App Service. This is the "brain" of
    - Takes 30-60 seconds
    - You'll see "Build succeeded"
 
-4. **Create ZIP File:**
+4. **IMPORTANT - Verify web.config Hosting Model:**
+   - Open the file: `E:\CISP_Behavioural_Biometric\backend\publish\web.config`
+   - Find the line with `hostingModel=`
+   - Make sure it says: `hostingModel="outofprocess"`
+   - If it says `"inprocess"`, change it to `"outofprocess"`
+   - Also ensure: `stdoutLogEnabled="true"` for better debugging
+   - Save the file
+
+   **Why this matters:** Azure App Service requires out-of-process hosting for ASP.NET Core 8. Using in-process mode will cause HTTP 500.30 errors.
+
+5. **Create ZIP File:**
    ```powershell
    Compress-Archive -Path ./publish/* -DestinationPath ./publish.zip -Force
    ```
    - This packages everything into one file
 
-5. **Deploy to Azure:**
+6. **Deploy to Azure:**
    ```powershell
    az webapp deployment source config-zip --resource-group cbba-production --name cbba-backend-tank108 --src ./publish.zip
    ```
    - **Replace `cbba-backend-tank108`** with YOUR backend name!
    - This uploads your code to Azure
    - Takes 2-3 minutes
-   - You'll see lots of output, ending with "Deployment successful"
+   - You'll see lots of output, ending with `"provisioningState": "Succeeded"`
 
 
 
@@ -721,24 +731,58 @@ Deploying your ASP.NET Core backend to Azure App Service. This is the "brain" of
 ### 2.5 Verify Backend is Running
 
 1. **Get Your Backend URL:**
-   - It's: `https://cbba-backend-tank108.azurewebsites.net`
+   - In Azure Portal, go to your App Service: `cbba-backend-tank108`
+   - On the Overview page, copy the **"Default domain"**
+   - It will look like: `cbba-backend-tank108-cqaqdefdf8ffehfx.southeastasia-01.azurewebsites.net`
+   - **Note:** The URL includes a random string and region - this is normal!
 
-2. **Test in Browser:**
-   - Open this URL in your browser
-   - You should see either:
-     - A simple page (if you have a default route)
-     - Or a 404 error (this is OK! Your API endpoints exist at `/api/...`)
+2. **Test Health Endpoint:**
+   ```powershell
+   curl https://[YOUR-BACKEND-URL]/api/health
+   ```
+   - Replace `[YOUR-BACKEND-URL]` with your actual URL
+   - Example: `https://cbba-backend-tank108-cqaqdefdf8ffehfx.southeastasia-01.azurewebsites.net/api/health`
+   
+   **Expected Response:**
+   ```json
+   {
+     "status": "healthy",
+     "message": "CBBA Backend is running"
+   }
+   ```
 
-3. **Test an API Endpoint:**
-   - Try: `https://cbba-backend-tank108.azurewebsites.net/api/health`
-   - Or: `https://cbba-backend-tank108.azurewebsites.net/swagger`
-   - You should see a response (not an error page)
+3. **What if I get an error?**
+
+   **HTTP 500.30 - App failed to start:**
+   - Check web.config hosting model (should be `outofprocess`)
+   - Redeploy after fixing
+   - Wait 60 seconds after deployment for app to fully start
+
+   **HTTP 404 - Not Found:**
+   - This is OK for the root URL `/`
+   - Try the health endpoint: `/api/health`
+   - API routes are at `/api/*`, not at root
+
+   **HTTP 503 - Service Unavailable:**
+   - App is still starting, wait 30 more seconds
+   - Or restart: `az webapp restart --resource-group cbba-production --name cbba-backend-tank108`
 
 4. **Check Logs if There's a Problem:**
    - Go to Azure Portal → Your App Service
    - Left menu → **"Monitoring"** → **"Log stream"**
    - Wait 30 seconds to see live logs
    - Look for any error messages in red
+   - Common errors:
+     - Connection string issues
+     - Missing environment variables
+     - Database connectivity problems
+
+5. **Download Detailed Logs (if needed):**
+   ```powershell
+   az webapp log download --resource-group cbba-production --name cbba-backend-tank108 --log-file backend-logs.zip
+   ```
+   - Extract and check the logs folder
+   - Look in `LogFiles/Application/` for errors
 
 ✅ **Checkpoint**: Your backend is live and running on Azure!
 
@@ -827,63 +871,131 @@ Good news! I already created the Dockerfile for you. Let's verify:
 
 **What we're doing:** Building a "box" (Docker image) with your Python app and uploading it to Azure.
 
-1. **Make sure you're in the Python service folder:**
+**⚠️ IMPORTANT NOTE:** The `az acr build` command is NOT available on Basic SKU registries. We'll build locally and push instead.
+
+1. **Make sure Docker Desktop is running:**
+   - Open Docker Desktop application
+   - Wait for it to show "Engine running"
+
+2. **Navigate to Python service folder:**
    ```powershell
    cd E:\CISP_Behavioural_Biometric\cbba_python_service
    ```
 
-2. **Build and Push Image to Azure:**
+3. **Build Docker image locally:**
    ```powershell
-   az acr build --registry cbbaregistrytank108 --image cbba-python-service:latest .
+   docker build -t cbba-python-service:latest .
    ```
-   - **Replace `cbbaregistrytank108`**
    - The `.` at the end is important! (means "current directory")
-   - This will:
-     - Build your Docker image (3-5 minutes)
-     - Upload it to Azure
-   - You'll see lots of output with steps like "Step 1/8", "Step 2/8", etc.
-   - Wait for "Run ID: ... was successful"
+   - This will build your Docker image (3-5 minutes)
+   - You'll see output like "Step 1/7", "Step 2/7", etc.
+   - Wait for "Successfully built" and "Successfully tagged"
 
-**⏱️ Build time: 5-7 minutes** (great time for a coffee break!)
+4. **Login to Azure Container Registry:**
+   ```powershell
+   az acr login --name cbbaregistrytank108
+   ```
+   - **Replace `cbbaregistrytank108`** with YOUR registry name
+   - You'll see "Login Succeeded"
 
-✅ **Checkpoint**: Docker image built and uploaded to Azure!
+5. **Tag the image for Azure:**
+   ```powershell
+   docker tag cbba-python-service:latest cbbaregistrytank108.azurecr.io/cbba-python-service:latest
+   ```
+   - **Replace `cbbaregistrytank108`** with YOUR registry name
+
+6. **Push image to Azure Container Registry:**
+   ```powershell
+   docker push cbbaregistrytank108.azurecr.io/cbba-python-service:latest
+   ```
+   - **Replace `cbbaregistrytank108`** with YOUR registry name
+   - This uploads your image to Azure (2-3 minutes)
+   - You'll see upload progress for each layer
+   - Wait for "latest: digest: sha256:..." message
+
+**⏱️ Total time: 7-10 minutes** (great time for a coffee break!)
+
+✅ **Checkpoint**: Docker image built locally and uploaded to Azure!
 
 ---
+
+
+
+
+
+
+
+
+
+
+
 
 ### 3.4 Deploy Container Instance (Run Your Python Service)
 
 **What we're doing:** Actually running the Docker container in Azure.
 
-1. **Get Your Encryption Key:**
+**⚠️ IMPORTANT - One-time Setup Required:**
+
+1. **Register Container Instance Provider (First Time Only):**
+   ```powershell
+   az provider register --namespace Microsoft.ContainerInstance
+   ```
+   - This is a one-time setup for your Azure subscription
+   - Takes 2-5 minutes to complete
+
+2. **Check Registration Status:**
+   ```powershell
+   az provider show -n Microsoft.ContainerInstance --query "registrationState"
+   ```
+   - Wait until it shows: `"Registered"`
+   - If it shows `"Registering"`, wait 1 minute and check again
+
+**Now Deploy Your Container:**
+
+3. **Get Your Encryption Key:**
    - Look at your saved secrets file from step 2.2
    - Find the "ENCRYPTION_KEY" value
-   - Copy it
+   - Copy it (should be 64 characters long)
 
-2. **Get Registry Password:**
+4. **Get Registry Password:**
    ```powershell
    az acr credential show --name cbbaregistrytank108 --query "passwords[0].value" --output tsv
    ```
+   - **Replace `cbbaregistrytank108`** with YOUR registry name
    - Copy the password that appears
 
-3. **Create Container Instance:**
+5. **Create Container Instance:**
    ```powershell
-   az container create --resource-group cbba-production --name cbba-python-service --image cbbaregistrytank108.azurecr.io/cbba-python-service:latest --cpu 1 --memory 1.5 --registry-login-server cbbaregistrytank108.azurecr.io --registry-username cbbaregistrytank108 --registry-password [PASTE_REGISTRY_PASSWORD_HERE] --dns-name-label cbba-python-tank108 --ports 5001 --environment-variables FLASK_PORT=5001 ENCRYPTION_KEY=[PASTE_ENCRYPTION_KEY_HERE] MODEL_STORAGE_PATH=/app/models RISK_THRESHOLD_MODERATE=50 RISK_THRESHOLD_HIGH=80
+   az container create --resource-group cbba-production --name cbba-python-service --image cbbaregistrytank108.azurecr.io/cbba-python-service:latest --cpu 1 --memory 1.5 --os-type Linux --registry-login-server cbbaregistrytank108.azurecr.io --registry-username cbbaregistrytank108 --registry-password [PASTE_REGISTRY_PASSWORD_HERE] --dns-name-label cbba-python-tank108 --ports 5001 --environment-variables FLASK_PORT=5001 FLASK_HOST=0.0.0.0 ENCRYPTION_KEY=[PASTE_ENCRYPTION_KEY_HERE] MODEL_STORAGE_PATH=/app/models RISK_THRESHOLD_MODERATE=50 RISK_THRESHOLD_HIGH=80
    ```
 
    **⚠️ IMPORTANT - Replace these values:**
    - `cbbaregistrytank108` → Your registry name (appears 3 times!)
-   - `[PASTE_REGISTRY_PASSWORD_HERE]` → The password from step 2
-   - `cbba-python-tank108` → Unique DNS name (e.g., `cbba-python-john123`)
-   - `[PASTE_ENCRYPTION_KEY_HERE]` → Your encryption key from secrets
+   - `[PASTE_REGISTRY_PASSWORD_HERE]` → The password from step 4
+   - `cbba-python-tank108` → Unique DNS name (e.g., `cbba-python-yourname`)
+   - `[PASTE_ENCRYPTION_KEY_HERE]` → Your encryption key from secrets (64 chars)
 
    **Example of final command:**
    ```powershell
-   az container create --resource-group cbba-production --name cbba-python-service --image cbbaregistryjohn.azurecr.io/cbba-python-service:latest --cpu 1 --memory 1.5 --registry-login-server cbbaregistryjohn.azurecr.io --registry-username cbbaregistryjohn --registry-password "abc123xyz789password" --dns-name-label cbba-python-john123 --ports 5001 --environment-variables FLASK_PORT=5001 ENCRYPTION_KEY="a1b2c3d4e5f6..." MODEL_STORAGE_PATH=/app/models RISK_THRESHOLD_MODERATE=50 RISK_THRESHOLD_HIGH=80
+   az container create --resource-group cbba-production --name cbba-python-service --image cbbaregistryjohn.azurecr.io/cbba-python-service:latest --cpu 1 --memory 1.5 --os-type Linux --registry-login-server cbbaregistryjohn.azurecr.io --registry-username cbbaregistryjohn --registry-password "abc123xyz789password" --dns-name-label cbba-python-john --ports 5001 --environment-variables FLASK_PORT=5001 FLASK_HOST=0.0.0.0 ENCRYPTION_KEY="a1b2c3d4e5f6..." MODEL_STORAGE_PATH=/app/models RISK_THRESHOLD_MODERATE=50 RISK_THRESHOLD_HIGH=80
    ```
 
-4. **Wait for Deployment** (2-3 minutes)
+6. **Wait for Deployment** (2-3 minutes)
    - You'll see JSON output
    - Look for `"provisioningState": "Succeeded"`
+   - Look for `"state": "Running"` in the output
+
+7. **Verify Container is Running:**
+   ```powershell
+   az container logs --resource-group cbba-production --name cbba-python-service
+   ```
+   - You should see:
+     ```
+     Starting CBBA Python Service on port 5001
+     Model storage path: /app/models
+     * Running on all addresses (0.0.0.0)
+     * Running on http://127.0.0.1:5001
+     ```
 
 ✅ **Checkpoint**: Python service is running in Azure!
 
@@ -891,54 +1003,99 @@ Good news! I already created the Dockerfile for you. Let's verify:
 
 ### 3.5 Get Your Python Service URL
 
-1. **Get the Public URL:**
+1. **Get the Public IP Address:**
    ```powershell
-   az container show --resource-group cbba-production --name cbba-python-service --query ipAddress.fqdn --output tsv
+   az container show --resource-group cbba-production --name cbba-python-service --query ipAddress.ip --output tsv
+   ```
+   - Copy the IP address (e.g., `4.144.154.255`)
+
+2. **Your Python Service URL is:**
+   ```
+   http://[YOUR_IP_ADDRESS]:5001
+   ```
+   - Example: `http://4.144.154.255:5001`
+
+3. **Test it in PowerShell:**
+   ```powershell
+   curl http://[YOUR_IP_ADDRESS]:5001/health
+   ```
+   - Replace `[YOUR_IP_ADDRESS]` with your actual IP
+   - You should see:
+   ```json
+   {
+     "service": "CBBA Python Service",
+     "status": "healthy",
+     "version": "1.0.0"
+   }
    ```
 
-2. **You'll see something like:**
-   ```
-   cbba-python-john123.eastus.azurecontainer.io
-   ```
+4. **⚠️ IMPORTANT - Save this IP address!** 
+   - Write it down or save it in Notepad
+   - Format: `http://4.144.154.255:5001` (use YOUR IP)
+   - You'll need it for the next step to connect the backend
 
-3. **Your full URL is:**
-   ```
-   http://cbba-python-john123.eastus.azurecontainer.io:5001
-   ```
-
-4. **Test it in your browser:**
-   - Go to: `http://[your-url]:5001/api/cbba/health`
-   - You should see: `{"status": "healthy"}` or similar
-
-5. **⚠️ Save this URL!** You need it for the next step.
+**Troubleshooting:**
+- If you get "Unable to connect", wait 30 seconds for the container to fully start
+- Check container logs: `az container logs --resource-group cbba-production --name cbba-python-service`
+- Verify the container is running: Look for "Running on all addresses (0.0.0.0)" in logs
 
 ✅ **Checkpoint**: Python service is accessible and responding!
 
 ---
 
+
+
+
 ### 3.6 Connect Backend to Python Service
 
 **Now tell your backend where to find the Python service:**
 
-1. **Go to Azure Portal:**
-   - Find your App Service: `cbba-backend-tank108`
+1. **Get Your Python Service IP Address:**
+   ```powershell
+   az container show --resource-group cbba-production --name cbba-python-service --query ipAddress.ip --output tsv
+   ```
+   - Copy the IP address (e.g., `4.144.154.255`)
+   - **Note:** Use IP address instead of DNS name for better reliability
 
-2. **Update Configuration:**
+2. **Update Backend Configuration via Azure CLI:**
+   ```powershell
+   az webapp config appsettings set --resource-group cbba-production --name cbba-backend-tank108 --settings PythonCBBAService__Url=http://[4.144.154.255]:5001
+   ```
+   - **Replace `[YOUR_IP_HERE]`** with the IP from step 1
+   - **Replace `cbba-backend-tank108`** with YOUR backend name
+   - Example: `PythonCBBAService__Url=http://4.144.154.255:5001`
+
+   **Alternative: Via Azure Portal:**
+   - Go to Azure Portal → Your App Service: `cbba-backend-tank108`
    - Left menu → **"Configuration"**
    - Find the setting: `PythonCBBAService__Url`
    - Click on it to edit
-   - Change value to: `http://cbba-python-tank108.eastus.azurecontainer.io:5001`
+   - Change value to: `http://4.144.154.255:5001` (use YOUR IP)
    - Click **"OK"**
    - Click **"Save"** at the top
    - Click **"Continue"** on the restart warning
 
 3. **Wait for Backend to Restart** (30 seconds)
 
+4. **Verify Connection:**
+   - Test that Python service responds: `http://4.144.154.255:5001/health`
+   - You should see: `{"service":"CBBA Python Service","status":"healthy","version":"1.0.0"}`
+
 ✅ **Checkpoint**: Backend and Python service are now connected!
 
 **⏱️ Time check**: You should be ~60 minutes in. One more component to go!
 
 ---
+
+
+
+
+
+
+
+
+
+
 
 ## 🌐 STEP 4: Deploy Frontend (Website) to Vercel (15 minutes)
 
@@ -967,6 +1124,8 @@ Deploying your React website to Vercel so anyone can access it on the internet!
    - ⚠️ Make sure it's `.env.production`, not `.env.production.txt`!
 
 ---
+
+
 
 ### 4.2 Deploy to Vercel (Using Dashboard - Easiest)
 
@@ -1156,23 +1315,43 @@ Deploying your React website to Vercel so anyone can access it on the internet!
 **Run these quick URL tests:**
 
 1. **Backend Health Check:**
+   ```powershell
+   curl https://[YOUR-BACKEND-URL]/api/health
    ```
-   https://cbba-backend-tank108.azurewebsites.net/api/health
-   ```
-   - Expected: `{"status":"healthy"}` or similar
-   - ❌ If error: Check backend logs in Azure Portal
+   - Replace `[YOUR-BACKEND-URL]` with your actual backend domain
+   - Example: `cbba-backend-tank108-cqaqdefdf8ffehfx.southeastasia-01.azurewebsites.net`
+   - ✅ Expected: `{"status":"healthy","message":"CBBA Backend is running"}`
+   - ❌ If error: Check backend logs in Azure Portal → Log stream
 
 2. **Python Service Health Check:**
+   ```powershell
+   curl http://[YOUR-PYTHON-IP]:5001/health
    ```
-   http://cbba-python-tank108.eastus.azurecontainer.io:5001/api/cbba/health
-   ```
-   - Expected: `{"status":"healthy"}`
-   - ❌ If error: Check container logs in Azure Portal
+   - Replace `[YOUR-PYTHON-IP]` with your Python service IP (e.g., `4.144.154.255`)
+   - ✅ Expected: `{"service":"CBBA Python Service","status":"healthy","version":"1.0.0"}`
+   - ❌ If error: Check container logs: `az container logs --resource-group cbba-production --name cbba-python-service`
 
 3. **Database Connection:**
    - Login to your application
-   - If login works, database is connected!
-   - ❌ If error: Check connection string in backend configuration
+   - If login works, database is connected! ✅
+   - ❌ If error: 
+     - Check connection string in backend configuration
+     - Verify database firewall rules allow Azure services
+     - Check if database is running in Azure Portal
+
+4. **Backend → Python Service Connection:**
+   - After completing CBBA training (step 5.1.5)
+   - Check backend logs for Python service communication
+   - Should show successful ML model training requests
+   - ❌ If error: Verify `PythonCBBAService__Url` is set to correct IP in backend config
+
+5. **Frontend → Backend CORS:**
+   - Open browser Developer Tools (F12)
+   - Go to Console tab
+   - Try to login or register
+   - Check Network tab for API calls
+   - ✅ Successful: API calls return 200/201 status codes
+   - ❌ If CORS errors appear: Update backend CORS settings with your Vercel URL
 
 ---
 
@@ -1193,9 +1372,63 @@ Solution:
 - Wait for logs to appear (30 seconds)
 - Look for error messages in red
 - Common issues:
-  - Database connection string incorrect
-  - Missing environment variables
-  - JWT key not set
+  - **HTTP 500.30**: web.config hosting model is wrong (should be `outofprocess`)
+  - Database connection string incorrect or has curly braces in password
+  - Missing environment variables (check Configuration settings)
+  - JWT key not set or invalid
+
+**Problem: Backend returns HTTP 500.30 - App failed to start**
+
+Solution:
+1. Check web.config hosting model:
+   - Open: `backend/publish/web.config`
+   - Find: `hostingModel=`
+   - Should be: `hostingModel="outofprocess"`
+   - If it says `inprocess`, change to `outofprocess`
+2. Rebuild and redeploy:
+   ```powershell
+   cd E:\CISP_Behavioural_Biometric\backend
+   dotnet publish -c Release -o ./publish
+   Compress-Archive -Path ./publish/* -DestinationPath ./publish.zip -Force
+   az webapp deployment source config-zip --resource-group cbba-production --name cbba-backend-tank108 --src ./publish.zip
+   ```
+3. Wait 60 seconds after deployment
+4. Test again: `curl https://[YOUR-BACKEND-URL]/api/health`
+
+**Problem: Python service can't connect (Connection refused)**
+
+Solution:
+- Check if Flask is binding to 0.0.0.0 (not 127.0.0.1)
+- Verify environment variable: `FLASK_HOST=0.0.0.0` is set
+- Check container logs: `az container logs --resource-group cbba-production --name cbba-python-service`
+- Should see: "Running on all addresses (0.0.0.0)"
+- If seeing "Running on http://127.0.0.1", rebuild with correct config
+
+**Problem: "ACR Tasks not permitted" when building Docker image**
+
+Solution:
+- Azure Container Registry Basic SKU doesn't support `az acr build`
+- Use local Docker build instead:
+  ```powershell
+  docker build -t cbba-python-service:latest .
+  az acr login --name cbbaregistrytank108
+  docker tag cbba-python-service:latest cbbaregistrytank108.azurecr.io/cbba-python-service:latest
+  docker push cbbaregistrytank108.azurecr.io/cbba-python-service:latest
+  ```
+
+**Problem: "MissingSubscriptionRegistration" for Container Instance**
+
+Solution:
+- Register the provider (one-time):
+  ```powershell
+  az provider register --namespace Microsoft.ContainerInstance
+  ```
+- Wait 2-5 minutes, check status:
+  ```powershell
+  az provider show -n Microsoft.ContainerInstance --query "registrationState"
+  ```
+- Wait until it shows: `"Registered"`
+- Then retry creating container instance
 
 **Problem: CBBA analysis not working**
 
@@ -2013,6 +2246,78 @@ az container start --resource-group cbba-production --name cbba-python-service
    - Delete resource group
    - Follow guide again from Step 1
    - Sometimes faster than debugging!
+
+---
+
+## 📋 Deployment Summary & Quick Reference
+
+### Your Deployed Components:
+
+**✅ Backend API (ASP.NET Core)**
+- URL Pattern: `https://cbba-backend-[name]-[random].southeastasia-01.azurewebsites.net`
+- Health Check: `https://[your-backend-url]/api/health`
+- Platform: Azure App Service (Windows, .NET 8)
+- **Important:** Hosting model must be `outofprocess` in web.config
+
+**✅ Python ML Service (Flask)**
+- URL: `http://[YOUR-IP]:5001` (use IP address, not DNS)
+- Health Check: `http://[your-ip]:5001/health`
+- Platform: Azure Container Instance (Linux)
+- **Important:** Flask must bind to `0.0.0.0` (not `127.0.0.1`)
+
+**✅ Database (Azure SQL)**
+- Server: `cbba-sql-server-[name].database.windows.net`
+- Database: `db_biometrics_mvp`
+- **Important:** Remove curly braces from passwords in connection strings
+
+**✅ Frontend (React on Vercel)**
+- URL: `https://cisp-behavioural-biometric-[name].vercel.app`
+- Build: Automatic on Git push
+- Root Directory: `frontend`
+
+---
+
+### Quick Commands Reference:
+
+**Redeploy Backend:**
+```powershell
+cd E:\CISP_Behavioural_Biometric\backend
+dotnet publish -c Release -o ./publish
+Compress-Archive -Path ./publish/* -DestinationPath ./publish.zip -Force
+az webapp deployment source config-zip --resource-group cbba-production --name cbba-backend-tank108 --src ./publish.zip
+```
+
+**Redeploy Python Service:**
+```powershell
+cd E:\CISP_Behavioural_Biometric\cbba_python_service
+docker build -t cbba-python-service:latest .
+az acr login --name cbbaregistrytank108
+docker tag cbba-python-service:latest cbbaregistrytank108.azurecr.io/cbba-python-service:latest
+docker push cbbaregistrytank108.azurecr.io/cbba-python-service:latest
+az container delete --resource-group cbba-production --name cbba-python-service --yes
+# Then recreate container with az container create command
+```
+
+**View Logs:**
+```powershell
+# Backend logs (live)
+az webapp log tail --resource-group cbba-production --name cbba-backend-tank108
+
+# Python service logs
+az container logs --resource-group cbba-production --name cbba-python-service
+
+# Download backend logs
+az webapp log download --resource-group cbba-production --name cbba-backend-tank108 --log-file logs.zip
+```
+
+**Restart Services:**
+```powershell
+# Backend
+az webapp restart --resource-group cbba-production --name cbba-backend-tank108
+
+# Python service (delete and recreate)
+az container restart --resource-group cbba-production --name cbba-python-service
+```
 
 ---
 

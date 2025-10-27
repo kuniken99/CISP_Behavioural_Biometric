@@ -9,7 +9,7 @@ class Config:
     
     # Flask settings
     FLASK_PORT = int(os.getenv('FLASK_PORT', 5001)) # Python service on 5001, backend on 5000
-    FLASK_HOST = '127.0.0.1'
+    FLASK_HOST = os.getenv('FLASK_HOST', '0.0.0.0')  # 0.0.0.0 for Docker, 127.0.0.1 for local dev
     DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
     
     # Security settings
