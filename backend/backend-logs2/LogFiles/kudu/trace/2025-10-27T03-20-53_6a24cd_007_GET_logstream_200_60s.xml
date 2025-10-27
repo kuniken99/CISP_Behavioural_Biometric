@@ -1,0 +1,9 @@
+<step title="Incoming Request" date="2025-10-27T03:20:53.899" instance="6a24cd" url="/logstream" method="GET" type="request" pid="588,2,9" Accept-Encoding="identity" Authorization="Bea..." Host="cbba-backend-tank108-cqaqdefdf8ffehfx.scm.southeastasia-01.azurewebsites.net" User-Agent="AZURECLI/2.77.0 (MSI)" x-ms-client-request-id="ed589865-b2e3-11f0-883c-aa7042f5b042" X-ARR-LOG-ID="ed589865-b2e3-11f0-883c-aa7042f5b042" CLIENT-IP="118.200.208.214:59956" X-SITE-DEPLOYMENT-ID="cbba-backend-tank108" WAS-DEFAULT-HOSTNAME="cbba-backend-tank108-cqaqdefdf8ffehfx.scm.southeastasia-01.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/logstream" >
+  <step title="Cleanup Xml Logs" date="2025-10-27T03:20:53.911" /><!-- duration: 0ms -->
+  <step title="LogStreamHandler.BeginProcessRequest" date="2025-10-27T03:20:53.942" >
+    <step title="LockFile &apos;C:\home\site\locks\hooks.lock&apos; acquired" date="2025-10-27T03:20:54.021" /><!-- duration: 16ms -->
+    <step title="LockFile &apos;C:\home\site\locks\hooks.lock&apos; released" date="2025-10-27T03:20:54.161" /><!-- duration: 0ms -->
+  </step><!-- duration: 234ms -->
+  <step title="LogStreamHandler.EndProcessRequest" date="2025-10-27T03:21:54.027" /><!-- duration: 16ms -->
+  <step title="Outgoing response" date="2025-10-27T03:21:54.042" type="response" statusCode="200" statusText="OK" Server="Microsoft-IIS/10.0" Cache-Control="private" X-AspNet-Version="4.0.30319" Content-Type="text/plain; charset=utf-8" /><!-- duration: 16ms -->
+</step><!-- duration: 60159ms -->

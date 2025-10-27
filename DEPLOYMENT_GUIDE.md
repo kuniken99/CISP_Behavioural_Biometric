@@ -253,7 +253,7 @@ Creating a SQL Server database in the cloud to store all user data, behavioral p
    A popup will appear. Fill it in:
 
    **Server Name:**
-   - Type: `cbba-sql-server-yourname` 
+   - Type: `cbba-sql-server-tank108` 
    - Example: `cbba-sql-server-john123`
    - **Must be unique worldwide!** If taken, add more numbers
 
@@ -309,7 +309,7 @@ Creating a SQL Server database in the cloud to store all user data, behavioral p
 **Why?** By default, Azure blocks all connections for security. We need to allow your computer and Azure services to connect.
 
 1. **Go to Your SQL Server** (not the database):
-   - In the Azure Portal, search for your server name: `cbba-sql-server-yourname`
+   - In the Azure Portal, search for your server name: `cbba-sql-server-tank108`
    - Click on it
 
 2. **Open Networking Settings:**
@@ -350,7 +350,7 @@ Creating a SQL Server database in the cloud to store all user data, behavioral p
    - Click the **copy icon** next to the ADO.NET connection string
    - It looks like this:
    ```
-   Server=tcp:cbba-sql-server-yourname.database.windows.net,1433;Initial Catalog=db_biometrics_mvp;Persist Security Info=False;User ID=cbbaadmin;Password={your_password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
+   Server=tcp:cbba-sql-server-tank108.database.windows.net,1433;Initial Catalog=db_biometrics_mvp;Persist Security Info=False;User ID=cbbaadmin;Password={your_password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
    ```
 
 4. **IMPORTANT - Update the Password:**
@@ -460,7 +460,7 @@ Deploying your ASP.NET Core backend to Azure App Service. This is the "brain" of
    - This groups everything together!
 
    **Name:**
-   - Type: `cbba-backend-yourname`
+   - Type: `cbba-backend-tank108`
    - Example: `cbba-backend-john123`
    - **Must be unique worldwide!**
    - This becomes your URL: `cbba-backend-john123.azurewebsites.net`
@@ -502,6 +502,13 @@ Deploying your ASP.NET Core backend to Azure App Service. This is the "brain" of
 
 ---
 
+
+
+
+
+
+
+
 ### 2.2 Generate Security Secrets
 
 **Before configuring, we need to generate secure keys!**
@@ -533,7 +540,7 @@ Deploying your ASP.NET Core backend to Azure App Service. This is the "brain" of
 **What are environment variables?** Secret settings your backend needs to run (like passwords, API keys, etc.)
 
 1. **Go to Your App Service:**
-   - In Azure Portal, find your `cbba-backend-yourname` app
+   - In Azure Portal, find your `cbba-backend-tank108` app
 
 2. **Open Configuration:**
    - Left menu → **"Settings"** section
@@ -679,12 +686,16 @@ Deploying your ASP.NET Core backend to Azure App Service. This is the "brain" of
 
 5. **Deploy to Azure:**
    ```powershell
-   az webapp deployment source config-zip --resource-group cbba-production --name cbba-backend-yourname --src ./publish.zip
+   az webapp deployment source config-zip --resource-group cbba-production --name cbba-backend-tank108 --src ./publish.zip
    ```
-   - **Replace `cbba-backend-yourname`** with YOUR backend name!
+   - **Replace `cbba-backend-tank108`** with YOUR backend name!
    - This uploads your code to Azure
    - Takes 2-3 minutes
    - You'll see lots of output, ending with "Deployment successful"
+
+
+
+
 
 **⏱️ Deployment time: 3-5 minutes**
 
@@ -696,18 +707,21 @@ Deploying your ASP.NET Core backend to Azure App Service. This is the "brain" of
 4. Select **"Azure"** → **"Next"**
 5. Select **"Azure App Service (Windows)"** → **"Next"**
 6. Sign in to Azure
-7. Select your subscription and `cbba-backend-yourname`
+7. Select your subscription and `cbba-backend-tank108`
 8. Click **"Finish"**
 9. Click **"Publish"** button
 10. Wait for "Publish succeeded"
 
 ---
 
+
+
+
+
 ### 2.5 Verify Backend is Running
 
 1. **Get Your Backend URL:**
-   - It's: `https://cbba-backend-yourname.azurewebsites.net`
-   - Example: `https://cbba-backend-john123.azurewebsites.net`
+   - It's: `https://cbba-backend-tank108.azurewebsites.net`
 
 2. **Test in Browser:**
    - Open this URL in your browser
@@ -716,8 +730,8 @@ Deploying your ASP.NET Core backend to Azure App Service. This is the "brain" of
      - Or a 404 error (this is OK! Your API endpoints exist at `/api/...`)
 
 3. **Test an API Endpoint:**
-   - Try: `https://cbba-backend-yourname.azurewebsites.net/api/health`
-   - Or: `https://cbba-backend-yourname.azurewebsites.net/swagger`
+   - Try: `https://cbba-backend-tank108.azurewebsites.net/api/health`
+   - Or: `https://cbba-backend-tank108.azurewebsites.net/swagger`
    - You should see a response (not an error page)
 
 4. **Check Logs if There's a Problem:**
@@ -731,6 +745,25 @@ Deploying your ASP.NET Core backend to Azure App Service. This is the "brain" of
 **⏱️ Time check**: You should be ~35 minutes in. Halfway there!
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 🤖 STEP 3: Deploy Python ML Service (AI Service) (25 minutes)
 
@@ -768,19 +801,22 @@ Good news! I already created the Dockerfile for you. Let's verify:
    ```powershell
    cd E:\CISP_Behavioural_Biometric\cbba_python_service
    
-   az acr create --resource-group cbba-production --name cbbaregistryyourname --sku Basic --location eastus
+   az acr create --resource-group cbba-production --name cbbaregistrytank108 --sku Basic --location eastus
    ```
-   - **Replace `yourname`** with something unique (e.g., `cbbaregistryjohn123`)
+   - **Replace `tank108`** with something unique (e.g., `cbbaregistryjohn123`)
    - ⚠️ **Must be lowercase letters and numbers only, no dashes!**
    - Takes 2-3 minutes
 
 2. **Wait for "provisioningState": "Succeeded"**
 
+
+
+
 3. **Login to the Registry:**
    ```powershell
-   az acr login --name cbbaregistryyourname
+   az acr login --name cbbaregistrytank108
    ```
-   - **Replace `cbbaregistryyourname`** with YOUR registry name
+   - **Replace `cbbaregistrytank108`** with YOUR registry name
    - You'll see "Login Succeeded"
 
 ✅ **Checkpoint**: Container Registry created and logged in!
@@ -798,9 +834,9 @@ Good news! I already created the Dockerfile for you. Let's verify:
 
 2. **Build and Push Image to Azure:**
    ```powershell
-   az acr build --registry cbbaregistryyourname --image cbba-python-service:latest .
+   az acr build --registry cbbaregistrytank108 --image cbba-python-service:latest .
    ```
-   - **Replace `cbbaregistryyourname`**
+   - **Replace `cbbaregistrytank108`**
    - The `.` at the end is important! (means "current directory")
    - This will:
      - Build your Docker image (3-5 minutes)
@@ -825,19 +861,19 @@ Good news! I already created the Dockerfile for you. Let's verify:
 
 2. **Get Registry Password:**
    ```powershell
-   az acr credential show --name cbbaregistryyourname --query "passwords[0].value" --output tsv
+   az acr credential show --name cbbaregistrytank108 --query "passwords[0].value" --output tsv
    ```
    - Copy the password that appears
 
 3. **Create Container Instance:**
    ```powershell
-   az container create --resource-group cbba-production --name cbba-python-service --image cbbaregistryyourname.azurecr.io/cbba-python-service:latest --cpu 1 --memory 1.5 --registry-login-server cbbaregistryyourname.azurecr.io --registry-username cbbaregistryyourname --registry-password [PASTE_REGISTRY_PASSWORD_HERE] --dns-name-label cbba-python-yourname --ports 5001 --environment-variables FLASK_PORT=5001 ENCRYPTION_KEY=[PASTE_ENCRYPTION_KEY_HERE] MODEL_STORAGE_PATH=/app/models RISK_THRESHOLD_MODERATE=50 RISK_THRESHOLD_HIGH=80
+   az container create --resource-group cbba-production --name cbba-python-service --image cbbaregistrytank108.azurecr.io/cbba-python-service:latest --cpu 1 --memory 1.5 --registry-login-server cbbaregistrytank108.azurecr.io --registry-username cbbaregistrytank108 --registry-password [PASTE_REGISTRY_PASSWORD_HERE] --dns-name-label cbba-python-tank108 --ports 5001 --environment-variables FLASK_PORT=5001 ENCRYPTION_KEY=[PASTE_ENCRYPTION_KEY_HERE] MODEL_STORAGE_PATH=/app/models RISK_THRESHOLD_MODERATE=50 RISK_THRESHOLD_HIGH=80
    ```
 
    **⚠️ IMPORTANT - Replace these values:**
-   - `cbbaregistryyourname` → Your registry name (appears 3 times!)
+   - `cbbaregistrytank108` → Your registry name (appears 3 times!)
    - `[PASTE_REGISTRY_PASSWORD_HERE]` → The password from step 2
-   - `cbba-python-yourname` → Unique DNS name (e.g., `cbba-python-john123`)
+   - `cbba-python-tank108` → Unique DNS name (e.g., `cbba-python-john123`)
    - `[PASTE_ENCRYPTION_KEY_HERE]` → Your encryption key from secrets
 
    **Example of final command:**
@@ -885,13 +921,13 @@ Good news! I already created the Dockerfile for you. Let's verify:
 **Now tell your backend where to find the Python service:**
 
 1. **Go to Azure Portal:**
-   - Find your App Service: `cbba-backend-yourname`
+   - Find your App Service: `cbba-backend-tank108`
 
 2. **Update Configuration:**
    - Left menu → **"Configuration"**
    - Find the setting: `PythonCBBAService__Url`
    - Click on it to edit
-   - Change value to: `http://cbba-python-yourname.eastus.azurecontainer.io:5001`
+   - Change value to: `http://cbba-python-tank108.eastus.azurecontainer.io:5001`
    - Click **"OK"**
    - Click **"Save"** at the top
    - Click **"Continue"** on the restart warning
@@ -922,10 +958,10 @@ Deploying your React website to Vercel so anyone can access it on the internet!
    - Open Notepad
    - Paste this (update the values!):
    ```properties
-   REACT_APP_API_URL=https://cbba-backend-yourname.azurewebsites.net
+   REACT_APP_API_URL=https://cbba-backend-tank108.azurewebsites.net
    REACT_APP_RECAPTCHA_SITE_KEY=your-recaptcha-site-key-from-earlier
    ```
-   - **Replace `cbba-backend-yourname`** with YOUR backend URL
+   - **Replace `cbba-backend-tank108`** with YOUR backend URL
    - **Replace `your-recaptcha-site-key-from-earlier`** with the Site Key (not Secret Key!)
    - Save as: `E:\CISP_Behavioural_Biometric\frontend\.env.production`
    - ⚠️ Make sure it's `.env.production`, not `.env.production.txt`!
@@ -979,7 +1015,7 @@ Deploying your React website to Vercel so anyone can access it on the internet!
    
    Add Variable 1:
    - Name: `REACT_APP_API_URL`
-   - Value: `https://cbba-backend-yourname.azurewebsites.net`
+   - Value: `https://cbba-backend-tank108.azurewebsites.net`
    - ⚠️ Use YOUR backend URL!
    - Click **"Add"**
 
@@ -999,7 +1035,7 @@ Deploying your React website to Vercel so anyone can access it on the internet!
 7. **Wait for Deployment** (3-5 minutes total)
    - You'll see a progress screen with steps
    - When done, you'll see: **"Congratulations! 🎉"**
-   - You'll see your URL: `https://cisp-behavioural-biometric-yourname.vercel.app`
+   - You'll see your URL: `https://cisp-behavioural-biometric-tank108.vercel.app`
 
 8. **Visit Your Website!**
    - Click the preview or visit the URL
@@ -1046,11 +1082,11 @@ Deploying your React website to Vercel so anyone can access it on the internet!
 ### 4.4 Update Backend with Frontend URL
 
 1. **Go to Backend Configuration:**
-   - Azure Portal → `cbba-backend-yourname` → **"Configuration"**
+   - Azure Portal → `cbba-backend-tank108` → **"Configuration"**
 
 2. **Update Frontend URL Setting:**
    - Find: `AppSettings__FrontendUrl`
-   - Change value to: `https://cisp-behavioural-biometric-yourname.vercel.app`
+   - Change value to: `https://cisp-behavioural-biometric-tank108.vercel.app`
    - Click **"OK"**
    - Click **"Save"**
    - Click **"Continue"** on restart warning
@@ -1068,7 +1104,7 @@ Deploying your React website to Vercel so anyone can access it on the internet!
 **Follow this exact sequence to verify everything is working:**
 
 1. **Open Your Frontend:**
-   - Go to your Vercel URL: `https://cisp-behavioural-biometric-yourname.vercel.app`
+   - Go to your Vercel URL: `https://cisp-behavioural-biometric-tank108.vercel.app`
    - Page should load (no errors in browser console)
 
 2. **Test User Registration:**
@@ -1121,14 +1157,14 @@ Deploying your React website to Vercel so anyone can access it on the internet!
 
 1. **Backend Health Check:**
    ```
-   https://cbba-backend-yourname.azurewebsites.net/api/health
+   https://cbba-backend-tank108.azurewebsites.net/api/health
    ```
    - Expected: `{"status":"healthy"}` or similar
    - ❌ If error: Check backend logs in Azure Portal
 
 2. **Python Service Health Check:**
    ```
-   http://cbba-python-yourname.eastus.azurecontainer.io:5001/api/cbba/health
+   http://cbba-python-tank108.eastus.azurecontainer.io:5001/api/cbba/health
    ```
    - Expected: `{"status":"healthy"}`
    - ❌ If error: Check container logs in Azure Portal
@@ -1435,12 +1471,12 @@ az resource list --resource-group cbba-production --output table
 
 **Restart backend:**
 ```powershell
-az webapp restart --name cbba-backend-yourname --resource-group cbba-production
+az webapp restart --name cbba-backend-tank108 --resource-group cbba-production
 ```
 
 **View backend logs:**
 ```powershell
-az webapp log tail --name cbba-backend-yourname --resource-group cbba-production
+az webapp log tail --name cbba-backend-tank108 --resource-group cbba-production
 ```
 
 **Check container status:**
@@ -1639,7 +1675,7 @@ az group delete --name cbba-production --yes --no-wait
 **How to enable:**
 
 1. **Go to Your Backend App Service:**
-   - Azure Portal → `cbba-backend-yourname`
+   - Azure Portal → `cbba-backend-tank108`
 
 2. **Enable Application Insights:**
    - Left menu → **"Application Insights"**
@@ -1694,17 +1730,17 @@ az group delete --name cbba-production --yes --no-wait
 
 **Check backend health:**
 ```powershell
-curl https://cbba-backend-yourname.azurewebsites.net/api/health
+curl https://cbba-backend-tank108.azurewebsites.net/api/health
 ```
 
 **Check Python service health:**
 ```powershell
-curl http://cbba-python-yourname.azurecontainer.io:5001/api/cbba/health
+curl http://cbba-python-tank108.azurecontainer.io:5001/api/cbba/health
 ```
 
 **View live backend logs:**
 ```powershell
-az webapp log tail --name cbba-backend-yourname --resource-group cbba-production
+az webapp log tail --name cbba-backend-tank108 --resource-group cbba-production
 ```
 
 **Check container status:**
@@ -1714,7 +1750,7 @@ az container show --resource-group cbba-production --name cbba-python-service --
 
 **Get database size:**
 ```powershell
-az sql db show --resource-group cbba-production --server cbba-sql-server-yourname --name db_biometrics_mvp --query "maxSizeBytes"
+az sql db show --resource-group cbba-production --server cbba-sql-server-tank108 --name db_biometrics_mvp --query "maxSizeBytes"
 ```
 
 ---
@@ -1748,7 +1784,7 @@ az sql db show --resource-group cbba-production --server cbba-sql-server-yournam
    cd backend
    dotnet publish -c Release -o ./publish
    Compress-Archive -Path ./publish/* -DestinationPath ./publish.zip -Force
-   az webapp deployment source config-zip --resource-group cbba-production --name cbba-backend-yourname --src ./publish.zip
+   az webapp deployment source config-zip --resource-group cbba-production --name cbba-backend-tank108 --src ./publish.zip
    ```
 
 ---
@@ -1808,7 +1844,7 @@ dotnet ef database update
 
 **Wrong URL in Backend:**
 - Backend Configuration → `PythonCBBAService__Url`
-- Should be: `http://cbba-python-yourname.region.azurecontainer.io:5001`
+- Should be: `http://cbba-python-tank108.region.azurecontainer.io:5001`
 - Make sure it's `http://` not `https://`
 - Don't forget the `:5001` port!
 
@@ -1846,7 +1882,7 @@ dotnet ef database update
 dotnet tool install --global dotnet-sql-cache
 
 # Test connection (replace with your details)
-sqlcmd -S cbba-sql-server-yourname.database.windows.net -U cbbaadmin -P YourPassword -d db_biometrics_mvp -Q "SELECT @@VERSION"
+sqlcmd -S cbba-sql-server-tank108.database.windows.net -U cbbaadmin -P YourPassword -d db_biometrics_mvp -Q "SELECT @@VERSION"
 ```
 
 ---
@@ -2058,9 +2094,9 @@ az container start --resource-group cbba-production --name cbba-python-service
 ### Your System:
 
 - **Frontend URL:** `https://your-app.vercel.app`
-- **Backend URL:** `https://cbba-backend-yourname.azurewebsites.net`
-- **Python Service:** `http://cbba-python-yourname.azurecontainer.io:5001`
-- **Database:** `cbba-sql-server-yourname.database.windows.net`
+- **Backend URL:** `https://cbba-backend-tank108.azurewebsites.net`
+- **Python Service:** `http://cbba-python-tank108.azurecontainer.io:5001`
+- **Database:** `cbba-sql-server-tank108.database.windows.net`
 
 ### Monthly Cost:
 

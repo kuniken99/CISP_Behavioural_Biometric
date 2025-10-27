@@ -1,0 +1,16 @@
+<step title="Incoming Request" date="2025-10-27T03:16:22.428" instance="6a24cd" url="/api/zipdeploy?isAsync=true" method="POST" type="request" pid="588,2,7" Cache-Control="no-cache" Content-Length="6904213" Content-Type="application/octet-stream" Accept="*/*" Accept-Encoding="gzip, deflate" Authorization="Bea..." Host="cbba-backend-tank108-cqaqdefdf8ffehfx.scm.southeastasia-01.azurewebsites.net" User-Agent="AZURECLI/2.77.0 (MSI)" x-ms-client-request-id="45be1f15-b2e3-11f0-b0f3-aa7042f5b042" X-ARR-LOG-ID="45be1f15-b2e3-11f0-b0f3-aa7042f5b042" CLIENT-IP="118.200.208.214:63021" X-SITE-DEPLOYMENT-ID="cbba-backend-tank108" WAS-DEFAULT-HOSTNAME="cbba-backend-tank108-cqaqdefdf8ffehfx.scm.southeastasia-01.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/zipdeploy?isAsync=true" >
+  <step title="ZipPushDeploy" date="2025-10-27T03:16:23.954" >
+    <step title="ZipDeploy. Extract zip. " date="2025-10-27T03:16:24.033" /><!-- duration: 0ms -->
+    <step title="Starting PushDeployAsync" date="2025-10-27T03:16:24.063" /><!-- duration: 31ms -->
+    <step title="Updating shutdown sentinel last write time" date="2025-10-27T03:16:24.377" SemaphoreCount="7" /><!-- duration: 0ms -->
+    <step title="LockFile &apos;C:\home\site\locks\deployments.lock&apos; acquired" date="2025-10-27T03:16:24.391" /><!-- duration: 0ms -->
+    <step title="Saving request content to C:\local\Temp\zipdeploy\4pdpvuk5.zip" date="2025-10-27T03:16:24.407" >
+      <step title="Total 6,904,213 bytes written to C:\local\Temp\zipdeploy\4pdpvuk5.zip" date="2025-10-27T03:16:24.709" /><!-- duration: 11ms -->
+    </step><!-- duration: 313ms -->
+    <step title="LockFile &apos;C:\home\site\locks\deployments.lock&apos; released" date="2025-10-27T03:16:24.735" /><!-- duration: 16ms -->
+    <step title="Deleting shutdown sentinel file" date="2025-10-27T03:16:24.751" SemaphoreCount="8" /><!-- duration: 16ms -->
+    <step title="Starting FetchDeploy" date="2025-10-27T03:16:24.782" /><!-- duration: 0ms -->
+    <step title="Start deployment in the background" date="2025-10-27T03:16:24.798" /><!-- duration: 250ms -->
+  </step><!-- duration: 1109ms -->
+  <step title="Outgoing response" date="2025-10-27T03:16:25.350" type="response" statusCode="202" statusText="Accepted" Server="Microsoft-IIS/10.0" x-ms-request-id="45be1f15-b2e3-11f0-b0f3-aa7042f5b042" Retry-After="30" Cache-Control="private" X-AspNet-Version="4.0.30319" Location="https://cbba-backend-tank108-cqaqdefdf8ffehfx.scm.southeastasia-01.azurewebsites.net/api/deployments/latest?deployer=ZipDeploy&amp;time=2025-10-27_03-16-25Z" /><!-- duration: 10ms -->
+</step><!-- duration: 2952ms -->

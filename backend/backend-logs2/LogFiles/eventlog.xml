@@ -1,0 +1,205 @@
+<Events><Event><System><Provider Name=".NET Runtime"/><EventID>1000</EventID><Level>2</Level><Task>0</Task><Keywords>Keywords</Keywords><TimeCreated SystemTime="2025-10-27T03:20:36Z"/><EventRecordID>38406859</EventRecordID><Channel>Application</Channel><Computer>dw1sdwk000DJV</Computer><Security/></System><EventData><Data>Category: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager
+EventId: 35
+
+No XML encryptor configured. Key {0a0160bf-98d7-491c-b92d-482198472979} may be persisted to storage in unencrypted form.
+</Data></EventData></Event><Event><System><Provider Name=".NET Runtime"/><EventID>1000</EventID><Level>1</Level><Task>0</Task><Keywords>Keywords</Keywords><TimeCreated SystemTime="2025-10-27T03:20:37Z"/><EventRecordID>38408250</EventRecordID><Channel>Application</Channel><Computer>dw1sdwk000DJV</Computer><Security/></System><EventData><Data>Category: Microsoft.AspNetCore.Hosting.Diagnostics
+EventId: 6
+
+Application startup exception
+
+Exception: 
+System.InvalidOperationException: Application is running inside IIS process but is not configured to use IIS server.
+   at Microsoft.AspNetCore.Server.IIS.Core.IISServerSetupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.HostFilteringStartupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+</Data></EventData></Event><Event><System><Provider Name=".NET Runtime"/><EventID>1000</EventID><Level>1</Level><Task>0</Task><Keywords>Keywords</Keywords><TimeCreated SystemTime="2025-10-27T03:20:38Z"/><EventRecordID>38408593</EventRecordID><Channel>Application</Channel><Computer>dw1sdwk000DJV</Computer><Security/></System><EventData><Data>Category: Microsoft.Extensions.Hosting.Internal.Host
+EventId: 11
+
+Hosting failed to start
+
+Exception: 
+System.InvalidOperationException: Application is running inside IIS process but is not configured to use IIS server.
+   at Microsoft.AspNetCore.Server.IIS.Core.IISServerSetupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.HostFilteringStartupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.&lt;StartAsync&gt;b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+</Data></EventData></Event><Event><System><Provider Name=".NET Runtime"/><EventID>1026</EventID><Level>1</Level><Task>0</Task><Keywords>Keywords</Keywords><TimeCreated SystemTime="2025-10-27T03:20:38Z"/><EventRecordID>38409062</EventRecordID><Channel>Application</Channel><Computer>dw1sdwk000DJV</Computer><Security/></System><EventData><Data>Application: w3wp.exe
+CoreCLR Version: 8.0.1625.21506
+.NET Version: 8.0.16
+Description: The process was terminated due to an unhandled exception.
+Exception Info: System.InvalidOperationException: Application is running inside IIS process but is not configured to use IIS server.
+   at Microsoft.AspNetCore.Server.IIS.Core.IISServerSetupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.HostFilteringStartupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.&lt;StartAsync&gt;b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+   at Microsoft.Extensions.Hosting.Internal.Host.&lt;StartAsync&gt;g__LogAndRethrow|15_3(&lt;&gt;c__DisplayClass15_0&amp;)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.Run(IHost host)
+   at db_biometrics_mvp.Backend.Program.Main(String[] args) in E:\CISP_Behavioural_Biometric\backend\Program.cs:line 12
+</Data></EventData></Event><Event><System><Provider Name="IIS AspNetCore Module V2"/><EventID>1018</EventID><Level>1</Level><Task>0</Task><Keywords>Keywords</Keywords><TimeCreated SystemTime="2025-10-27T03:20:39Z"/><EventRecordID>38409312</EventRecordID><Channel>Application</Channel><Computer>dw1sdwk000DJV</Computer><Security/></System><EventData><Data>Application '/LM/W3SVC/503970870/ROOT' with physical root 'C:\home\site\wwwroot\' hit unexpected managed exception, exception code = '0xe0434352'. First 30KB characters of captured stdout and stderr logs:
+warn: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[35]
+      No XML encryptor configured. Key {0a0160bf-98d7-491c-b92d-482198472979} may be persisted to storage in unencrypted form.
+crit: Microsoft.AspNetCore.Hosting.Diagnostics[6]
+      Application startup exception
+      System.InvalidOperationException: Application is running inside IIS process but is not configured to use IIS server.
+         at Microsoft.AspNetCore.Server.IIS.Core.IISServerSetupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+         at Microsoft.AspNetCore.HostFilteringStartupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+         at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+fail: Microsoft.Extensions.Hosting.Internal.Host[11]
+      Hosting failed to start
+      System.InvalidOperationException: Application is running inside IIS process but is not configured to use IIS server.
+         at Microsoft.AspNetCore.Server.IIS.Core.IISServerSetupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+         at Microsoft.AspNetCore.HostFilteringStartupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+         at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+         at Microsoft.Extensions.Hosting.Internal.Host.&lt;StartAsync&gt;b__15_1(IHostedService service, CancellationToken token)
+         at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+Unhandled exception. System.InvalidOperationException: Application is running inside IIS process but is not configured to use IIS server.
+   at Microsoft.AspNetCore.Server.IIS.Core.IISServerSetupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.HostFilteringStartupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.&lt;StartAsync&gt;b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+   at Microsoft.Extensions.Hosting.Internal.Host.&lt;StartAsync&gt;g__LogAndRethrow|15_3(&lt;&gt;c__DisplayClass15_0&amp;)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.Run(IHost host)
+   at db_biometrics_mvp.Backend.Program.Main(String[] args) in E:\CISP_Behavioural_Biometric\backend\Program.cs:line 12
+</Data><Data>Process Id: 5076.</Data><Data>File Version: 18.0.25107.16. Description: IIS ASP.NET Core Module V2 Request Handler. Commit: </Data></EventData></Event><Event><System><Provider Name="IIS AspNetCore Module V2"/><EventID>1007</EventID><Level>1</Level><Task>0</Task><Keywords>Keywords</Keywords><TimeCreated SystemTime="2025-10-27T03:20:39Z"/><EventRecordID>38409953</EventRecordID><Channel>Application</Channel><Computer>dw1sdwk000DJV</Computer><Security/></System><EventData><Data>Application '/LM/W3SVC/503970870/ROOT' with physical root 'C:\home\site\wwwroot\' failed to load coreclr. Exception message:
+CLR worker thread exited prematurely</Data><Data>Process Id: 5076.</Data><Data>File Version: 18.0.25107.16. Description: IIS ASP.NET Core Module V2 Request Handler. Commit: </Data></EventData></Event><Event><System><Provider Name=".NET Runtime"/><EventID>1000</EventID><Level>1</Level><Task>0</Task><Keywords>Keywords</Keywords><TimeCreated SystemTime="2025-10-27T03:24:10Z"/><EventRecordID>38620765</EventRecordID><Channel>Application</Channel><Computer>dw1sdwk000DJV</Computer><Security/></System><EventData><Data>Category: Microsoft.AspNetCore.Hosting.Diagnostics
+EventId: 6
+
+Application startup exception
+
+Exception: 
+System.InvalidOperationException: Application is running inside IIS process but is not configured to use IIS server.
+   at Microsoft.AspNetCore.Server.IIS.Core.IISServerSetupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.HostFilteringStartupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+</Data></EventData></Event><Event><System><Provider Name=".NET Runtime"/><EventID>1000</EventID><Level>1</Level><Task>0</Task><Keywords>Keywords</Keywords><TimeCreated SystemTime="2025-10-27T03:24:10Z"/><EventRecordID>38620781</EventRecordID><Channel>Application</Channel><Computer>dw1sdwk000DJV</Computer><Security/></System><EventData><Data>Category: Microsoft.Extensions.Hosting.Internal.Host
+EventId: 11
+
+Hosting failed to start
+
+Exception: 
+System.InvalidOperationException: Application is running inside IIS process but is not configured to use IIS server.
+   at Microsoft.AspNetCore.Server.IIS.Core.IISServerSetupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.HostFilteringStartupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.&lt;StartAsync&gt;b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+</Data></EventData></Event><Event><System><Provider Name=".NET Runtime"/><EventID>1026</EventID><Level>1</Level><Task>0</Task><Keywords>Keywords</Keywords><TimeCreated SystemTime="2025-10-27T03:24:10Z"/><EventRecordID>38620843</EventRecordID><Channel>Application</Channel><Computer>dw1sdwk000DJV</Computer><Security/></System><EventData><Data>Application: w3wp.exe
+CoreCLR Version: 8.0.1625.21506
+.NET Version: 8.0.16
+Description: The process was terminated due to an unhandled exception.
+Exception Info: System.InvalidOperationException: Application is running inside IIS process but is not configured to use IIS server.
+   at Microsoft.AspNetCore.Server.IIS.Core.IISServerSetupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.HostFilteringStartupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.&lt;StartAsync&gt;b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+   at Microsoft.Extensions.Hosting.Internal.Host.&lt;StartAsync&gt;g__LogAndRethrow|15_3(&lt;&gt;c__DisplayClass15_0&amp;)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.Run(IHost host)
+   at db_biometrics_mvp.Backend.Program.Main(String[] args) in E:\CISP_Behavioural_Biometric\backend\Program.cs:line 12
+</Data></EventData></Event><Event><System><Provider Name="IIS AspNetCore Module V2"/><EventID>1018</EventID><Level>1</Level><Task>0</Task><Keywords>Keywords</Keywords><TimeCreated SystemTime="2025-10-27T03:24:10Z"/><EventRecordID>38620859</EventRecordID><Channel>Application</Channel><Computer>dw1sdwk000DJV</Computer><Security/></System><EventData><Data>Application '/LM/W3SVC/503970870/ROOT' with physical root 'C:\home\site\wwwroot\' hit unexpected managed exception, exception code = '0xe0434352'. First 30KB characters of captured stdout and stderr logs:
+crit: Microsoft.AspNetCore.Hosting.Diagnostics[6]
+      Application startup exception
+      System.InvalidOperationException: Application is running inside IIS process but is not configured to use IIS server.
+         at Microsoft.AspNetCore.Server.IIS.Core.IISServerSetupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+         at Microsoft.AspNetCore.HostFilteringStartupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+         at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+fail: Microsoft.Extensions.Hosting.Internal.Host[11]
+      Hosting failed to start
+      System.InvalidOperationException: Application is running inside IIS process but is not configured to use IIS server.
+         at Microsoft.AspNetCore.Server.IIS.Core.IISServerSetupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+         at Microsoft.AspNetCore.HostFilteringStartupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+         at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+         at Microsoft.Extensions.Hosting.Internal.Host.&lt;StartAsync&gt;b__15_1(IHostedService service, CancellationToken token)
+         at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+Unhandled exception. System.InvalidOperationException: Application is running inside IIS process but is not configured to use IIS server.
+   at Microsoft.AspNetCore.Server.IIS.Core.IISServerSetupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.HostFilteringStartupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.&lt;StartAsync&gt;b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+   at Microsoft.Extensions.Hosting.Internal.Host.&lt;StartAsync&gt;g__LogAndRethrow|15_3(&lt;&gt;c__DisplayClass15_0&amp;)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.Run(IHost host)
+   at db_biometrics_mvp.Backend.Program.Main(String[] args) in E:\CISP_Behavioural_Biometric\backend\Program.cs:line 12
+</Data><Data>Process Id: 5608.</Data><Data>File Version: 18.0.25107.16. Description: IIS ASP.NET Core Module V2 Request Handler. Commit: </Data></EventData></Event><Event><System><Provider Name="IIS AspNetCore Module V2"/><EventID>1007</EventID><Level>1</Level><Task>0</Task><Keywords>Keywords</Keywords><TimeCreated SystemTime="2025-10-27T03:24:10Z"/><EventRecordID>38620875</EventRecordID><Channel>Application</Channel><Computer>dw1sdwk000DJV</Computer><Security/></System><EventData><Data>Application '/LM/W3SVC/503970870/ROOT' with physical root 'C:\home\site\wwwroot\' failed to load coreclr. Exception message:
+CLR worker thread exited prematurely</Data><Data>Process Id: 5608.</Data><Data>File Version: 18.0.25107.16. Description: IIS ASP.NET Core Module V2 Request Handler. Commit: </Data></EventData></Event><Event><System><Provider Name="W3SVC-WP"/><EventID>2303</EventID><Level>2</Level><Task>0</Task><Keywords>Keywords</Keywords><TimeCreated SystemTime="2025-10-27T03:24:27Z"/><EventRecordID>38637312</EventRecordID><Channel>Application</Channel><Computer>dw1sdwk000DJV</Computer><Security/></System><EventData><Data>cbba-backend-tank108</Data><Binary>02000780</Binary></EventData></Event><Event><System><Provider Name="W3SVC-WP"/><EventID>2303</EventID><Level>2</Level><Task>0</Task><Keywords>Keywords</Keywords><TimeCreated SystemTime="2025-10-27T03:24:27Z"/><EventRecordID>38637421</EventRecordID><Channel>Application</Channel><Computer>dw1sdwk000DJV</Computer><Security/></System><EventData><Data>cbba-backend-tank108</Data><Binary>02000780</Binary></EventData></Event><Event><System><Provider Name=".NET Runtime"/><EventID>1000</EventID><Level>1</Level><Task>0</Task><Keywords>Keywords</Keywords><TimeCreated SystemTime="2025-10-27T03:25:12Z"/><EventRecordID>38683140</EventRecordID><Channel>Application</Channel><Computer>dw1sdwk000DJV</Computer><Security/></System><EventData><Data>Category: Microsoft.AspNetCore.Hosting.Diagnostics
+EventId: 6
+
+Application startup exception
+
+Exception: 
+System.InvalidOperationException: Application is running inside IIS process but is not configured to use IIS server.
+   at Microsoft.AspNetCore.Server.IIS.Core.IISServerSetupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.HostFilteringStartupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+</Data></EventData></Event><Event><System><Provider Name=".NET Runtime"/><EventID>1000</EventID><Level>1</Level><Task>0</Task><Keywords>Keywords</Keywords><TimeCreated SystemTime="2025-10-27T03:25:12Z"/><EventRecordID>38683156</EventRecordID><Channel>Application</Channel><Computer>dw1sdwk000DJV</Computer><Security/></System><EventData><Data>Category: Microsoft.Extensions.Hosting.Internal.Host
+EventId: 11
+
+Hosting failed to start
+
+Exception: 
+System.InvalidOperationException: Application is running inside IIS process but is not configured to use IIS server.
+   at Microsoft.AspNetCore.Server.IIS.Core.IISServerSetupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.HostFilteringStartupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.&lt;StartAsync&gt;b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+</Data></EventData></Event><Event><System><Provider Name=".NET Runtime"/><EventID>1026</EventID><Level>1</Level><Task>0</Task><Keywords>Keywords</Keywords><TimeCreated SystemTime="2025-10-27T03:25:12Z"/><EventRecordID>38683234</EventRecordID><Channel>Application</Channel><Computer>dw1sdwk000DJV</Computer><Security/></System><EventData><Data>Application: w3wp.exe
+CoreCLR Version: 8.0.1625.21506
+.NET Version: 8.0.16
+Description: The process was terminated due to an unhandled exception.
+Exception Info: System.InvalidOperationException: Application is running inside IIS process but is not configured to use IIS server.
+   at Microsoft.AspNetCore.Server.IIS.Core.IISServerSetupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.HostFilteringStartupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.&lt;StartAsync&gt;b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+   at Microsoft.Extensions.Hosting.Internal.Host.&lt;StartAsync&gt;g__LogAndRethrow|15_3(&lt;&gt;c__DisplayClass15_0&amp;)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.Run(IHost host)
+   at db_biometrics_mvp.Backend.Program.Main(String[] args) in E:\CISP_Behavioural_Biometric\backend\Program.cs:line 12
+</Data></EventData></Event><Event><System><Provider Name="IIS AspNetCore Module V2"/><EventID>1018</EventID><Level>1</Level><Task>0</Task><Keywords>Keywords</Keywords><TimeCreated SystemTime="2025-10-27T03:25:12Z"/><EventRecordID>38683250</EventRecordID><Channel>Application</Channel><Computer>dw1sdwk000DJV</Computer><Security/></System><EventData><Data>Application '/LM/W3SVC/503970870/ROOT' with physical root 'C:\home\site\wwwroot\' hit unexpected managed exception, exception code = '0xe0434352'. First 30KB characters of captured stdout and stderr logs:
+crit: Microsoft.AspNetCore.Hosting.Diagnostics[6]
+      Application startup exception
+      System.InvalidOperationException: Application is running inside IIS process but is not configured to use IIS server.
+         at Microsoft.AspNetCore.Server.IIS.Core.IISServerSetupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+         at Microsoft.AspNetCore.HostFilteringStartupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+         at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+fail: Microsoft.Extensions.Hosting.Internal.Host[11]
+      Hosting failed to start
+      System.InvalidOperationException: Application is running inside IIS process but is not configured to use IIS server.
+         at Microsoft.AspNetCore.Server.IIS.Core.IISServerSetupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+         at Microsoft.AspNetCore.HostFilteringStartupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+         at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+         at Microsoft.Extensions.Hosting.Internal.Host.&lt;StartAsync&gt;b__15_1(IHostedService service, CancellationToken token)
+         at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+Unhandled exception. System.InvalidOperationException: Application is running inside IIS process but is not configured to use IIS server.
+   at Microsoft.AspNetCore.Server.IIS.Core.IISServerSetupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.HostFilteringStartupFilter.&lt;&gt;c__DisplayClass0_0.&lt;Configure&gt;b__0(IApplicationBuilder app)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.&lt;StartAsync&gt;b__15_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+   at Microsoft.Extensions.Hosting.Internal.Host.&lt;StartAsync&gt;g__LogAndRethrow|15_3(&lt;&gt;c__DisplayClass15_0&amp;)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.Run(IHost host)
+   at db_biometrics_mvp.Backend.Program.Main(String[] args) in E:\CISP_Behavioural_Biometric\backend\Program.cs:line 12
+</Data><Data>Process Id: 316.</Data><Data>File Version: 18.0.25107.16. Description: IIS ASP.NET Core Module V2 Request Handler. Commit: </Data></EventData></Event><Event><System><Provider Name="IIS AspNetCore Module V2"/><EventID>1007</EventID><Level>1</Level><Task>0</Task><Keywords>Keywords</Keywords><TimeCreated SystemTime="2025-10-27T03:25:12Z"/><EventRecordID>38683265</EventRecordID><Channel>Application</Channel><Computer>dw1sdwk000DJV</Computer><Security/></System><EventData><Data>Application '/LM/W3SVC/503970870/ROOT' with physical root 'C:\home\site\wwwroot\' failed to load coreclr. Exception message:
+CLR worker thread exited prematurely</Data><Data>Process Id: 316.</Data><Data>File Version: 18.0.25107.16. Description: IIS ASP.NET Core Module V2 Request Handler. Commit: </Data></EventData></Event></Events>
