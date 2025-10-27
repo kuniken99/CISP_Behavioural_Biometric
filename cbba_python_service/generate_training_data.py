@@ -241,11 +241,19 @@ def generate_training_session(session_type='normal'):
         'mouse_data': mouse_data
     }
 
-def train_user_profile(username, jwt_token, num_samples=20):
+def train_user_profile(username, jwt_token, num_samples=20, backend_url=None):
     """Train user profile with diverse behavioral data"""
+    
+    # Default to localhost if not specified
+    if backend_url is None:
+        backend_url = 'http://localhost:5000'
+    
+    # Remove trailing slash if present
+    backend_url = backend_url.rstrip('/')
     
     print(f"\n{'='*60}")
     print(f"CBBA Model Training for User: {username}")
+    print(f"Backend URL: {backend_url}")
     print(f"{'='*60}\n")
     
     # Generate diverse training sessions
@@ -269,7 +277,7 @@ def train_user_profile(username, jwt_token, num_samples=20):
     try:
         # Send to backend API
         response = requests.post(
-            'http://localhost:5000/api/Biometric/train',
+            f'{backend_url}/api/Biometric/train',
             headers={
                 'Authorization': f'Bearer {jwt_token}',
                 'Content-Type': 'application/json'
@@ -319,10 +327,8 @@ def train_user_profile(username, jwt_token, num_samples=20):
             
     except requests.exceptions.ConnectionError:
         print(f"✗ Connection Error!\n")
-        print(f"Could not connect to backend at http://localhost:5000")
-        print(f"Make sure the backend service is running:\n")
-        print(f"  cd E:\\CISP_Behavioural_Biometric\\backend")
-        print(f"  dotnet run\n")
+        print(f"Could not connect to backend at {backend_url}")
+        print(f"Make sure the backend service is running and accessible.\n")
         return False
     except Exception as e:
         print(f"✗ Training Error!\n")
@@ -335,20 +341,24 @@ def print_usage():
     print("CBBA Model Training Data Generator")
     print("="*60 + "\n")
     print("Usage:")
-    print("  python generate_training_data.py <username> <jwt_token> [num_samples]\n")
+    print("  python generate_training_data.py <username> <jwt_token> [num_samples] [backend_url]\n")
     print("Parameters:")
     print("  username     - Your username (e.g., tank108)")
     print("  jwt_token    - Your JWT authentication token")
-    print("  num_samples  - Number of training samples (default: 100, recommended: 200-500)\n")
+    print("  num_samples  - Number of training samples (default: 100, recommended: 200-500)")
+    print("  backend_url  - Backend API URL (default: http://localhost:5000)\n")
     print("Recommended sample counts:")
     print("  • Basic training:     100-200 samples (faster, decent accuracy)")
     print("  • Good accuracy:      200-500 samples (balanced, recommended)")
     print("  • High accuracy:      500-1000 samples (better false positive reduction)")
     print("  • Maximum accuracy:   1000-5000 samples (best accuracy, slower training)\n")
-    print("Example:")
-    print("  python generate_training_data.py tank108 eyJhbGciOi... 500\n")
+    print("Examples:")
+    print("  Local development:")
+    print("    python generate_training_data.py tank108 eyJhbGciOi... 500\n")
+    print("  Production deployment:")
+    print("    python generate_training_data.py tank108 eyJhbGciOi... 500 https://cbba-backend-tank108-cqaqdefdf8ffehfx.southeastasia-01.azurewebsites.net\n")
     print("How to get your JWT token:")
-    print("  1. Login to the application")
+    print("  1. Login to the application (localhost or production)")
     print("  2. Open browser console (F12)")
     print("  3. Run: localStorage.getItem('jwt_token')")
     print("  4. Copy the token (without quotes)")
@@ -363,6 +373,7 @@ if __name__ == '__main__':
     username = sys.argv[1]
     jwt_token = sys.argv[2]
     num_samples = int(sys.argv[3]) if len(sys.argv) > 3 else 100
+    backend_url = sys.argv[4] if len(sys.argv) > 4 else None
     
     # Validate inputs
     if not username or not jwt_token:
@@ -383,7 +394,7 @@ if __name__ == '__main__':
             sys.exit(1)
     
     # Run training
-    success = train_user_profile(username, jwt_token, num_samples)
+    success = train_user_profile(username, jwt_token, num_samples, backend_url)
     
     if success:
         print("Next steps:")
