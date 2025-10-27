@@ -1,4 +1,5 @@
 // frontend/src/config/constants.js
+// Updated for production deployment
 
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000'; // Your ASP.NET Core API base URL
 // export const API_BASE_URL_SSL = 'https://localhost-5000.vscodessl-api.net/api';
