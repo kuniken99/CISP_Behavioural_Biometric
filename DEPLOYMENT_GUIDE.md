@@ -1170,18 +1170,28 @@ Deploying your React website to Vercel so anyone can access it on the internet!
    - Install Command: `npm install`
 
    **Environment Variables:**
-   - Click **"Environment Variables"** section
+   - Click **"Environment Variables"** section to expand it
+   
+   **⚠️ IMPORTANT:** Enter each variable individually, NOT as a reference to secrets.
    
    Add Variable 1:
-   - Name: `REACT_APP_API_URL`
-   - Value: `https://cbba-backend-tank108.azurewebsites.net`
-   - ⚠️ Use YOUR backend URL!
-   - Click **"Add"**
+   - Key (Name): `REACT_APP_API_URL`
+   - Value: Paste your full backend URL
+   - Example: `https://cbba-backend-tank108-cqaqdefdf8ffehfx.southeastasia-01.azurewebsites.net`
+   - ⚠️ **Use YOUR actual backend URL** from Step 2.5!
+   - **Do NOT** add quotes around the URL
+   - Environment: Select **"Production"** (default)
+   - Click **"Add"** button
 
    Add Variable 2:
-   - Name: `REACT_APP_RECAPTCHA_SITE_KEY`
-   - Value: [Your reCAPTCHA Site Key from earlier]
-   - Click **"Add"**
+   - Key (Name): `REACT_APP_RECAPTCHA_SITE_KEY`
+   - Value: Paste your reCAPTCHA Site Key (NOT Secret Key!)
+   - Example: `6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI`
+   - **Do NOT** add quotes
+   - Environment: Select **"Production"** (default)
+   - Click **"Add"** button
+
+   **Double-check both variables are added** before proceeding!
 
 6. **Deploy!**
    - Click **"Deploy"** button
@@ -1445,6 +1455,31 @@ Solution:
 - Check SMTP settings in backend configuration
 - Make sure "Less secure app access" is OFF (use App Password instead)
 - Check backend logs for SMTP errors
+
+**Problem: Vercel build fails with "references Secret which does not exist"**
+
+Solution:
+- This happens when environment variables are entered incorrectly
+- **Fix:**
+  1. Go to Vercel Dashboard → Your Project → **Settings** → **Environment Variables**
+  2. Delete the problematic variable
+  3. Re-add it with the actual VALUE (not a reference):
+     - Key: `REACT_APP_API_URL`
+     - Value: `https://cbba-backend-tank108-cqaqdefdf8ffehfx.southeastasia-01.azurewebsites.net`
+     - **Do NOT** use quotes or secret references
+  4. Go to **Deployments** tab
+  5. Click the three dots (•••) on the latest deployment
+  6. Click **"Redeploy"** → **"Use existing build cache"** → **"Redeploy"**
+
+**Problem: Frontend loads but shows "Network Error" or "Cannot connect to API"**
+
+Solution:
+- Open browser Developer Tools (F12) → Console tab
+- Check for CORS errors
+- Verify `REACT_APP_API_URL` is set correctly in Vercel (Settings → Environment Variables)
+- Make sure backend URL starts with `https://` (not `http://`)
+- Check backend is running: Test `https://[backend-url]/api/health`
+- Update CORS in backend to include your Vercel URL (see Step 4.3)
 
 ---
 
