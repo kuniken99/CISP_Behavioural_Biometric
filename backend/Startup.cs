@@ -110,7 +110,9 @@ namespace db_biometrics_mvp.Backend
                 {
                     builder.WithOrigins(
                             "http://localhost:3000",
-                            "https://n4r8cp9x-3000.asse.devtunnels.ms" // update this if tunnel changes
+                            "https://n4r8cp9x-3000.asse.devtunnels.ms", // update this if tunnel changes
+                            "https://csip-hfje2gfkh-kens-projects-7a196530.vercel.app", // Vercel production
+                            "https://csip-e6mnv2p2g-kens-projects-7a196530.vercel.app"  // Vercel previous deployment
                         )
                         .AllowAnyHeader()
                         .AllowAnyMethod()
