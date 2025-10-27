@@ -5,9 +5,10 @@ from sklearn.svm import OneClassSVM
 from sklearn.preprocessing import StandardScaler
 import joblib
 import os
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List, Dict
 from datetime import datetime
 import json
+from keystroke_anomaly_detector import KeystrokeAnomalyDetector
 
 
 class AnomalyDetector:
@@ -46,6 +47,9 @@ class AnomalyDetector:
         self.is_trained = False
         self.training_samples = []
         self.feature_dim = None
+        
+        # Initialize keystroke anomaly detector for advanced pattern detection
+        self.keystroke_detector = KeystrokeAnomalyDetector()
         
         # Load existing model if available
         self._load_model()
@@ -120,12 +124,13 @@ class AnomalyDetector:
             print(f"Update training failed for user {self.user_id}: {str(e)}")
             return False
     
-    def predict(self, feature_vector: np.ndarray) -> Tuple[float, dict]:
+    def predict(self, feature_vector: np.ndarray, keystroke_data: List[Dict] = None) -> Tuple[float, dict]:
         """
         Predict anomaly score for a feature vector
         
         Args:
             feature_vector: Single feature vector to evaluate
+            keystroke_data: Optional raw keystroke data for advanced pattern analysis
             
         Returns:
             Tuple of (risk_score, details_dict)
@@ -198,14 +203,34 @@ class AnomalyDetector:
                 else:
                     print(f"[BOT DETECTION] No penalty - below 30% threshold")
             
-            # Combine all three risk assessments with REDUCED feature weight:
-            # - Isolation Forest (25%): Statistical outlier detection (reduced from 40%)
-            # - SVM (60%): Boundary-based anomaly detection (increased from 30% - most stable)
-            # - Feature deviation (15%): Direct behavioral difference measurement (reduced from 30% - too strict)
+            # Advanced Keystroke Dynamics Anomaly Detection
+            # Detect specific attack patterns: hesitation, dwell time shifts, speed changes, etc.
+            keystroke_anomaly_score = 0.0
+            keystroke_details = {}
+            if keystroke_data and len(keystroke_data) > 5:
+                keystroke_anomaly_score, keystroke_details = self.keystroke_detector.analyze_keystroke_patterns(keystroke_data)
+                print(f"[KEYSTROKE ANOMALY] User {self.user_id} - Advanced pattern score: {keystroke_anomaly_score:.1f}%")
+                if keystroke_anomaly_score > 50:
+                    print(f"[KEYSTROKE ANOMALY DETECTED] Patterns: {keystroke_details.get('anomaly_breakdown', {})}")
+            
+            # Combine all risk assessments:
+            # - Isolation Forest (20%): Statistical outlier detection (reduced to make room for keystroke)
+            # - SVM (50%): Boundary-based anomaly detection (reduced but still primary)
+            # - Feature deviation (10%): Direct behavioral difference (reduced - too strict)
+            # - Keystroke Anomalies (20%): Advanced keystroke pattern detection (NEW!)
             # 
-            # SVM is the most stable and tolerant, so we weight it heavily
-            # Feature distance is too sensitive, so we reduce its impact significantly
-            combined_risk = (if_risk * 0.25 + svm_risk * 0.60 + feature_based_risk * 0.15)
+            # The new keystroke analyzer specifically detects:
+            # 1. Hesitation and errors (slow, pauses, backspaces)
+            # 2. Dwell time shifts (different touch pressure)
+            # 3. Speed/rhythm changes (different typist)
+            # 4. Heavy-fingered typing
+            # 5. Rhythm disruption (flight time anomalies)
+            combined_risk = (
+                if_risk * 0.20 + 
+                svm_risk * 0.50 + 
+                feature_based_risk * 0.10 +
+                keystroke_anomaly_score * 0.20
+            )
             
             # Apply bot detection penalty
             combined_risk += bot_risk_penalty
@@ -220,7 +245,7 @@ class AnomalyDetector:
             combined_risk = np.clip(combined_risk, 0, 100)
             
             # Log the scoring details
-            print(f"[CBBA] User {self.user_id} - IF: {if_risk:.1f}%, SVM: {svm_risk:.1f}%, Feature: {feature_based_risk:.1f}%, Combined: {combined_risk:.1f}%")
+            print(f"[CBBA] User {self.user_id} - IF: {if_risk:.1f}%, SVM: {svm_risk:.1f}%, Feature: {feature_based_risk:.1f}%, Keystroke: {keystroke_anomaly_score:.1f}%, Combined: {combined_risk:.1f}%")
             
             # Determine status based on new risk level thresholds
             # Green (0-49%): Normal behavior
@@ -243,6 +268,8 @@ class AnomalyDetector:
                 'one_class_svm_score': float(svm_score),
                 'isolation_forest_risk': float(if_risk),
                 'one_class_svm_risk': float(svm_risk),
+                'keystroke_anomaly_score': float(keystroke_anomaly_score),
+                'keystroke_anomaly_details': keystroke_details,
                 'isolation_forest_prediction': 'anomaly' if if_prediction == -1 else 'normal',
                 'one_class_svm_prediction': 'anomaly' if svm_prediction == -1 else 'normal',
                 'timestamp': datetime.now().isoformat()
@@ -415,6 +442,7 @@ class AnomalyDetector:
                 'is_trained': self.is_trained,
                 'training_samples': self.training_samples,
                 'feature_dim': self.feature_dim,
+                'keystroke_baseline': self.keystroke_detector.baseline,
                 'trained_at': datetime.now().isoformat()
             }
             
@@ -436,6 +464,10 @@ class AnomalyDetector:
                 self.is_trained = model_data['is_trained']
                 self.training_samples = model_data['training_samples']
                 self.feature_dim = model_data['feature_dim']
+                
+                # Load keystroke baseline if available
+                if 'keystroke_baseline' in model_data:
+                    self.keystroke_detector.baseline = model_data['keystroke_baseline']
                 
                 print(f"Model loaded for user {self.user_id}")
                 

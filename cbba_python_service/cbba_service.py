@@ -91,7 +91,8 @@ class CBBAService:
             
             elif mode == 'assess':
                 # Assess current behavior
-                risk_score, details = detector.predict(combined_features)
+                # Pass keystroke_data to enable advanced keystroke anomaly detection
+                risk_score, details = detector.predict(combined_features, keystroke_data=keystroke_data)
                 
                 # Determine required action based on risk score
                 action = self._determine_action(risk_score)
