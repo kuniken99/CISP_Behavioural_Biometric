@@ -358,11 +358,15 @@ namespace db_biometrics_mvp.Backend.Controllers
                 return BadRequest(new { message = "Email already exists." });
             }
 
-            // Use database transaction to ensure atomicity
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            // Use execution strategy for Azure SQL to handle transactions
+            var strategy = _context.Database.CreateExecutionStrategy();
             
-            try
+            return await strategy.ExecuteAsync(async () =>
             {
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                
+                try
+                {
                 // Create new user (but don't mark unique code as used yet)
                 var user = new User
                 {
@@ -429,9 +433,11 @@ namespace db_biometrics_mvp.Backend.Controllers
             {
                 // Rollback transaction on any error
                 await transaction.RollbackAsync();
-                _logger.LogError(ex, "Registration failed for email {Email}", registerDto.Email);
-                return StatusCode(500, new { message = "Registration failed due to an unexpected error. Please try again." });
+                _logger.LogError(ex, "Registration failed for email {Email}. Error: {ErrorMessage}", registerDto.Email, ex.Message);
+                // Include error details for debugging in production
+                return StatusCode(500, new { message = "Registration failed due to an unexpected error. Please try again.", error = ex.Message, innerError = ex.InnerException?.Message });
             }
+            });
         }
 
         [AllowAnonymous]
