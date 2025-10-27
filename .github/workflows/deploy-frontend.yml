@@ -33,7 +33,8 @@ jobs:
       - name: Build application
         working-directory: ./frontend
         env:
-          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
+          CI: false
+          REACT_APP_API_BASE_URL: ${{ secrets.REACT_APP_API_BASE_URL }}
           REACT_APP_RECAPTCHA_SITE_KEY: ${{ secrets.REACT_APP_RECAPTCHA_SITE_KEY }}
         run: npm run build
 
