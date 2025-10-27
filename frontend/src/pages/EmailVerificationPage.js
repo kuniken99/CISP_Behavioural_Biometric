@@ -111,7 +111,7 @@ const EmailVerificationPage = ({ setCurrentAuthPage, email, context = 'registrat
             className="link-button"
             onClick={() => {
               // You can implement a contact support feature here
-              alert('Please contact support at support@company.com');
+              alert('Please contact support at tank108@uni.coventry.ac.uk');
             }}
           >
             Contact Support
