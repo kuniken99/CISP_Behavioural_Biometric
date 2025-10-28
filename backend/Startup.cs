@@ -109,6 +109,7 @@ namespace db_biometrics_mvp.Backend
                 options.AddPolicy("FrontendPolicy", builder =>
                 {
                     builder.WithOrigins(
+                            "https://cbba.app", // Custom domain
                             "http://localhost:3000",
                             "https://n4r8cp9x-3000.asse.devtunnels.ms", // update this if tunnel changes
                             "https://csip-ken.vercel.app", // Vercel production domain

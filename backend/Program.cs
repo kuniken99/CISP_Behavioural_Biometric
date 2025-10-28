@@ -17,12 +17,11 @@ namespace db_biometrics_mvp.Backend
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.UseIISIntegration(); // Add IIS integration for Azure App Service
-                    // Increase max request body size for large training data batches
-                    // Default: 30MB, Increased: 500MB for up to 10,000 training samples
-                    webBuilder.UseKestrel(options =>
+                    
+                    // Configure max request body size for both Kestrel and IIS
+                    webBuilder.ConfigureKestrel(options =>
                     {
-                        options.Limits.MaxRequestBodySize = 524288000; // 500MB
+                        options.Limits.MaxRequestBodySize = 524288000; // 500MB for large training batches
                     });
                 });
     }
