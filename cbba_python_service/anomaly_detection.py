@@ -290,8 +290,6 @@ class AnomalyDetector:
         """
         Normalize Isolation Forest anomaly score to 0-100 scale
         IF scores typically range from -0.5 (very anomalous) to 0.5 (very normal)
-        
-        ULTRA-CONSERVATIVE: Extremely wide normal ranges to prevent false positives
         """
         # NO amplification - use raw IF score
         # This prevents normal behavior variations from triggering high risk
@@ -325,8 +323,6 @@ class AnomalyDetector:
         """
         Normalize One-Class SVM decision function score to 0-100 scale
         SVM scores typically range from -2.0 (very anomalous) to 2.0 (very normal)
-        
-        ULTRA-CONSERVATIVE: Extremely wide normal ranges to prevent false positives
         """
         # NO amplification - use raw SVM score
         # This prevents normal behavior variations from triggering high risk

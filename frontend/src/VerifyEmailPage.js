@@ -21,7 +21,7 @@ function VerifyEmailPage() {
       }
 
       try {
-        const response = await fetch(`${API_BASE_URL}/auth/verify-email/${token}`, {
+        const response = await fetch(`${API_BASE_URL}/Auth/verify-email/${token}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
