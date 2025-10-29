@@ -25,6 +25,11 @@ const UserProfilePage = ({ currentUser, userRole }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  
+  // Training state
+  const [isTraining, setIsTraining] = useState(false);
+  const [trainingProgress, setTrainingProgress] = useState(null);
+  const [numSamples, setNumSamples] = useState(1000);
 
   // Fetch user profile data
   useEffect(() => {
@@ -79,6 +84,71 @@ const UserProfilePage = ({ currentUser, userRole }) => {
       return () => clearTimeout(timer);
     }
   }, [success]);
+
+  // Poll training progress
+  useEffect(() => {
+    if (!isTraining) return;
+
+    const pollInterval = setInterval(async () => {
+      try {
+        const token = localStorage.getItem('jwt_token');
+        const response = await fetch(`${API_BASE_URL}/Biometric/training-progress`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+          const progress = await response.json();
+          setTrainingProgress(progress);
+
+          if (!progress.isTraining && progress.percentComplete === 100) {
+            setIsTraining(false);
+            setSuccess('Training completed successfully!');
+            setTrainingProgress(null);
+          } else if (!progress.isTraining && progress.error) {
+            setIsTraining(false);
+            setError(`Training failed: ${progress.error}`);
+            setTrainingProgress(null);
+          }
+        }
+      } catch (err) {
+        console.error('Error polling training progress:', err);
+      }
+    }, 1000);
+
+    return () => clearInterval(pollInterval);
+  }, [isTraining]);
+
+  const handleRetrain = async () => {
+    setError('');
+    setSuccess('');
+
+    if (numSamples < 100 || numSamples > 5000) {
+      setError('Number of samples must be between 100 and 5000');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('jwt_token');
+      const response = await fetch(`${API_BASE_URL}/Biometric/start-auto-training`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ numSamples: parseInt(numSamples) })
+      });
+
+      if (response.ok) {
+        setIsTraining(true);
+        setSuccess('Training started...');
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error || 'Failed to start training');
+      }
+    } catch (err) {
+      setError('Network error: Unable to start training');
+    }
+  };
 
   const handleEmailChange = async () => {
     if (!newEmail) return;
@@ -531,6 +601,122 @@ const UserProfilePage = ({ currentUser, userRole }) => {
                 {userProfile.lastLogout}
               </span>
             </div>
+          </div>
+
+          {/* Retrain Section */}
+          <div style={{ 
+            marginTop: '24px', 
+            paddingTop: '20px', 
+            borderTop: '1px solid #e5e7eb' 
+          }}>
+            <h4 style={{ 
+              margin: '0 0 12px 0', 
+              fontSize: '16px', 
+              fontWeight: '600',
+              color: '#111827'
+            }}>
+              Retrain CBBA Profile
+            </h4>
+            <p style={{ 
+              margin: '0 0 12px 0', 
+              fontSize: '13px', 
+              color: '#6b7280',
+              lineHeight: '1.5'
+            }}>
+              Generate new behavioral training data to improve accuracy
+            </p>
+            
+            <div style={{ marginBottom: '12px' }}>
+              <label style={{ 
+                display: 'block',
+                fontSize: '13px', 
+                fontWeight: '500',
+                color: '#374151',
+                marginBottom: '6px'
+              }}>
+                Number of samples (100-5000):
+              </label>
+              <input
+                type="number"
+                min="100"
+                max="5000"
+                value={numSamples}
+                onChange={(e) => setNumSamples(e.target.value)}
+                disabled={isTraining}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  backgroundColor: isTraining ? '#f9fafb' : 'white'
+                }}
+              />
+              <span style={{ 
+                fontSize: '12px', 
+                color: '#6b7280',
+                display: 'block',
+                marginTop: '4px'
+              }}>
+                Recommended: 1000-2000 for best accuracy
+              </span>
+            </div>
+
+            {isTraining && trainingProgress && (
+              <div style={{ marginBottom: '12px' }}>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between',
+                  marginBottom: '6px'
+                }}>
+                  <span style={{ fontSize: '13px', color: '#374151', fontWeight: '500' }}>
+                    {trainingProgress.status}
+                  </span>
+                  <span style={{ fontSize: '13px', color: '#6b7280' }}>
+                    {trainingProgress.percentComplete}%
+                  </span>
+                </div>
+                <div style={{
+                  width: '100%',
+                  height: '8px',
+                  backgroundColor: '#e5e7eb',
+                  borderRadius: '4px',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{
+                    width: `${trainingProgress.percentComplete}%`,
+                    height: '100%',
+                    backgroundColor: '#3b82f6',
+                    transition: 'width 0.3s ease'
+                  }} />
+                </div>
+              </div>
+            )}
+
+            <button
+              onClick={handleRetrain}
+              disabled={isTraining}
+              style={{
+                width: '100%',
+                padding: '10px 16px',
+                backgroundColor: isTraining ? '#9ca3af' : '#3b82f6',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                fontSize: '14px',
+                fontWeight: '500',
+                cursor: isTraining ? 'not-allowed' : 'pointer',
+                transition: 'background-color 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                if (!isTraining) e.target.style.backgroundColor = '#2563eb';
+              }}
+              onMouseLeave={(e) => {
+                if (!isTraining) e.target.style.backgroundColor = '#3b82f6';
+              }}
+            >
+              {isTraining ? 'Training in progress...' : 'Start Retraining'}
+            </button>
           </div>
         </div>
       </div>

@@ -261,7 +261,7 @@ namespace db_biometrics_mvp.Backend.Services
         private List<object> GenerateKeystrokeData(int durationMs, string speed)
         {
             var keystrokes = new List<object>();
-            var random = new Random();
+            var random = new Random(Guid.NewGuid().GetHashCode()); // Better seed for more randomness
             int currentTime = 0;
 
             int avgInterval, stdDev;
@@ -269,15 +269,15 @@ namespace db_biometrics_mvp.Backend.Services
             {
                 case "fast":
                     avgInterval = 100;
-                    stdDev = 60;
+                    stdDev = 60; // Increased variation
                     break;
                 case "slow":
                     avgInterval = 450;
-                    stdDev = 180;
+                    stdDev = 180; // Increased variation
                     break;
                 default:
                     avgInterval = 250;
-                    stdDev = 120;
+                    stdDev = 120; // Increased variation
                     break;
             }
 
@@ -285,41 +285,42 @@ namespace db_biometrics_mvp.Backend.Services
 
             while (currentTime < durationMs)
             {
-                // Occasional pauses
-                if (random.NextDouble() < 0.08)
+                // Occasional pauses (increased from 0.08 to 0.10 for more variation)
+                if (random.NextDouble() < 0.10)
                 {
-                    currentTime += random.Next(500, 3000);
+                    currentTime += random.Next(500, 3500); // Extended pause range
                     continue;
                 }
 
                 var key = keys[random.Next(keys.Length)].ToString();
-                var burstMultiplier = random.NextDouble() < 0.15 ? random.NextDouble() * 0.25 + 0.5 : 1.0;
+                var burstMultiplier = random.NextDouble() < 0.18 ? random.NextDouble() * 0.3 + 0.5 : 1.0; // Increased burst probability
 
-                // Occasional typo
-                if (random.NextDouble() < 0.05)
+                // Occasional typo (increased from 0.05 to 0.07)
+                if (random.NextDouble() < 0.07)
                 {
                     var wrongKey = keys[random.Next(keys.Length)].ToString();
                     keystrokes.Add(new { key = wrongKey, timestamp = currentTime, @event = "keydown" });
-                    var dwellTime = random.Next(60, 120);
+                    var dwellTime = random.Next(60, 140); // Wider range
                     keystrokes.Add(new { key = wrongKey, timestamp = currentTime + dwellTime, @event = "keyup" });
-                    currentTime += dwellTime + random.Next(80, 150) + random.Next(100, 300);
+                    currentTime += dwellTime + random.Next(80, 180) + random.Next(100, 350); // More variation
 
                     keystrokes.Add(new { key = "Backspace", timestamp = currentTime, @event = "keydown" });
-                    dwellTime = random.Next(70, 110);
+                    dwellTime = random.Next(70, 120); // Wider range
                     keystrokes.Add(new { key = "Backspace", timestamp = currentTime + dwellTime, @event = "keyup" });
-                    currentTime += dwellTime + random.Next(100, 200);
+                    currentTime += dwellTime + random.Next(100, 250); // More variation
                 }
 
                 keystrokes.Add(new { key = key, timestamp = currentTime, @event = "keydown" });
                 
-                var dwell = speed == "fast" ? random.Next(20, 150) : 
-                           speed == "slow" ? random.Next(70, 350) : 
-                           random.Next(40, 220);
+                // Wider dwell time ranges for more diversity
+                var dwell = speed == "fast" ? random.Next(20, 180) :  // Increased range
+                           speed == "slow" ? random.Next(70, 400) :   // Increased range
+                           random.Next(40, 250);                       // Increased range
                 
                 keystrokes.Add(new { key = key, timestamp = currentTime + dwell, @event = "keyup" });
 
                 var flight = (int)(NextGaussian(random, avgInterval, stdDev) * burstMultiplier);
-                flight = Math.Max(10, Math.Min(flight, 1500));
+                flight = Math.Max(10, Math.Min(flight, 1800)); // Increased max from 1500 to 1800
                 
                 currentTime += dwell + flight;
             }
@@ -330,16 +331,17 @@ namespace db_biometrics_mvp.Backend.Services
         private List<object> GenerateMouseData(int durationMs, string pattern)
         {
             var mouseData = new List<object>();
-            var random = new Random();
+            var random = new Random(Guid.NewGuid().GetHashCode()); // Better seed
             int currentTime = 0;
             int x = random.Next(400, 600);
             int y = random.Next(300, 500);
 
             while (currentTime < durationMs)
             {
-                if (random.NextDouble() < 0.15)
+                // Increased pause probability from 0.15 to 0.18
+                if (random.NextDouble() < 0.18)
                 {
-                    currentTime += random.Next(200, 1500);
+                    currentTime += random.Next(200, 1800); // Extended pause range
                     continue;
                 }
 
@@ -347,25 +349,39 @@ namespace db_biometrics_mvp.Backend.Services
                 switch (pattern)
                 {
                     case "smooth":
-                        dx = random.Next(-12, 12);
-                        dy = random.Next(-12, 12);
-                        interval = random.Next(25, 80);
+                        dx = random.Next(-15, 15); // Increased from -12, 12
+                        dy = random.Next(-15, 15);
+                        interval = random.Next(25, 90); // Wider range
                         break;
                     case "erratic":
-                        dx = random.Next(-80, 80);
-                        dy = random.Next(-80, 80);
-                        interval = random.Next(70, 180);
+                        dx = random.Next(-100, 100); // Increased from -80, 80
+                        dy = random.Next(-100, 100);
+                        interval = random.Next(70, 200); // Wider range
                         break;
                     case "fast":
-                        dx = random.Next(-50, 50);
-                        dy = random.Next(-50, 50);
-                        interval = random.Next(20, 70);
+                        dx = random.Next(-60, 60); // Increased from -50, 50
+                        dy = random.Next(-60, 60);
+                        interval = random.Next(20, 80); // Wider range
                         break;
                     default:
-                        dx = random.Next(-35, 35);
-                        dy = random.Next(-35, 35);
-                        interval = random.Next(50, 120);
+                        dx = random.Next(-40, 40); // Increased from -35, 35
+                        dy = random.Next(-40, 40);
+                        interval = random.Next(50, 140); // Wider range
                         break;
+                }
+
+                // Add overshoot simulation (increased probability from 0.12 to 0.15)
+                if (random.NextDouble() < 0.15)
+                {
+                    dx = (int)(dx * random.NextDouble() * 1.5 + 1.5); // More overshoot
+                    dy = (int)(dy * random.NextDouble() * 1.5 + 1.5);
+                }
+
+                // Micro-corrections (increased from 0.20 to 0.25)
+                if (random.NextDouble() < 0.25)
+                {
+                    dx += random.Next(-6, 6); // Increased from -5, 5
+                    dy += random.Next(-6, 6);
                 }
 
                 x = Math.Max(0, Math.Min(1920, x + dx));
@@ -373,9 +389,12 @@ namespace db_biometrics_mvp.Backend.Services
 
                 mouseData.Add(new { x, y, timestamp = currentTime, @event = "mousemove" });
 
-                if (random.NextDouble() < 0.08)
+                // Increased click probability from 0.08 to 0.10
+                if (random.NextDouble() < 0.10)
                 {
-                    mouseData.Add(new { x, y, timestamp = currentTime + 10, @event = "click", button = 0 });
+                    var clickX = x + random.Next(-4, 4); // Increased jitter
+                    var clickY = y + random.Next(-4, 4);
+                    mouseData.Add(new { x = clickX, y = clickY, timestamp = currentTime + 10, @event = "click", button = 0 });
                 }
 
                 currentTime += interval;
