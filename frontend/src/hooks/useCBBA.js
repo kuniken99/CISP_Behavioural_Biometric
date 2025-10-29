@@ -220,20 +220,18 @@ const useCBBA = (isAuthenticated, user, onRiskDetected) => {
         setIsTrained(prevTrained => {
           if (prevTrained !== newIsTrained) {
             console.log(`[CBBA] Training status updated: ${prevTrained} → ${newIsTrained}`);
-            
-            // If user is not trained and on dashboard, redirect to training
-            if (!newIsTrained && result.status === 'untrained') {
-              console.log('[CBBA] User is untrained, redirecting to training page...');
-              setTimeout(() => {
-                window.location.href = '/training-progress';
-              }, 1000);
-              return newIsTrained;
-            }
-            
-            return newIsTrained;
           }
-          return prevTrained;
+          return newIsTrained;
         });
+        
+        // Check if user needs training (outside setState to always execute)
+        // Only redirect if not already on training page
+        if (!newIsTrained && result.status === 'untrained' && !window.location.pathname.includes('/training-progress')) {
+          console.log('[CBBA] User is untrained, redirecting to training page...');
+          setTimeout(() => {
+            window.location.href = '/training-progress';
+          }, 1000);
+        }
 
         // Handle risk-based actions (only for trained users)
         if (newIsTrained) {
