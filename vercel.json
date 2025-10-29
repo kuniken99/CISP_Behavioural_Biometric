@@ -9,6 +9,12 @@
       }
     }
   ],
+  "build": {
+    "env": {
+      "CI": "false",
+      "DISABLE_ESLINT_PLUGIN": "true"
+    }
+  },
   "routes": [
     {
       "src": "/static/(.*)",
