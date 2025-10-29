@@ -16,15 +16,20 @@ function TrainingProgressPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    let intervalId = null;
+    
     // Start auto-training when component mounts
     const startTraining = async () => {
       try {
         const token = localStorage.getItem('jwt_token');
         if (!token) {
-          setError('Not authenticated');
+          console.error('[TRAINING] No JWT token found');
+          setError('Not authenticated. Please log in again.');
+          setTimeout(() => navigate('/login'), 2000);
           return;
         }
 
+        console.log('[TRAINING] Starting auto-training...');
         const response = await fetch(`${API_BASE_URL}/Biometric/start-auto-training`, {
           method: 'POST',
           headers: {
@@ -35,11 +40,16 @@ function TrainingProgressPage() {
         });
 
         if (!response.ok) {
-          throw new Error('Failed to start training');
+          const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+          console.error('[TRAINING] Failed to start training:', errorData);
+          throw new Error(errorData.error || 'Failed to start training');
         }
 
+        const startResult = await response.json();
+        console.log('[TRAINING] Training started:', startResult);
+
         // Start polling for progress
-        const intervalId = setInterval(async () => {
+        intervalId = setInterval(async () => {
           try {
             const progressResponse = await fetch(`${API_BASE_URL}/Biometric/training-progress`, {
               headers: {
@@ -49,10 +59,12 @@ function TrainingProgressPage() {
 
             if (progressResponse.ok) {
               const data = await progressResponse.json();
+              console.log('[TRAINING] Progress update:', data);
               setProgress(data);
 
               // If training complete, redirect to dashboard after 2 seconds
               if (!data.isTraining && data.percentComplete === 100) {
+                console.log('[TRAINING] Training complete! Redirecting to dashboard...');
                 clearInterval(intervalId);
                 setTimeout(() => {
                   navigate('/dashboard');
@@ -61,23 +73,32 @@ function TrainingProgressPage() {
 
               // If training failed, show error
               if (!data.isTraining && data.error) {
+                console.error('[TRAINING] Training failed:', data.error);
                 clearInterval(intervalId);
                 setError(data.error);
               }
+            } else {
+              console.error('[TRAINING] Failed to fetch progress:', progressResponse.status);
             }
           } catch (err) {
-            console.error('Error fetching progress:', err);
+            console.error('[TRAINING] Error fetching progress:', err);
           }
         }, 1000); // Poll every second
-
-        // Cleanup interval on unmount
-        return () => clearInterval(intervalId);
       } catch (err) {
+        console.error('[TRAINING] Error starting training:', err);
         setError(err.message);
       }
     };
 
     startTraining();
+    
+    // Cleanup interval on unmount
+    return () => {
+      if (intervalId) {
+        console.log('[TRAINING] Cleaning up interval');
+        clearInterval(intervalId);
+      }
+    };
   }, [navigate]);
 
   return (
