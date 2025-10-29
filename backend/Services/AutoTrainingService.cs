@@ -9,6 +9,8 @@ using db_biometrics_mvp.Backend.Data;
 using db_biometrics_mvp.Backend.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
+using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace db_biometrics_mvp.Backend.Services
 {
@@ -137,13 +139,19 @@ namespace db_biometrics_mvp.Backend.Services
                 _trainingProgress[username].Status = "Training ML models...";
                 _trainingProgress[username].PercentComplete = 95;
 
-                var result = await _cbbaService.TrainUserProfile(username, new List<BehavioralSession>(
-                    trainingData.Select(session => new BehavioralSession
+                // Convert training data to proper format
+                var behavioralSessions = new List<BehavioralSession>();
+                foreach (var session in trainingData)
+                {
+                    var sessionObj = (dynamic)session;
+                    behavioralSessions.Add(new BehavioralSession
                     {
-                        KeystrokeData = ((dynamic)session).keystroke_data,
-                        MouseData = ((dynamic)session).mouse_data
-                    })
-                ));
+                        KeystrokeData = Newtonsoft.Json.Linq.JArray.FromObject(sessionObj.keystroke_data),
+                        MouseData = Newtonsoft.Json.Linq.JArray.FromObject(sessionObj.mouse_data)
+                    });
+                }
+
+                var result = await _cbbaService.TrainUserProfile(username, behavioralSessions);
 
                 if (result.Success)
                 {

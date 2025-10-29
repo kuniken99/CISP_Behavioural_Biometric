@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("db_biometrics_mvp.Backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+418c16d824052b299bc8ad8d92f475b5bfa3f08c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ac8deae26909821c83a4fb012ea72fb16adce2d1")]
 [assembly: System.Reflection.AssemblyProductAttribute("db_biometrics_mvp.Backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("db_biometrics_mvp.Backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

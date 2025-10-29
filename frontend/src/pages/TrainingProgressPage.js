@@ -41,8 +41,8 @@ function TrainingProgressPage() {
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-          console.error('[TRAINING] Failed to start training:', errorData);
-          throw new Error(errorData.error || 'Failed to start training');
+          console.error('[TRAINING] Failed to start training:', response.status, errorData);
+          throw new Error(errorData.error || errorData.message || `HTTP ${response.status}: Failed to start training`);
         }
 
         const startResult = await response.json();
