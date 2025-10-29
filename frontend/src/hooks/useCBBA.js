@@ -2,14 +2,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { API_BASE_URL } from '../config/constants';
-import { useNavigate } from 'react-router-dom';
 
 /**
  * CBBA Hook for Continuous Behavioral Biometric Authentication
  * Captures keystroke and mouse dynamics, sends to backend for risk assessment
  */
 const useCBBA = (isAuthenticated, user, onRiskDetected) => {
-  const navigate = useNavigate();
   // State
   const [riskScore, setRiskScore] = useState(0);
   const [riskLevel, setRiskLevel] = useState('low');
@@ -227,7 +225,7 @@ const useCBBA = (isAuthenticated, user, onRiskDetected) => {
             if (!newIsTrained && result.status === 'untrained') {
               console.log('[CBBA] User is untrained, redirecting to training page...');
               setTimeout(() => {
-                navigate('/training-progress');
+                window.location.href = '/training-progress';
               }, 1000);
               return newIsTrained;
             }
