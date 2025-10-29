@@ -2,46 +2,63 @@
 
 **FYP CISP CU, Aug 2025 to Oct 2025**
 
+## 🌐 Live Demo
+
+**Production URL**: https://cbba.app
+
+**Test Credentials** (Demo purposes only):
+- Email: admin@cbba.app
+- Password: Contact for demo access
+
+---
+
 ## Overview
 
-The CBBA (Continuous Behavioral Biometric Authentication) system is a production-ready security solution that provides real-time behavioral monitoring for privileged administrative accounts. The system uses machine learning to analyze keystroke dynamics and mouse movement patterns, enabling continuous authentication that detects unauthorized access and bot attacks.
+The CBBA (Continuous Behavioral Biometric Authentication) system is a security solution that provides real-time behavioral monitoring through advanced keystroke dynamics and mouse movement analysis. The system uses machine learning to continuously authenticate users by analyzing typing patterns and mouse movements, bot attacks, and unauthorized access attempts.
 
 ### Architecture
 
-The system consists of three main components:
+The system is deployed on **Microsoft Azure** with three main components:
 
-1. **Frontend** (React 18) - User interface and biometric data collection
-2. **Backend** (ASP.NET Core 8) - API server, authentication, and database management
-3. **CBBA Python Service** (Flask) - Machine learning inference engine
+1. **Frontend** (React 18 on Vercel) - https://cbba.app
+2. **Backend** (ASP.NET Core 8 on Azure App Service) - RESTful API
+3. **Python ML Service** (Flask on Azure Container Instances) - Machine learning inference
+4. **Database** (Azure SQL Database) - Secure data storage
 
 ```
-┌─────────────────┐         ┌─────────────────┐         ┌─────────────────┐
-│                 │         │                 │         │                 │
-│    Frontend     │────────▶│     Backend     │────────▶│  Python ML      │
-│   (React 18)    │  HTTP   │  (ASP.NET Core) │  HTTP   │   Service       │
-│   Port: 3000    │         │   Port: 5000    │         │  Port: 5001     │
-│                 │         │                 │         │                 │
-└─────────────────┘         └─────────────────┘         └─────────────────┘
-         │                           │                           │
-         │                           │                           │
-         └───────────────────────────┼───────────────────────────┘
-                                     ▼
-                            ┌─────────────────┐
-                            │   SQL Server    │
-                            │    Database     │
-                            └─────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    Production Deployment                     │
+└─────────────────────────────────────────────────────────────┘
+
+┌──────────────────┐         ┌──────────────────┐         ┌──────────────────┐
+│                  │         │                  │         │                  │
+│   Frontend       │────────▶│   Backend        │────────▶│  Python ML       │
+│   (Vercel)       │  HTTPS  │  (Azure App      │  HTTP   │  Service         │
+│   cbba.app       │         │   Service)       │         │  (Azure ACI)     │
+│                  │         │                  │         │                  │
+└──────────────────┘         └──────────────────┘         └──────────────────┘
+                                      │
+                                      ▼
+                             ┌──────────────────┐
+                             │   Azure SQL      │
+                             │   Database       │
+                             └──────────────────┘
 ```
 
 ### Key Features
 
-✅ **Real-time Behavioral Monitoring** - Continuous authentication every 5 seconds  
-✅ **Machine Learning** - Ensemble approach using Isolation Forest + One-Class SVM  
-✅ **Adaptive Security** - Graduated response (Low/Moderate/High risk levels)  
-✅ **Bot Detection** - Identifies automated attacks through repetitive click patterns  
-✅ **Step-Up Authentication** - TOTP verification for moderate-risk sessions  
-✅ **Session Locking** - Immediate termination for high-risk behavior  
-✅ **AES-256 Encryption** - Secure biometric profile storage  
-✅ **Comprehensive Auditing** - Complete activity logging for compliance
+✅ ** Keystroke Dynamics**
+✅ **Machine Learning** - Ensemble approach (60% SVM + 25% IF + 15% Feature Distance)  
+✅ **Real-time Monitoring** - Continuous assessment every 5 seconds  
+✅ **Adaptive Security** - Graduated response based on risk levels  
+✅ **Session Locking** - Automatic termination at 80%+ sustained risk  
+✅ **Step-Up Authentication** - 2FA 6-digit re-verification for moderate risk (50-79%)  
+✅ **End-to-End Encryption** - AES-256-GCM for biometric profiles  
+✅ **Production-Ready** - Deployed on Azure with 99.9% uptime SLA  
+✅ **Comprehensive Auditing** - Full activity logs with behavioral risk scores  
+✅ **Email Verification** - SMTP integration with Gmail  
+✅ **2FA Support** - TOTP-based two-factor authentication  
+✅ **RBAC** - Role-based access control (Guest, User, Admin, Super Admin)
 
 ---
 
@@ -84,31 +101,45 @@ dotnet --version
 
 ---
 
-## Installation & Setup
+## Quick Start (Local Development)
 
-### 1. Clone the Repository
+### Prerequisites
+
+| Component | Version | Download |
+|-----------|---------|----------|
+| **Node.js** | 18.x+ | https://nodejs.org/ |
+| **Python** | 3.9+ | https://www.python.org/ |
+| **.NET SDK** | 8.0+ | https://dotnet.microsoft.com/download |
+| **SQL Server** | 2019+ | https://www.microsoft.com/sql-server |
+
+### Installation
+
+**1. Clone Repository**
 
 ```powershell
 git clone https://github.com/kuniken99/CISP_Behavioural_Biometric.git
 cd CISP_Behavioural_Biometric
 ```
 
-### 2. Database Setup
+**2. Database Setup**
 
-#### Create Database
-
-1. Open **SQL Server Management Studio (SSMS)**
-2. Connect to your SQL Server instance: `localhost\SQLEXPRESS`
-3. Create a new database:
-
-```sql
+```powershell
+# Open SSMS and create database
 CREATE DATABASE db_biometrics_mvp;
+
+# Run migrations
+cd backend
+dotnet ef database update
 ```
 
-#### Update Connection String (if needed)
+**3. Backend Setup**
 
-If your SQL Server instance differs from `localhost\SQLEXPRESS`, update the connection string in:
+```powershell
+cd backend
+dotnet restore
+dotnet build
 
+# Update appsettings.json with your SQL Server connection string in:
 **File:** `backend/appsettings.json`
 
 ```json
@@ -119,62 +150,34 @@ If your SQL Server instance differs from `localhost\SQLEXPRESS`, update the conn
 }
 ```
 
-#### Run Database Migrations
-
-```powershell
-cd backend
-dotnet ef database update
-cd ..
+# Run backend
+dotnet run
+# Backend runs at http://localhost:5000
 ```
 
-This creates all required tables: Users, BiometricProfiles, AuditLog, SecurityLogs, etc.
-
-### 3. Backend Setup (ASP.NET Core)
-
-#### Install Dependencies
+**4. Python ML Service**
 
 ```powershell
-cd backend
-dotnet restore
+cd cbba_python_service
+pip install -r requirements.txt
+
+# Run Python service
+python app.py
+# Service runs at http://localhost:5001
 ```
 
-#### Configure SMTP (Email Service)
-
-Update email settings in `backend/appsettings.json`:
-
-```json
-{
-  "SMTP": {
-    "Host": "smtp.gmail.com",
-    "Port": "587",
-    "FromEmail": "your-email@gmail.com",
-    "Password": "your-app-password"
-  }
-}
-```
-
-**Note:** For Gmail, use an [App Password](https://support.google.com/accounts/answer/185833), not your regular password.
-
-#### Build Backend
+**5. Frontend Setup**
 
 ```powershell
-dotnet build
+cd frontend
+npm install
+npm start
+# Frontend runs at http://localhost:3000
 ```
 
-Expected output: `Build succeeded. 0 Warning(s), 0 Error(s)`
+**6. Access Application**
 
-### 4. Python Service Setup
-
-#### Navigate to Python Service Directory
-
-```powershell
-cd ../cbba_python_service
-```
-
-#### Create Virtual Environment (Recommended)
-
-```powershell
-# Create virtual environment
+Open browser: http://localhost:3000
 python -m venv venv
 
 # Activate virtual environment
@@ -254,135 +257,94 @@ REACT_APP_RECAPTCHA_SITE_KEY=6LfogeErAAAAAPl-jd4Opxslssej0QCL87ZWtYov
 
 ---
 
-## Running the System
 
-### Quick Start (All Components)
+## Production Deployment (Azure)
 
-You need **three separate terminal windows** to run all components simultaneously.
+The system is deployed on **Microsoft Azure** with the following architecture:
 
-#### Terminal 1: Python ML Service
+### Infrastructure
 
-```powershell
-cd cbba_python_service
-.\venv\Scripts\Activate.ps1  # Activate virtual environment
-python app.py
-```
+| Component | Service | URL/Details |
+|-----------|---------|-------------|
+| **Frontend** | Vercel | https://cbba.app |
+| **Backend** | Azure App Service | cbba-backend-tank108.azurewebsites.net |
+| **Python ML** | Azure Container Instances | 20.247.240.136:5001 (Docker) |
+| **Database** | Azure SQL Database | cbba-sql-server-tank108.database.windows.net |
+| **Storage** | Azure App Service (Encrypted ML models) | AES-256-GCM |
 
-**Expected Output:**
-```
- * Serving Flask app 'app'
- * Debug mode: on
-WARNING: This is a development server. Do not use it in a production deployment.
- * Running on http://127.0.0.1:5001
-Press CTRL+C to quit
-```
+### Deployment Commands
 
-✅ **Status:** Python ML Service running on port 5001
-
-#### Terminal 2: Backend API Server
-
+**Backend Deployment:**
 ```powershell
 cd backend
-dotnet run
+dotnet publish -c Release -o ./publish
+az webapp deploy --resource-group cbba-production --name cbba-backend-tank108 --src-path ./publish.zip --type zip
+az webapp restart --resource-group cbba-production --name cbba-backend-tank108
 ```
 
-**Expected Output:**
+**Python ML Service (Docker):**
+```powershell
+cd cbba_python_service
+docker build -t kuni888/cbba-ml-service:latest .
+docker push kuni888/cbba-ml-service:latest
+az container create --resource-group cbba-production --name cbba-ml-service-tank108 --image kuni888/cbba-ml-service:latest --cpu 1 --memory 1.5 --ports 5001 --ip-address Public --os-type Linux
 ```
-Building...
-info: Microsoft.Hosting.Lifetime[14]
-      Now listening on: http://localhost:5000
-info: Microsoft.Hosting.Lifetime[0]
-      Application started. Press Ctrl+C to shut down.
-```
 
-✅ **Status:** Backend API running on port 5000
-
-#### Terminal 3: Frontend Development Server
-
+**Frontend Deployment:**
 ```powershell
 cd frontend
-npm start
+npm run build
+vercel --prod
+vercel alias set <deployment-url> cbba.app
 ```
 
-**Expected Output:**
-```
-Compiled successfully!
+### Environment Variables (Production)
 
-You can now view frontend in the browser.
+**Backend (Azure App Service):**
+- `ConnectionStrings__DefaultConnection`: Azure SQL connection string
+- `PythonCBBAService__Url`: http://20.247.240.136:5001
+- `AppSettings__FrontendUrl`: https://cbba.app
+- `SMTP__*`: Gmail SMTP configuration
+- `Jwt__*`: JWT signing configuration
+- `ReCaptcha__*`: Google reCAPTCHA keys
 
-  Local:            http://localhost:3000
-  On Your Network:  http://192.168.x.x:3000
-```
-
-Your browser should automatically open to `http://localhost:3000`
-
-✅ **Status:** Frontend running on port 3000
+**Frontend (Vercel):**
+- `REACT_APP_API_BASE_URL`: https://cbba-backend-tank108-cqaqdefdf8ffehfx.southeastasia-01.azurewebsites.net/api
+- `REACT_APP_RECAPTCHA_SITE_KEY`: 6LfogeErAAAAAPl-jd4Opxslssej0QCL87ZWtYov
 
 ---
 
-## Verification & Testing
+## Training Behavioral Profiles
 
-### 1. Check All Services Are Running
-
-Open PowerShell and test each endpoint:
+After registration, users must train their behavioral profile (minimum 300 samples recommended):
 
 ```powershell
-# Test Frontend
-curl http://localhost:3000
-# Should return HTML content
-
-# Test Backend (if health endpoint exists)
-curl http://localhost:5000/
-
-# Test Python Service
-curl http://localhost:5001/api/cbba/health
-# Should return: {"status": "healthy"}
+cd cbba_python_service
+python generate_training_data.py <username> <JWT_TOKEN> 300 <BACKEND_URL>
 ```
 
-### 2. Test User Registration
+**Example (Production):**
+```powershell
+python generate_training_data.py tank108 eyJhbGci... 300 https://cbba-backend-tank108-cqaqdefdf8ffehfx.southeastasia-01.azurewebsites.net
+```
 
-1. Open browser to `http://localhost:3000`
-2. Click **"Don't have an account? Register"**
-3. Fill in registration form:
-   - Username: `testadmin`
-   - Email: `test@example.com`
-   - Password: `Test@1234`
-   - Confirm Password: `Test@1234`
-   - Role: Select **Administrator**
-4. Click **Register**
-5. Check email for verification link (or check backend logs for verification URL)
+**Training establishes:**
+- Average typing speed (WPM)
+- Dwell time patterns (key hold duration)
+- Flight time patterns (time between keys)
+- Backspace ratio baseline
+- Pause frequency baseline
 
-### 3. Test CBBA Training
-
-1. Login with your registered credentials
-2. You should see a **Training Modal** appear:
-   - "CBBA Training Required"
-   - "Please interact normally for 1 minute"
-   - Progress bar showing collection status
-3. Type and move your mouse naturally for **1 minute**
-4. After collecting **5+ samples**, training automatically completes
-5. Success modal appears: "Training Complete! Your behavioral profile has been created."
-
-### 4. Test Real-Time Monitoring
-
-1. After training completion, observe the **Header** component
-2. You should see a **green indicator** showing:
-   - "Risk: Low (XX%)"
-   - Updates every 5 seconds
-3. Try rapid, repetitive clicking in the same spot
-4. Risk level should increase (orange/red)
-5. If risk exceeds 80%, **Session Lock** modal appears
-
-### 5. Test Step-Up Authentication (Moderate Risk)
-
-1. Deliberately type very differently from your normal pattern (very fast or very slow)
-2. Risk level may reach 50-79% (orange)
-3. **Step-Up Authentication Modal** appears:
-   - "Unusual behavioral patterns detected"
-   - Input field for 6-digit code
-4. Check your email for TOTP code
-5. Enter code to verify identity
-6. Session continues with 15-minute grace period
+**Training Output:**
+```
+✓ Training Successful!
+Results:
+  • Samples trained: 300
+  • Keystroke baseline: Established
+  • Model Type: Isolation Forest + One-Class SVM + 5 Keystroke Patterns
+  • Encryption: AES-256-GCM
+  • Profile Status: Ready for real-time assessment
+```
 
 ---
 
@@ -411,55 +373,50 @@ cd e:\CISP_Behavioural_Biometric\frontend
 npm start
 ```
 
-### Default Ports
-
-- Frontend: `http://localhost:3000`
-- Backend: `http://localhost:5000`
-- Python: `http://localhost:5001`
-- Database: `localhost\SQLEXPRESS`
-
 ---
 
-## System Configuration
+## Technical Documentation
 
-### Adjusting Risk Thresholds
+### Security Features
 
-**File:** `cbba_python_service/.env`
+**Encryption:**
+- Algorithm: AES-256-GCM
+- Key Derivation: PBKDF2 with 600,000 iterations
+- Implementation: `cbba_python_service/encryption_service.py`
 
-```properties
-# Moderate risk threshold (50-79% triggers step-up auth)
-RISK_THRESHOLD_MODERATE=50
+**Authentication:**
+- JWT tokens with 12-hour expiration
+- Secure password hashing (ASP.NET Core Identity)
+- Email verification required
+- Optional 2FA (TOTP)
 
-# High risk threshold (80-100% triggers session lock)
-RISK_THRESHOLD_HIGH=80
-```
+**Session Management:**
+- 30-minute inactivity timeout
+- Real-time risk monitoring (5-second intervals)
+- Automatic lock at 80%+ sustained risk
+- Step-up auth for moderate risk (40-79%)
 
-**Lower values = More sensitive** (more false alarms)  
-**Higher values = Less sensitive** (may miss some attacks)
+### Configuration Files
 
-**Recommended:** Keep default values (50/80) for balanced security and usability
+| File | Purpose |
+|------|---------|
+| `backend/appsettings.json` | Database, SMTP, JWT, ReCaptcha settings |
+| `frontend/.env.production` | Production API URL, ReCaptcha key |
+| `cbba_python_service/.env` | Python service configuration |
+| `cbba_python_service/config.py` | ML model parameters |
 
-### Training Requirements
+### Database Schema
 
-**File:** `backend/Controllers/BiometricController.cs` (Lines 254-257)
-
-```csharp
-var minimumRequired = 5;        // Minimum interaction samples
-var recommendedMinutes = 1;     // Minimum training duration (minutes)
-```
-
-**File:** `cbba_python_service/config.py` (Line 35)
-
-```python
-MIN_TRAINING_SAMPLES = 4        // Minimum sessions for ML training
-```
-
-**For faster testing:** Current values (1 min, 5 samples)  
-**For production:** Consider increasing to (5 min, 20 samples) for better accuracy
-
-### Session Timeout
-
-**File:** `frontend/src/components/security/SessionManager.js` (Line 8)
+**Key Tables:**
+- `Users` - User accounts and roles
+- `BiometricProfiles` - Encrypted ML models
+- `EmailVerificationTokens` - Email verification
+- `PasswordResetTokens` - Password reset flow
+- `AuditLogs` - Activity logging
+- `SecurityLogs` - Security events
+- `KeyStrokes` - Raw keystroke data
+- `MouseMovements` - Raw mouse data
+- `RiskScores` - Historical risk assessments
 
 ```javascript
 const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
@@ -519,57 +476,103 @@ REACT_APP_RECAPTCHA_SITE_KEY=6LfogeErAAAAAPl-jd4Opxslssej0QCL87ZWtYov
 1. Go to [Google reCAPTCHA Admin](https://www.google.com/recaptcha/admin)
 2. Create a new site
 3. Choose reCAPTCHA v2 "I'm not a robot" checkbox
-4. Add your domain (localhost for development)
-5. Copy the Site Key (for frontend) and Secret Key (for backend)
-
-### Test Keys for Development
-
-Google provides test keys that always pass:
-- **Site Key**: `6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI`
-- **Secret Key**: `6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe`
-
 ---
+
 
 ## Troubleshooting
 
-### Port Already in Use
+### Common Issues
 
-**Error:** `Address already in use` or `Port 3000/5000/5001 is already in use`
+**1. Email Verification Not Received**
+- Check spam/junk folder
+- Verify SMTP settings in `backend/appsettings.json`
+- Gmail may block Azure IPs - use Gmail App Password
+- Manually verify: Run SQL query `UPDATE Users SET IsEmailVerified = 1 WHERE Username = 'youruser'`
 
-**Solution:**
+**2. CORS Errors in Production**
+- Verify `AppSettings__FrontendUrl` in Azure App Service settings
+- Check CORS origins in Azure: `az webapp cors show`
+- Ensure `supportCredentials: true` is set
 
-```powershell
-# Find process using the port (replace PORT with actual port number)
-netstat -ano | findstr :PORT
+**3. Keystroke Anomalies Not Detecting**
+- User must be trained first (300+ samples)
+- Verify Python ML service is running: `curl http://localhost:5001/health`
+- Check browser console for CBBA logs
+- Type 2x faster than normal with many backspaces to trigger
 
-# Kill the process (replace PID with process ID from previous command)
-taskkill /PID PID /F
+**4. Session Lock Not Triggering**
+- Risk must be sustained at 80%+ for 3+ consecutive assessments
+- Check CBBA widget for current risk level
+- View console logs for detailed risk breakdown
+
+**5. Database Migration Errors**
+- Delete database and recreate: `az sql db delete` → `az sql db create`
+- Run migrations: `dotnet ef database update`
+- Verify connection string matches Azure SQL database
+
+**6. Python Service Connection Failed**
+- Check backend `appsettings.json` has correct Python URL
+- For Azure: `http://20.247.240.136:5001`
+- For local: `http://localhost:5001`
+- Verify container is running: `az container show --name cbba-ml-service-tank108`
+
+---
+
+## Project Structure
+
 ```
-
-### Database Connection Failed
-
-**Error:** `A network-related or instance-specific error occurred`
-
-**Solutions:**
-
-1. Verify SQL Server is running:
-   - Open **Services** (Win + R → `services.msc`)
-   - Find **SQL Server (SQLEXPRESS)**
-   - Ensure status is **Running**
-
-2. Check connection string in `backend/appsettings.json`
-
-3. Test connection in SSMS with the same server name
-
-### Python Dependencies Installation Failed
-
-**Error:** `ERROR: Could not find a version that satisfies the requirement`
-
-**Solutions:**
-
-```powershell
-# Upgrade pip
-python -m pip install --upgrade pip
+CISP_Behavioural_Biometric/
+│
+├── backend/                          # ASP.NET Core 8 Backend
+│   ├── Controllers/                  # API endpoints
+│   │   ├── AuthController.cs        # Login, register, email verification
+│   │   └── BiometricController.cs   # CBBA training & assessment
+│   ├── Models/                       # Data models
+│   ├── Services/                     # Business logic
+│   │   ├── EmailService.cs          # SMTP email sending
+│   │   └── PythonCBBAService.cs     # Python ML service client
+│   ├── Migrations/                   # EF Core database migrations
+│   ├── appsettings.json             # Configuration
+│   └── Startup.cs                    # App configuration, CORS
+│
+├── frontend/                         # React 18 Frontend
+│   ├── src/
+│   │   ├── pages/                    # Page components
+│   │   │   ├── LoginPage.js
+│   │   │   ├── RegistrationPage.js
+│   │   │   └── DashboardPage.js
+│   │   ├── components/
+│   │   │   ├── CBBAMonitor.js       # Real-time risk widget
+│   │   │   └── security/
+│   │   │       ├── SessionLock.js   # Session lock modal
+│   │   │       └── StepUpAuth.js    # Password re-verification
+│   │   ├── hooks/
+│   │   │   └── useCBBA.js           # CBBA integration hook
+│   │   └── utils/
+│   │       └── config.js             # API configuration
+│   ├── .env.production              # Production environment vars
+│   └── package.json
+│
+├── cbba_python_service/             # Python ML Service
+│   ├── app.py                        # Flask application
+│   ├── cbba_service.py              # Training & assessment logic
+│   ├── anomaly_detection.py         # ML models (IF, SVM)
+│   ├── keystroke_anomaly_detector.py # 5 pattern detectors
+│   ├── feature_extraction.py        # Feature engineering
+│   ├── encryption_service.py        # AES-256-GCM encryption
+│   ├── generate_training_data.py    # Training data generator
+│   ├── requirements.txt             # Python dependencies
+│   ├── Dockerfile                    # Docker configuration
+│   └── models/                       # Encrypted ML models
+│
+├── Documentation/                    # Technical documentation
+│   ├── DEPLOYMENT_UPDATE_GUIDE.md
+│   ├── KEYSTROKE_ANOMALY_SUMMARY.md
+│   ├── CBBA_TRAINING_QUICK_START.md
+│   └── AZURE_DEPLOYMENT.md
+│
+└── README.md                         # This file
+```
 
 # Install dependencies one by one to identify problematic package
 pip install scikit-learn
@@ -613,73 +616,25 @@ All values should be consistent (4 for testing, 10-20 for production).
 3. Check firewall isn't blocking port 587
 4. Verify SMTP settings in `appsettings.json`
 
----
 
-## API Endpoints Reference
+## License & Credits
 
-### Backend (Port 5000)
-
-#### Authentication
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-- `POST /api/auth/logout` - User logout
-- `GET /api/auth/verify-email?token={token}` - Email verification
-
-#### Biometric
-- `POST /api/biometric/collect` - Collect behavioral data
-- `GET /api/biometric/risk-score` - Get current risk score
-- `POST /api/biometric/start-training` - Start CBBA training
-- `POST /api/biometric/complete-training` - Complete training
-- `GET /api/biometric/training-status` - Get training progress
-
-#### Two-Factor Auth
-- `POST /api/twofactor/send-code` - Send TOTP code
-- `POST /api/twofactor/verify-code` - Verify TOTP code
-
-### Python Service (Port 5001)
-
-- `POST /api/cbba/train` - Train user biometric model
-- `POST /api/cbba/assess-risk` - Assess behavioral risk
-- `GET /api/cbba/health` - Health check
+**Project:** Final Year Project - CISP, Coventry University  
+**Period:** August 2025 - October 2025  
+**Author:** kuniken99  
+**Repository:** https://github.com/kuniken99/CISP_Behavioural_Biometric
 
 ---
 
-## Performance Metrics
+## Support
 
-### Expected Performance
-
-| Metric | Value | Description |
-|--------|-------|-------------|
-| **Risk Assessment Latency** | <250ms | End-to-end time from event collection to risk score |
-| **Monitoring Interval** | 5 seconds | Frequency of behavioral analysis |
-| **Training Time** | 1-2 minutes | Time to train ML models (4 sessions) |
-| **False Positive Rate** | <5% | Legitimate users incorrectly flagged |
-| **Bot Detection Rate** | 100% | Automated attacks detected |
-| **Concurrent Users** | 100+ | Tested with load testing tools |
+For issues or questions:
+1. Review troubleshooting section above
+2. Contact: tank108@uni.coventry.ac.uk
 
 ---
 
-## Additional Documentation
-
-- **Technical Report:** `1FINAL_CBBA_IMPLEMENTATION_TECHNICAL_REPORT.md` - Comprehensive implementation details
-- **Training Guide:** `1FINAL_CBBA_TRAINING_QUICK_START.md` - Quick start for CBBA training
-- **Testing Guide:** `TESTING_GUIDE.md` - Complete testing procedures
-- **Security Examples:** `SECURITY_CODE_EXAMPLES.md` - Code examples for security features
-
----
-
-## Project Status
-
-✅ **Production Ready** - 98.6% test pass rate, comprehensive security validation
-
-**Latest Updates:**
-- Reduced training requirements to 1 minute / 5 samples for fast testing
-- Fixed JSON serialization issues between C# and Python
-- Implemented auto-completion for training workflows
-- Added risk percentage display in session lock modal
-- Comprehensive testing coverage across all components
-
----
+**End of README**
 
 ## Security Best Practices
 
@@ -704,7 +659,7 @@ This project is part of the CISP (Certified Information Security Professional) c
 ## Contributors
 
 - **Project Developer:** Kennedy Tan (kuniken99)
-- **Course:** CISP Behavioral Biometric Authentication Project
+- **Project Name:** CISP Continuous Behavioral Biometric Authentication (CBBA) Project
 - **Date:** October 2025
 
 ---
