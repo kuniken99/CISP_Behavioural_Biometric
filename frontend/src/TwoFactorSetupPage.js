@@ -120,11 +120,22 @@ function TwoFactorSetupPage({ setCurrentAuthPage, email, onSetupComplete }) {
         }
         
         setSetupComplete(true);
-        // Redirect to dashboard with flag to show training modal
-        setTimeout(() => {
-          localStorage.setItem('showTrainingModal', 'true');
-          navigate('/dashboard');
-        }, 2000);
+        
+        // Set flag to show training modal on dashboard
+        localStorage.setItem('showTrainingModal', 'true');
+        
+        // If onSetupComplete callback is provided (from AuthWrapper), call it
+        // This will handle the login and redirect to dashboard
+        if (onSetupComplete) {
+          setTimeout(() => {
+            onSetupComplete(data.token, data.user || { username: email, role: 'User' });
+          }, 2000);
+        } else {
+          // Fallback: Direct navigation (shouldn't happen, but just in case)
+          setTimeout(() => {
+            navigate('/dashboard');
+          }, 2000);
+        }
       } else {
         const errorData = await response.json();
         setError(errorData.message || 'Invalid verification code');

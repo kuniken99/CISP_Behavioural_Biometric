@@ -19,6 +19,14 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
 
   // Handle redirect from email verification to 2FA setup
   useEffect(() => {
+    // Check for auto-show 2FA setup from email verification
+    if (location.state?.autoShow2FASetup && location.state?.email) {
+      setCurrentAuthPage('twofa-setup', { 
+        email: location.state.email
+      });
+      return;
+    }
+    
     if (location.state?.redirectTo2FA && location.state?.userData) {
       const userData = location.state.userData;
       // Automatically redirect to 2FA setup
@@ -26,6 +34,7 @@ const LoginPage = ({ onLogin, setCurrentAuthPage }) => {
         email: userData.email, 
         username: userData.username
       });
+      return;
     }
     
     // Check for logout message from SessionManager

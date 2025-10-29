@@ -39,7 +39,7 @@ function VerifyEmailPage() {
             localStorage.setItem('jwt_token', data.token);
           }
           
-          // If user needs 2FA setup, store their email for the setup process
+          // Store user data for 2FA setup
           if (data.requiresTwoFactorSetup && data.email) {
             localStorage.setItem('pendingTwoFactorSetup', JSON.stringify({
               email: data.email,
@@ -50,9 +50,19 @@ function VerifyEmailPage() {
 
           // Redirect after 2 seconds
           setTimeout(() => {
-            // If 2FA is already set up, redirect to login (training happens after 2FA)
-            // If 2FA needs setup, user will be redirected there from login page
-            navigate('/login');
+            // If 2FA setup is required, redirect to login with flag
+            // AuthWrapper will detect this and show 2FA setup page
+            if (data.requiresTwoFactorSetup) {
+              navigate('/login', { 
+                state: { 
+                  autoShow2FASetup: true,
+                  email: data.email
+                }
+              });
+            } else {
+              // If 2FA is already set up, redirect to login normally
+              navigate('/login');
+            }
           }, 2000);
         } else {
           setVerificationStatus('error');
