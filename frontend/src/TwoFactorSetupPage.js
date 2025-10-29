@@ -120,22 +120,12 @@ function TwoFactorSetupPage({ setCurrentAuthPage, email, onSetupComplete }) {
         }
         
         setSetupComplete(true);
-        
-        // Set flag to show training modal on dashboard
-        localStorage.setItem('showTrainingModal', 'true');
-        
-        // If onSetupComplete callback is provided (from AuthWrapper), call it
-        // This will handle the login and redirect to dashboard
-        if (onSetupComplete) {
-          setTimeout(() => {
-            onSetupComplete(data.token, data.user || { username: email, role: 'User' });
-          }, 2000);
-        } else {
-          // Fallback: Direct navigation (shouldn't happen, but just in case)
-          setTimeout(() => {
-            navigate('/dashboard');
-          }, 2000);
-        }
+        // Call the completion callback after a short delay to show success message
+        setTimeout(() => {
+          if (onSetupComplete) {
+            onSetupComplete(data.token, data.user);
+          }
+        }, 2000);
       } else {
         const errorData = await response.json();
         setError(errorData.message || 'Invalid verification code');
@@ -182,7 +172,7 @@ function TwoFactorSetupPage({ setCurrentAuthPage, email, onSetupComplete }) {
             }}>✓</div>
             <h2 className="auth-title">Setup Complete!</h2>
             <p>Two-factor authentication has been successfully configured for your account.</p>
-            <p>Setting up your behavioral profile...</p>
+            <p>You will now be redirected to the dashboard...</p>
           </div>
         </div>
       </div>

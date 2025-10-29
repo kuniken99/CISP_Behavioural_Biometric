@@ -32,38 +32,15 @@ function VerifyEmailPage() {
 
         if (response.ok) {
           setVerificationStatus('success');
-          setMessage(data.message || 'Email verified successfully. Setting up your profile...');
+          setMessage(data.message || 'Email verified successfully. You can now log in.');
           
-          // Store JWT token if provided for auto-training
-          if (data.token) {
-            localStorage.setItem('jwt_token', data.token);
-          }
-          
-          // Store user data for 2FA setup
+          // If user needs 2FA setup, store their email for the setup process
           if (data.requiresTwoFactorSetup && data.email) {
             localStorage.setItem('pendingTwoFactorSetup', JSON.stringify({
               email: data.email,
-              username: data.username,
-              token: data.token
+              username: data.username
             }));
           }
-
-          // Redirect after 2 seconds
-          setTimeout(() => {
-            // If 2FA setup is required, redirect to login with flag
-            // AuthWrapper will detect this and show 2FA setup page
-            if (data.requiresTwoFactorSetup) {
-              navigate('/login', { 
-                state: { 
-                  autoShow2FASetup: true,
-                  email: data.email
-                }
-              });
-            } else {
-              // If 2FA is already set up, redirect to login normally
-              navigate('/login');
-            }
-          }, 2000);
         } else {
           setVerificationStatus('error');
           setMessage(data.message || 'Email verification failed. The link may be invalid or expired.');
@@ -78,7 +55,7 @@ function VerifyEmailPage() {
     };
 
     verifyEmail();
-  }, [token, navigate]);
+  }, [token]);
 
   const handleLoginRedirect = () => {
     // Check if user needs to set up 2FA

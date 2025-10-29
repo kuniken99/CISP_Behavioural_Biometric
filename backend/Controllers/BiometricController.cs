@@ -26,19 +26,17 @@ namespace db_biometrics_mvp.Backend.Controllers
         private readonly PythonCBBAService _cbbaService;
         private readonly ILogger<BiometricController> _logger;
         private readonly AppDbContext _context; // For auditing
-        private readonly IAutoTrainingService _autoTrainingService;
 
         // In a real application, these would be stored persistently per user/session
         // For MVP, using static dictionaries to hold data temporarily per active session
         private static Dictionary<string, List<BiometricEvent>> _sessionBiometricData = new Dictionary<string, List<BiometricEvent>>();
         private static Dictionary<string, List<DbActionEvent>> _sessionDbEventData = new Dictionary<string, List<DbActionEvent>>();
 
-        public BiometricController(PythonCBBAService cbbaService, ILogger<BiometricController> logger, AppDbContext context, IAutoTrainingService autoTrainingService)
+        public BiometricController(PythonCBBAService cbbaService, ILogger<BiometricController> logger, AppDbContext context)
         {
             _cbbaService = cbbaService;
             _logger = logger;
             _context = context;
-            _autoTrainingService = autoTrainingService;
         }
 
         // Endpoint to receive continuous biometric data from the frontend
@@ -495,61 +493,6 @@ namespace db_biometrics_mvp.Backend.Controllers
             }
         }
 
-        /// <summary>
-        /// Start automatic training after registration
-        /// POST /api/biometric/start-auto-training
-        /// </summary>
-        [HttpPost("start-auto-training")]
-        public async Task<IActionResult> StartAutoTraining([FromBody] AutoTrainingRequest request)
-        {
-            try
-            {
-                var username = User.Identity?.Name ?? "Unknown";
-                var userId = GetUserIdFromClaims().ToString();
-                
-                int numSamples = request?.NumSamples ?? 1000;
-                
-                _logger.LogInformation($"Starting auto-training for {username} with {numSamples} samples");
-                
-                var success = await _autoTrainingService.StartAutoTraining(username, userId, numSamples);
-                
-                return Ok(new { 
-                    success = success,
-                    message = success ? "Auto-training started" : "Failed to start auto-training",
-                    numSamples = numSamples
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error starting auto-training: {ex.Message}");
-                return StatusCode(500, new { success = false, error = ex.Message });
-            }
-        }
-
-        /// <summary>
-        /// Get training progress
-        /// GET /api/biometric/training-progress
-        /// </summary>
-        [HttpGet("training-progress")]
-        public IActionResult GetTrainingProgress()
-        {
-            try
-            {
-                var username = User.Identity?.Name ?? "Unknown";
-                var progress = _autoTrainingService.GetTrainingProgress(username);
-                
-                return Ok(progress);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error getting training progress: {ex.Message}");
-                return StatusCode(500, new { 
-                    isTraining = false,
-                    error = ex.Message 
-                });
-            }
-        }
-
         private int GetUserIdFromClaims()
         {
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier);
@@ -562,10 +505,6 @@ namespace db_biometrics_mvp.Backend.Controllers
     }
 
     // Request Models
-    public class AutoTrainingRequest
-    {
-        public int NumSamples { get; set; } = 1000;
-    }
     public class CBBATrainingRequest
     {
         public List<BehavioralSession> TrainingData { get; set; } = new List<BehavioralSession>();

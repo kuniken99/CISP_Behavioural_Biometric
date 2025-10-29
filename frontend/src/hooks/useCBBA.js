@@ -220,22 +220,18 @@ const useCBBA = (isAuthenticated, user, onRiskDetected) => {
         setIsTrained(prevTrained => {
           if (prevTrained !== newIsTrained) {
             console.log(`[CBBA] Training status updated: ${prevTrained} → ${newIsTrained}`);
+            return newIsTrained;
           }
-          return newIsTrained;
+          return prevTrained;
         });
-        
-        // Note: Training modal now handled by DashboardPage after 2FA setup
-        // No auto-redirect needed here - users will see training modal on dashboard
 
-        // Handle risk-based actions (only for trained users)
-        if (newIsTrained) {
-          if (result.action === 'challenge' && onRiskDetected) {
-            console.log('[CBBA] Triggering step-up authentication challenge');
-            onRiskDetected('challenge', result.riskScore);
-          } else if (result.action === 'lock' && onRiskDetected) {
-            console.log('[CBBA] Triggering session lock');
-            onRiskDetected('lock', result.riskScore);
-          }
+        // Handle risk-based actions
+        if (result.action === 'challenge' && onRiskDetected) {
+          console.log('[CBBA] Triggering step-up authentication challenge');
+          onRiskDetected('challenge', result.riskScore);
+        } else if (result.action === 'lock' && onRiskDetected) {
+          console.log('[CBBA] Triggering session lock');
+          onRiskDetected('lock', result.riskScore);
         }
       } else {
         console.error('[CBBA] Risk assessment failed:', response.status, response.statusText);

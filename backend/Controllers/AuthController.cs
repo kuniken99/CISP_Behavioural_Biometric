@@ -521,15 +521,11 @@ namespace db_biometrics_mvp.Backend.Controllers
             
             await _context.SaveChangesAsync();
 
-            // Generate JWT token for auto-login and training
-            var jwtToken = GenerateJwtToken(verificationToken.User);
-
             return Ok(new { 
-                message = "Email verified successfully. Setting up your profile...",
+                message = "Email verified successfully. You can now set up two-factor authentication.",
                 requiresTwoFactorSetup = true,
                 email = verificationToken.User.Email,
-                username = verificationToken.User.Username,
-                token = jwtToken
+                username = verificationToken.User.Username
             });
         }
 
