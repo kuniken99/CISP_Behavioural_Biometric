@@ -91,6 +91,9 @@ namespace db_biometrics_mvp.Backend
             // Register the Two-Factor Authentication service
             services.AddScoped<ITwoFactorAuthService, TwoFactorAuthService>();
 
+            // Register the Auto-Training service
+            services.AddSingleton<IAutoTrainingService, AutoTrainingService>();
+
             // Configure Session with in-memory cache
             services.AddDistributedMemoryCache(); // Required for session storage
             services.AddSession(options =>

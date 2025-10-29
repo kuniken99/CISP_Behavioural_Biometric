@@ -32,15 +32,31 @@ function VerifyEmailPage() {
 
         if (response.ok) {
           setVerificationStatus('success');
-          setMessage(data.message || 'Email verified successfully. You can now log in.');
+          setMessage(data.message || 'Email verified successfully. Setting up your profile...');
+          
+          // Store JWT token if provided for auto-training
+          if (data.token) {
+            localStorage.setItem('jwt_token', data.token);
+          }
           
           // If user needs 2FA setup, store their email for the setup process
           if (data.requiresTwoFactorSetup && data.email) {
             localStorage.setItem('pendingTwoFactorSetup', JSON.stringify({
               email: data.email,
-              username: data.username
+              username: data.username,
+              token: data.token
             }));
           }
+
+          // Redirect to training progress after 2 seconds
+          setTimeout(() => {
+            // Auto-login and redirect to training
+            if (data.token) {
+              navigate('/training-progress');
+            } else {
+              navigate('/login');
+            }
+          }, 2000);
         } else {
           setVerificationStatus('error');
           setMessage(data.message || 'Email verification failed. The link may be invalid or expired.');
@@ -55,7 +71,7 @@ function VerifyEmailPage() {
     };
 
     verifyEmail();
-  }, [token]);
+  }, [token, navigate]);
 
   const handleLoginRedirect = () => {
     // Check if user needs to set up 2FA

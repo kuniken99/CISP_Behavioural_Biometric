@@ -17,6 +17,7 @@ import AuthWrapper from './pages/AuthWrapper';
 import SetNewPasswordPage from './pages/SetNewPasswordPage';
 import VerifyEmailPage from './VerifyEmailPage';
 import ResendVerificationPage from './ResendVerificationPage';
+import TrainingProgressPage from './pages/TrainingProgressPage';
 import DashboardPage from './pages/DashboardPage';
 import DbEntryManagementPage from './pages/DbEntryManagementPage';
 import UserManagementPage from './pages/UserManagementPage';
@@ -265,6 +266,16 @@ function App() {
             <div className="app-container">
               <div className="main-content login-mode">
                 <VerifyEmailPage />
+              </div>
+            </div>
+          } 
+        />
+        <Route 
+          path="/training-progress" 
+          element={
+            <div className="app-container">
+              <div className="main-content login-mode">
+                <TrainingProgressPage />
               </div>
             </div>
           } 
