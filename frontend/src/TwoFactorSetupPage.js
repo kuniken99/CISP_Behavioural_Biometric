@@ -120,11 +120,9 @@ function TwoFactorSetupPage({ setCurrentAuthPage, email, onSetupComplete }) {
         }
         
         setSetupComplete(true);
-        // Call the completion callback after a short delay to show success message
+        // Redirect to training progress after a short delay
         setTimeout(() => {
-          if (onSetupComplete) {
-            onSetupComplete(data.token, data.user);
-          }
+          navigate('/training-progress');
         }, 2000);
       } else {
         const errorData = await response.json();
@@ -172,7 +170,7 @@ function TwoFactorSetupPage({ setCurrentAuthPage, email, onSetupComplete }) {
             }}>✓</div>
             <h2 className="auth-title">Setup Complete!</h2>
             <p>Two-factor authentication has been successfully configured for your account.</p>
-            <p>You will now be redirected to the dashboard...</p>
+            <p>Setting up your behavioral profile...</p>
           </div>
         </div>
       </div>
