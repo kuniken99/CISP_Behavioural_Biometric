@@ -269,15 +269,15 @@ namespace db_biometrics_mvp.Backend.Services
             {
                 case "fast":
                     avgInterval = 100;
-                    stdDev = 60; // Increased variation
+                    stdDev = 80; // INCREASED from 60 for even more variation
                     break;
                 case "slow":
                     avgInterval = 450;
-                    stdDev = 180; // Increased variation
+                    stdDev = 220; // INCREASED from 180 for even more variation
                     break;
                 default:
                     avgInterval = 250;
-                    stdDev = 120; // Increased variation
+                    stdDev = 150; // INCREASED from 120 for even more variation
                     break;
             }
 
@@ -285,18 +285,18 @@ namespace db_biometrics_mvp.Backend.Services
 
             while (currentTime < durationMs)
             {
-                // Occasional pauses (increased from 0.08 to 0.10 for more variation)
-                if (random.NextDouble() < 0.10)
+                // Occasional pauses (INCREASED to 0.12 for even more pauses)
+                if (random.NextDouble() < 0.12)
                 {
-                    currentTime += random.Next(500, 3500); // Extended pause range
+                    currentTime += random.Next(500, 4000); // INCREASED max pause to 4 seconds
                     continue;
                 }
 
                 var key = keys[random.Next(keys.Length)].ToString();
-                var burstMultiplier = random.NextDouble() < 0.18 ? random.NextDouble() * 0.3 + 0.5 : 1.0; // Increased burst probability
+                var burstMultiplier = random.NextDouble() < 0.20 ? random.NextDouble() * 0.35 + 0.45 : 1.0; // INCREASED burst variation
 
-                // Occasional typo (increased from 0.05 to 0.07)
-                if (random.NextDouble() < 0.07)
+                // Occasional typo (INCREASED to 0.08 for more typos)
+                if (random.NextDouble() < 0.08)
                 {
                     var wrongKey = keys[random.Next(keys.Length)].ToString();
                     keystrokes.Add(new { key = wrongKey, timestamp = currentTime, @event = "keydown" });
@@ -312,15 +312,15 @@ namespace db_biometrics_mvp.Backend.Services
 
                 keystrokes.Add(new { key = key, timestamp = currentTime, @event = "keydown" });
                 
-                // Wider dwell time ranges for more diversity
-                var dwell = speed == "fast" ? random.Next(20, 180) :  // Increased range
-                           speed == "slow" ? random.Next(70, 400) :   // Increased range
-                           random.Next(40, 250);                       // Increased range
+                // WIDER dwell time ranges for maximum diversity
+                var dwell = speed == "fast" ? random.Next(15, 200) :  // INCREASED range
+                           speed == "slow" ? random.Next(60, 450) :   // INCREASED range
+                           random.Next(30, 280);                       // INCREASED range
                 
                 keystrokes.Add(new { key = key, timestamp = currentTime + dwell, @event = "keyup" });
 
                 var flight = (int)(NextGaussian(random, avgInterval, stdDev) * burstMultiplier);
-                flight = Math.Max(10, Math.Min(flight, 1800)); // Increased max from 1500 to 1800
+                flight = Math.Max(5, Math.Min(flight, 2000)); // INCREASED max to 2 seconds for more variation
                 
                 currentTime += dwell + flight;
             }
@@ -338,10 +338,10 @@ namespace db_biometrics_mvp.Backend.Services
 
             while (currentTime < durationMs)
             {
-                // Increased pause probability from 0.15 to 0.18
-                if (random.NextDouble() < 0.18)
+                // INCREASED pause probability to 0.20 for more variation
+                if (random.NextDouble() < 0.20)
                 {
-                    currentTime += random.Next(200, 1800); // Extended pause range
+                    currentTime += random.Next(200, 2000); // INCREASED max pause to 2 seconds
                     continue;
                 }
 
@@ -349,39 +349,39 @@ namespace db_biometrics_mvp.Backend.Services
                 switch (pattern)
                 {
                     case "smooth":
-                        dx = random.Next(-15, 15); // Increased from -12, 12
-                        dy = random.Next(-15, 15);
-                        interval = random.Next(25, 90); // Wider range
+                        dx = random.Next(-18, 18); // INCREASED from -15, 15
+                        dy = random.Next(-18, 18);
+                        interval = random.Next(20, 100); // WIDER range
                         break;
                     case "erratic":
-                        dx = random.Next(-100, 100); // Increased from -80, 80
-                        dy = random.Next(-100, 100);
-                        interval = random.Next(70, 200); // Wider range
+                        dx = random.Next(-120, 120); // INCREASED from -100, 100
+                        dy = random.Next(-120, 120);
+                        interval = random.Next(60, 220); // WIDER range
                         break;
                     case "fast":
-                        dx = random.Next(-60, 60); // Increased from -50, 50
-                        dy = random.Next(-60, 60);
-                        interval = random.Next(20, 80); // Wider range
+                        dx = random.Next(-70, 70); // INCREASED
+                        dy = random.Next(-70, 70);
+                        interval = random.Next(15, 90); // WIDER
                         break;
                     default:
-                        dx = random.Next(-40, 40); // Increased from -35, 35
-                        dy = random.Next(-40, 40);
-                        interval = random.Next(50, 140); // Wider range
+                        dx = random.Next(-50, 50); // INCREASED
+                        dy = random.Next(-50, 50);
+                        interval = random.Next(40, 160); // WIDER
                         break;
                 }
 
-                // Add overshoot simulation (increased probability from 0.12 to 0.15)
-                if (random.NextDouble() < 0.15)
+                // Add overshoot simulation (INCREASED to 0.18)
+                if (random.NextDouble() < 0.18)
                 {
-                    dx = (int)(dx * random.NextDouble() * 1.5 + 1.5); // More overshoot
-                    dy = (int)(dy * random.NextDouble() * 1.5 + 1.5);
+                    dx = (int)(dx * (random.NextDouble() * 1.8 + 1.5)); // MORE overshoot
+                    dy = (int)(dy * (random.NextDouble() * 1.8 + 1.5));
                 }
 
-                // Micro-corrections (increased from 0.20 to 0.25)
-                if (random.NextDouble() < 0.25)
+                // Micro-corrections (INCREASED to 0.28)
+                if (random.NextDouble() < 0.28)
                 {
-                    dx += random.Next(-6, 6); // Increased from -5, 5
-                    dy += random.Next(-6, 6);
+                    dx += random.Next(-7, 7); // MORE jitter
+                    dy += random.Next(-7, 7);
                 }
 
                 x = Math.Max(0, Math.Min(1920, x + dx));
@@ -389,11 +389,11 @@ namespace db_biometrics_mvp.Backend.Services
 
                 mouseData.Add(new { x, y, timestamp = currentTime, @event = "mousemove" });
 
-                // Increased click probability from 0.08 to 0.10
-                if (random.NextDouble() < 0.10)
+                // Increased click probability to 0.12
+                if (random.NextDouble() < 0.12)
                 {
-                    var clickX = x + random.Next(-4, 4); // Increased jitter
-                    var clickY = y + random.Next(-4, 4);
+                    var clickX = x + random.Next(-5, 5); // MORE jitter
+                    var clickY = y + random.Next(-5, 5);
                     mouseData.Add(new { x = clickX, y = clickY, timestamp = currentTime + 10, @event = "click", button = 0 });
                 }
 
