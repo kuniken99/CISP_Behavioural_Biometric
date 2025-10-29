@@ -2,12 +2,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { API_BASE_URL } from '../config/constants';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * CBBA Hook for Continuous Behavioral Biometric Authentication
  * Captures keystroke and mouse dynamics, sends to backend for risk assessment
  */
 const useCBBA = (isAuthenticated, user, onRiskDetected) => {
+  const navigate = useNavigate();
   // State
   const [riskScore, setRiskScore] = useState(0);
   const [riskLevel, setRiskLevel] = useState('low');
@@ -220,18 +222,30 @@ const useCBBA = (isAuthenticated, user, onRiskDetected) => {
         setIsTrained(prevTrained => {
           if (prevTrained !== newIsTrained) {
             console.log(`[CBBA] Training status updated: ${prevTrained} → ${newIsTrained}`);
+            
+            // If user is not trained and on dashboard, redirect to training
+            if (!newIsTrained && result.status === 'untrained') {
+              console.log('[CBBA] User is untrained, redirecting to training page...');
+              setTimeout(() => {
+                navigate('/training-progress');
+              }, 1000);
+              return newIsTrained;
+            }
+            
             return newIsTrained;
           }
           return prevTrained;
         });
 
-        // Handle risk-based actions
-        if (result.action === 'challenge' && onRiskDetected) {
-          console.log('[CBBA] Triggering step-up authentication challenge');
-          onRiskDetected('challenge', result.riskScore);
-        } else if (result.action === 'lock' && onRiskDetected) {
-          console.log('[CBBA] Triggering session lock');
-          onRiskDetected('lock', result.riskScore);
+        // Handle risk-based actions (only for trained users)
+        if (newIsTrained) {
+          if (result.action === 'challenge' && onRiskDetected) {
+            console.log('[CBBA] Triggering step-up authentication challenge');
+            onRiskDetected('challenge', result.riskScore);
+          } else if (result.action === 'lock' && onRiskDetected) {
+            console.log('[CBBA] Triggering session lock');
+            onRiskDetected('lock', result.riskScore);
+          }
         }
       } else {
         console.error('[CBBA] Risk assessment failed:', response.status, response.statusText);
