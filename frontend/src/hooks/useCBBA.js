@@ -224,14 +224,8 @@ const useCBBA = (isAuthenticated, user, onRiskDetected) => {
           return newIsTrained;
         });
         
-        // Check if user needs training (outside setState to always execute)
-        // Only redirect if not already on training page
-        if (!newIsTrained && result.status === 'untrained' && !window.location.pathname.includes('/training-progress')) {
-          console.log('[CBBA] User is untrained, redirecting to training page...');
-          setTimeout(() => {
-            window.location.href = '/training-progress';
-          }, 1000);
-        }
+        // Note: Training modal now handled by DashboardPage after 2FA setup
+        // No auto-redirect needed here - users will see training modal on dashboard
 
         // Handle risk-based actions (only for trained users)
         if (newIsTrained) {

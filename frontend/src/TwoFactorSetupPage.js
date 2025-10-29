@@ -120,9 +120,10 @@ function TwoFactorSetupPage({ setCurrentAuthPage, email, onSetupComplete }) {
         }
         
         setSetupComplete(true);
-        // Redirect to training progress after a short delay
+        // Redirect to dashboard with flag to show training modal
         setTimeout(() => {
-          navigate('/training-progress');
+          localStorage.setItem('showTrainingModal', 'true');
+          navigate('/dashboard');
         }, 2000);
       } else {
         const errorData = await response.json();
