@@ -24,8 +24,8 @@ namespace db_biometrics_mvp.Backend.Services
         public int TotalSamples { get; set; }
         public int CompletedSamples { get; set; }
         public int PercentComplete { get; set; }
-        public string Status { get; set; }
-        public string Error { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public string? Error { get; set; }
     }
 
     public class AutoTrainingService : IAutoTrainingService
@@ -137,7 +137,13 @@ namespace db_biometrics_mvp.Backend.Services
                 _trainingProgress[username].Status = "Training ML models...";
                 _trainingProgress[username].PercentComplete = 95;
 
-                var result = await _cbbaService.TrainUserProfile(username, trainingData);
+                var result = await _cbbaService.TrainUserProfile(username, new List<BehavioralSession>(
+                    trainingData.Select(session => new BehavioralSession
+                    {
+                        KeystrokeData = ((dynamic)session).keystroke_data,
+                        MouseData = ((dynamic)session).mouse_data
+                    })
+                ));
 
                 if (result.Success)
                 {
@@ -145,13 +151,13 @@ namespace db_biometrics_mvp.Backend.Services
                     var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
                     if (user != null)
                     {
-                        var profile = await _context.BiometricProfiles.FirstOrDefaultAsync(p => p.UserId == user.UserId);
+                        var profile = await _context.BiometricProfiles.FirstOrDefaultAsync(p => p.UserId == user.Id);
                         
                         if (profile == null)
                         {
                             profile = new BiometricProfile
                             {
-                                UserId = user.UserId,
+                                UserId = user.Id,
                                 EncryptedProfile = result.EncryptedProfile,
                                 IsTrained = true,
                                 TrainedAt = DateTime.UtcNow,
