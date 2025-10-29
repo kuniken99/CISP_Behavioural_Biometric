@@ -48,14 +48,11 @@ function VerifyEmailPage() {
             }));
           }
 
-          // Redirect to training progress after 2 seconds
+          // Redirect after 2 seconds
           setTimeout(() => {
-            // Auto-login and redirect to training
-            if (data.token) {
-              navigate('/training-progress');
-            } else {
-              navigate('/login');
-            }
+            // If 2FA is already set up, redirect to login (training happens after 2FA)
+            // If 2FA needs setup, user will be redirected there from login page
+            navigate('/login');
           }, 2000);
         } else {
           setVerificationStatus('error');

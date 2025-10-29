@@ -269,15 +269,15 @@ namespace db_biometrics_mvp.Backend.Services
             {
                 case "fast":
                     avgInterval = 100;
-                    stdDev = 80; // INCREASED from 60 for even more variation
+                    stdDev = 100; // GREATLY INCREASED to match Python (was 60 → 80 → 100)
                     break;
                 case "slow":
                     avgInterval = 450;
-                    stdDev = 220; // INCREASED from 180 for even more variation
+                    stdDev = 280; // GREATLY INCREASED to match Python (was 180 → 220 → 280)
                     break;
                 default:
                     avgInterval = 250;
-                    stdDev = 150; // INCREASED from 120 for even more variation
+                    stdDev = 180; // GREATLY INCREASED to match Python (was 120 → 150 → 180)
                     break;
             }
 
@@ -285,42 +285,42 @@ namespace db_biometrics_mvp.Backend.Services
 
             while (currentTime < durationMs)
             {
-                // Occasional pauses (INCREASED to 0.12 for even more pauses)
-                if (random.NextDouble() < 0.12)
+                // Occasional pauses (GREATLY INCREASED to match Python 8% pause rate)
+                if (random.NextDouble() < 0.15) // INCREASED from 0.12
                 {
-                    currentTime += random.Next(500, 4000); // INCREASED max pause to 4 seconds
+                    currentTime += random.Next(500, 5000); // INCREASED max to 5 seconds (Python uses 3000)
                     continue;
                 }
 
                 var key = keys[random.Next(keys.Length)].ToString();
-                var burstMultiplier = random.NextDouble() < 0.20 ? random.NextDouble() * 0.35 + 0.45 : 1.0; // INCREASED burst variation
+                var burstMultiplier = random.NextDouble() < 0.25 ? random.NextDouble() * 0.40 + 0.40 : 1.0; // MORE burst variation
 
-                // Occasional typo (INCREASED to 0.08 for more typos)
-                if (random.NextDouble() < 0.08)
+                // Occasional typo (INCREASED to match Python 5% typo rate)
+                if (random.NextDouble() < 0.10) // INCREASED from 0.08
                 {
                     var wrongKey = keys[random.Next(keys.Length)].ToString();
                     keystrokes.Add(new { key = wrongKey, timestamp = currentTime, @event = "keydown" });
-                    var dwellTime = random.Next(60, 140); // Wider range
+                    var dwellTime = random.Next(60, 150); // Wider range
                     keystrokes.Add(new { key = wrongKey, timestamp = currentTime + dwellTime, @event = "keyup" });
-                    currentTime += dwellTime + random.Next(80, 180) + random.Next(100, 350); // More variation
+                    currentTime += dwellTime + random.Next(80, 200) + random.Next(100, 400); // Much more variation
 
                     keystrokes.Add(new { key = "Backspace", timestamp = currentTime, @event = "keydown" });
-                    dwellTime = random.Next(70, 120); // Wider range
+                    dwellTime = random.Next(70, 130); // Wider range
                     keystrokes.Add(new { key = "Backspace", timestamp = currentTime + dwellTime, @event = "keyup" });
-                    currentTime += dwellTime + random.Next(100, 250); // More variation
+                    currentTime += dwellTime + random.Next(100, 300); // More variation
                 }
 
                 keystrokes.Add(new { key = key, timestamp = currentTime, @event = "keydown" });
                 
-                // WIDER dwell time ranges for maximum diversity
-                var dwell = speed == "fast" ? random.Next(15, 200) :  // INCREASED range
-                           speed == "slow" ? random.Next(60, 450) :   // INCREASED range
-                           random.Next(30, 280);                       // INCREASED range
+                // MUCH WIDER dwell time ranges to match Python script diversity
+                var dwell = speed == "fast" ? random.Next(10, 250) :  // GREATLY INCREASED (was 15-200)
+                           speed == "slow" ? random.Next(50, 500) :   // GREATLY INCREASED (was 60-450)
+                           random.Next(20, 350);                       // GREATLY INCREASED (was 30-280)
                 
                 keystrokes.Add(new { key = key, timestamp = currentTime + dwell, @event = "keyup" });
 
                 var flight = (int)(NextGaussian(random, avgInterval, stdDev) * burstMultiplier);
-                flight = Math.Max(5, Math.Min(flight, 2000)); // INCREASED max to 2 seconds for more variation
+                flight = Math.Max(5, Math.Min(flight, 2500)); // INCREASED max to 2.5 seconds for extreme variation
                 
                 currentTime += dwell + flight;
             }
@@ -338,10 +338,10 @@ namespace db_biometrics_mvp.Backend.Services
 
             while (currentTime < durationMs)
             {
-                // INCREASED pause probability to 0.20 for more variation
-                if (random.NextDouble() < 0.20)
+                // GREATLY INCREASED pause probability to match Python (was 0.18 → 0.20 → 0.25)
+                if (random.NextDouble() < 0.25) // Python uses 0.15 (15%)
                 {
-                    currentTime += random.Next(200, 2000); // INCREASED max pause to 2 seconds
+                    currentTime += random.Next(200, 2500); // INCREASED max pause (Python uses 1500)
                     continue;
                 }
 
@@ -349,39 +349,39 @@ namespace db_biometrics_mvp.Backend.Services
                 switch (pattern)
                 {
                     case "smooth":
-                        dx = random.Next(-18, 18); // INCREASED from -15, 15
-                        dy = random.Next(-18, 18);
-                        interval = random.Next(20, 100); // WIDER range
+                        dx = random.Next(-25, 25); // GREATLY INCREASED (was -12 → -18 → -25, Python uses -12)
+                        dy = random.Next(-25, 25);
+                        interval = random.Next(15, 120); // WIDER range (Python uses 25-80)
                         break;
                     case "erratic":
-                        dx = random.Next(-120, 120); // INCREASED from -100, 100
-                        dy = random.Next(-120, 120);
-                        interval = random.Next(60, 220); // WIDER range
+                        dx = random.Next(-150, 150); // GREATLY INCREASED (was -80 → -120 → -150, Python uses -80)
+                        dy = random.Next(-150, 150);
+                        interval = random.Next(50, 250); // WIDER range (Python uses 70-180)
                         break;
                     case "fast":
-                        dx = random.Next(-70, 70); // INCREASED
-                        dy = random.Next(-70, 70);
-                        interval = random.Next(15, 90); // WIDER
+                        dx = random.Next(-90, 90); // GREATLY INCREASED (was -50 → -70 → -90, Python uses -50)
+                        dy = random.Next(-90, 90);
+                        interval = random.Next(10, 110); // WIDER range (Python uses 20-70)
                         break;
                     default:
-                        dx = random.Next(-50, 50); // INCREASED
-                        dy = random.Next(-50, 50);
-                        interval = random.Next(40, 160); // WIDER
+                        dx = random.Next(-60, 60); // GREATLY INCREASED (was -35 → -50 → -60, Python uses -35)
+                        dy = random.Next(-60, 60);
+                        interval = random.Next(30, 180); // WIDER range (Python uses 50-120)
                         break;
                 }
 
-                // Add overshoot simulation (INCREASED to 0.18)
-                if (random.NextDouble() < 0.18)
+                // Add overshoot simulation (GREATLY INCREASED to match Python 12%)
+                if (random.NextDouble() < 0.22) // INCREASED from 0.18 (Python uses 0.12)
                 {
-                    dx = (int)(dx * (random.NextDouble() * 1.8 + 1.5)); // MORE overshoot
-                    dy = (int)(dy * (random.NextDouble() * 1.8 + 1.5));
+                    dx = (int)(dx * (random.NextDouble() * 2.2 + 1.5)); // MUCH MORE overshoot
+                    dy = (int)(dy * (random.NextDouble() * 2.2 + 1.5));
                 }
 
-                // Micro-corrections (INCREASED to 0.28)
-                if (random.NextDouble() < 0.28)
+                // Micro-corrections (INCREASED to match Python 20%)
+                if (random.NextDouble() < 0.35) // INCREASED from 0.28 (Python uses 0.20)
                 {
-                    dx += random.Next(-7, 7); // MORE jitter
-                    dy += random.Next(-7, 7);
+                    dx += random.Next(-10, 10); // MUCH MORE jitter (was -5 → -7 → -10)
+                    dy += random.Next(-10, 10);
                 }
 
                 x = Math.Max(0, Math.Min(1920, x + dx));
@@ -389,11 +389,11 @@ namespace db_biometrics_mvp.Backend.Services
 
                 mouseData.Add(new { x, y, timestamp = currentTime, @event = "mousemove" });
 
-                // Increased click probability to 0.12
-                if (random.NextDouble() < 0.12)
+                // GREATLY INCREASED click probability to match Python (was 0.08 → 0.12 → 0.15)
+                if (random.NextDouble() < 0.15) // Python uses 0.08 (8%)
                 {
-                    var clickX = x + random.Next(-5, 5); // MORE jitter
-                    var clickY = y + random.Next(-5, 5);
+                    var clickX = x + random.Next(-8, 8); // MUCH MORE jitter (was -3 → -5 → -8)
+                    var clickY = y + random.Next(-8, 8);
                     mouseData.Add(new { x = clickX, y = clickY, timestamp = currentTime + 10, @event = "click", button = 0 });
                 }
 
